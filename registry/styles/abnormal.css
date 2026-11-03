@@ -1,0 +1,434 @@
+/*
+ * Abnormal design tokens. Install with `shadcn add @abnormal/theme`, then import it once right after Tailwind:
+ *
+ *   @import "tailwindcss";
+ *   @import "./abnormal.css";
+ *
+ * The palette is ink #141412 on warm paper #f7f7f4; dark mode is the ink itself.
+ * - The primary color is the ink: light #141412 with white text (18.4:1), dark #f0f0ea with ink text (16.1:1).
+ * - Highlighter yellow #ffe14d is the only chromatic brand color. It marks what is current, selected or new,
+ *   always carries ink text (14.2:1), and is never text on a light background nor the background of long text.
+ * - Cards have no fill (card is the page color); layering comes from thin borders.
+ * - control and input are semi-transparent ink, so they read the same over the page, the sidebar and popovers.
+ * - hover is opaque: pinned table columns rely on it to cover the content scrolling underneath.
+ *
+ * The theme is written on <html data-theme="light|dark">. Before any script runs it follows the system preference.
+ */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@custom-variant data-open {
+  &:where([data-state="open"]),
+  &:where([data-open]:not([data-open="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-closed {
+  &:where([data-state="closed"]),
+  &:where([data-closed]:not([data-closed="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-checked {
+  &:where([data-state="checked"]),
+  &:where([data-checked]:not([data-checked="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-unchecked {
+  &:where([data-state="unchecked"]),
+  &:where([data-unchecked]:not([data-unchecked="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-disabled {
+  &:where([data-disabled="true"]),
+  &:where([data-disabled]:not([data-disabled="false"])) {
+    @slot;
+  }
+}
+
+:root {
+  --brand: #141412;
+  --brand-foreground: #ffffff;
+  --highlight: #ffe14d;
+  --highlight-foreground: #141412;
+  /* Soft yellow surface for selected rows and the chosen option: text 16.6:1, secondary text 6.1:1. */
+  --highlight-muted: #fff4bf;
+  /* Small indicators that must stay visible on any surface (dots, progress, numbering): ink in light, yellow in dark. */
+  --signal: #141412;
+  --bg: #f7f7f4;
+  --surface: #ecece6;
+  --text: #141412;
+  --text-secondary: #5c5c55;
+  --border: #e3e3dc;
+  --hover: #efefea;
+  --control: #1414120b;
+  --input: #14141222;
+  /* Status colors stay at least 4.5:1 on their own 10-25% tints over the page and popovers. */
+  --badge-ink: #704800;
+  --success: #335c24;
+  --destructive: #9f1a2c;
+  --card: var(--bg);
+  --popover-bg: #ffffff;
+  --sidebar: #f2f2ee;
+  --sidebar-foreground: var(--text);
+  --sidebar-border: var(--border);
+  /* Focus outline: 3.3:1 against the paper background, meeting the non-text contrast requirement. */
+  --focus: #8a8a80;
+  --panel-shadow: 0 0 #0000;
+  --popover-shadow: 0 4px 12px #1414120d, 0 16px 40px #14141217;
+  /* Categorical chart colors, fixed order. The last two are below 3:1, so charts always carry a legend. */
+  --chart-1: #2a78d6;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --brand: #f0f0ea;
+  --brand-foreground: #141412;
+  /* Text 11.5:1, secondary text 5.3:1. */
+  --highlight-muted: #34311b;
+  --signal: #ffe14d;
+  --bg: #141412;
+  --surface: #252520;
+  --text: #f0f0ea;
+  --text-secondary: #a6a69c;
+  --border: #2e2e29;
+  --hover: #1c1c19;
+  --control: #f0f0ea0d;
+  --input: #f0f0ea1f;
+  --badge-ink: #e8b85a;
+  --success: #a8c48f;
+  --destructive: #ff8a96;
+  --popover-bg: #1c1c19;
+  --sidebar: #0f0f0d;
+  /* 3.6:1 against #141412. */
+  --focus: #6f6f66;
+  --popover-shadow: 0 0 0 1px #f0f0ea08, 0 16px 48px #00000080;
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  color-scheme: dark;
+}
+
+/* The same dark values, for the moment before a script has written data-theme. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --brand: #f0f0ea;
+    --brand-foreground: #141412;
+    --highlight-muted: #34311b;
+    --signal: #ffe14d;
+    --bg: #141412;
+    --surface: #252520;
+    --text: #f0f0ea;
+    --text-secondary: #a6a69c;
+    --border: #2e2e29;
+    --hover: #1c1c19;
+    --control: #f0f0ea0d;
+    --input: #f0f0ea1f;
+    --badge-ink: #e8b85a;
+    --success: #a8c48f;
+    --destructive: #ff8a96;
+    --popover-bg: #1c1c19;
+    --sidebar: #0f0f0d;
+    --focus: #6f6f66;
+    --popover-shadow: 0 0 0 1px #f0f0ea08, 0 16px 48px #00000080;
+    --chart-1: #3987e5;
+    --chart-2: #d95926;
+    --chart-3: #199e70;
+    --chart-4: #c98500;
+    color-scheme: dark;
+  }
+}
+
+/* shadcn's semantic names, mapped onto the tokens above. */
+:root {
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card-foreground: var(--text);
+  --popover: var(--popover-bg);
+  --popover-foreground: var(--text);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-foreground);
+  --secondary: var(--surface);
+  --secondary-foreground: var(--text);
+  --muted: var(--surface);
+  --muted-foreground: var(--text-secondary);
+  --accent: var(--hover);
+  --accent-foreground: var(--text);
+  --ring: var(--focus);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-control: var(--control);
+  --color-ring: var(--ring);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-highlight: var(--highlight);
+  --color-highlight-foreground: var(--highlight-foreground);
+  --color-highlight-muted: var(--highlight-muted);
+  --color-signal: var(--signal);
+  --color-surface: var(--surface);
+  --color-badge-ink: var(--badge-ink);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --shadow-panel: var(--panel-shadow);
+  --shadow-popover: var(--popover-shadow);
+
+  /*
+   * Body text is Inter, headings are Bricolage Grotesque, code and data are JetBrains Mono.
+   * next/font projects set --font-inter and friends; projects using @abnormal/fonts fall back to the family names.
+   * None of them has Chinese glyphs, so the Chinese fallbacks are chained in explicitly.
+   */
+  --font-sans:
+    var(--font-inter, "Inter"), -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --font-heading:
+    var(--font-bricolage, "Bricolage Grotesque"), var(--font-inter, "Inter"), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --font-mono:
+    var(--font-jetbrains-mono, "JetBrains Mono"), ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    "PingFang SC", "Microsoft YaHei", monospace;
+
+  /* A stable reading hierarchy: body 14px, secondary text 12-13px, page title 28px. */
+  --text-xs: 12px;
+  --text-xs--line-height: 1.5;
+  --text-sm: 13px;
+  --text-sm--line-height: 1.5;
+  --text-base: 14px;
+  --text-base--line-height: 1.5;
+  --text-md: 15px;
+  --text-md--line-height: 1.5;
+  --text-lg: 16px;
+  --text-lg--line-height: 1.45;
+  --text-xl: 20px;
+  --text-xl--line-height: 1.4;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 1.3;
+  --text-3xl: 28px;
+  --text-3xl--line-height: 1.2;
+  --text-4xl: 42px;
+  --text-4xl--line-height: 1.2;
+
+  /* Body text inherits 1.55; long-form copy opens up to 1.8. Use as text-md/prose. */
+  --leading-body: 1.55;
+  --leading-prose: 1.8;
+
+  /* Corners are tight, matching the square brand tile: badges 4, controls 6, popovers 8, cards and dialogs 12. */
+  --radius-chip: 4px;
+  --radius-control: 6px;
+  --radius-mark: 8px;
+  --radius-dialog: 12px;
+  --radius-panel: 12px;
+
+  /*
+   * Enter and exit animations use transform rather than translate: Tailwind's -translate-x-1/2 sets the CSS translate
+   * property, and an animation that also sets translate would override the centering of a dialog.
+   */
+  --animate-arrive: arrive 0.15s ease-out both;
+  --animate-leave: leave 0.12s ease-in both;
+  --animate-fade-in: fade-in 0.15s ease-out both;
+  --animate-fade-out: fade-out 0.12s ease-in both;
+  --animate-slide-in-right: slide-in-right 0.22s cubic-bezier(0.32, 0.72, 0, 1) both;
+  --animate-slide-out-right: slide-out-right 0.16s ease-in both;
+  --animate-slide-in-left: slide-in-left 0.22s cubic-bezier(0.32, 0.72, 0, 1) both;
+  --animate-slide-out-left: slide-out-left 0.16s ease-in both;
+  --animate-flash: flash 1.2s ease-out both;
+  --animate-pop: pop 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+  @keyframes arrive {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes leave {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(3px);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes slide-out-right {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes slide-out-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes flash {
+    from {
+      background-color: color-mix(in oklab, var(--success) 14%, transparent);
+    }
+    to {
+      background-color: transparent;
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+    scrollbar-color: var(--input) transparent;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    font-synthesis: none;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.55;
+    font-feature-settings: "cv11", "ss03";
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  /* Selected text is the brand's highlighter: yellow with ink text in both themes. */
+  ::selection {
+    background: var(--highlight);
+    color: var(--highlight-foreground);
+  }
+  a,
+  button,
+  summary {
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Keyboard focus: a 2px solid gray outline. Input-type controls hug their border; buttons and links leave a 2px gap. */
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [data-slot="select-trigger"]:focus-visible {
+    outline-offset: -1px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
+
+/* Toasts use the same floating layer style as menus. */
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"] {
+  box-shadow: var(--popover-shadow);
+  font-family: inherit;
+  font-size: 14px;
+  border-radius: var(--radius-panel);
+}
+
+/*
+ * Keep phone inputs at 16px, to stop iOS zooming the whole page on focus.
+ * Outside any layer on purpose: the controls set their size with text-base, and a utility beats anything in @layer base.
+ */
+@media (max-width: 639px) {
+  [data-slot="input"],
+  [data-slot="textarea"],
+  [data-slot="native-select"],
+  [data-slot="select-trigger"] {
+    font-size: 16px;
+  }
+}

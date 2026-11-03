@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "allowImportingTsExtensions": true,
+    "jsx": "react-jsx",
+    "types": ["node"],
+    "paths": {
+      "@/lib/*": ["./registry/lib/*"],
+      "@/components/ui/*": ["./registry/ui/*"]
+    }
+  },
+  "include": ["registry/**/*.ts", "registry/**/*.tsx", "tests/**/*.ts"]
+}

@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+.wrangler/
+*.tsbuildinfo
+# Built by `shadcn build` from registry.json.
+public/r/
