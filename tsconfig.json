@@ -13,10 +13,20 @@
     "allowImportingTsExtensions": true,
     "jsx": "react-jsx",
     "types": ["node"],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "paths": {
       "@/lib/*": ["./registry/lib/*"],
-      "@/components/ui/*": ["./registry/ui/*"]
-    }
+      "@/components/ui/*": ["./registry/ui/*", "./registry/marketing/*", "./registry/brand/*"],
+      "@/site/*": ["./src/*"]
+    },
+    "allowJs": true,
+    "incremental": true,
+    "esModuleInterop": true
   },
-  "include": ["registry/**/*.ts", "registry/**/*.tsx", "tests/**/*.ts"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
+  "exclude": ["node_modules", ".open-next", ".wrangler"]
 }

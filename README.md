@@ -37,14 +37,14 @@ pnpm dlx shadcn@latest add @abnormal/button @abnormal/dialog
 
 ## What's in it
 
-| Group      | Items                                                                                              |
-| ---------- | -------------------------------------------------------------------------------------------------- |
-| Foundation | `theme`, `fonts`, `utils`                                                                          |
-| Brand      | `brand-mark`                                                                                       |
-| Controls   | `button`, `input`, `textarea`, `select`, `native-select`, `checkbox`, `switch`, `label`            |
-| Display    | `alert`, `badge`, `card`, `disclosure`, `skeleton`, `status-label`, `table`                        |
-| Overlays   | `alert-dialog`, `context-menu`, `dialog`, `dropdown-menu`, `popover`, `sheet`, `sonner`, `tooltip` |
-| Marketing  | `container`, `section-heading`, `text-link`, `icon-tile`, `prose`                                  |
+| Group      | Items                                                                                                                   |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Foundation | `theme`, `fonts`, `utils`                                                                                               |
+| Brand      | `brand-mark`                                                                                                            |
+| Controls   | `button`, `input`, `input-group`, `field-message`, `textarea`, `select`, `native-select`, `checkbox`, `switch`, `label` |
+| Display    | `alert`, `badge`, `card`, `disclosure`, `skeleton`, `spinner`, `status-label`, `table`                                  |
+| Overlays   | `alert-dialog`, `context-menu`, `dialog`, `dropdown-menu`, `popover`, `sheet`, `sonner`, `tooltip`                      |
+| Marketing  | `container`, `section-heading`, `text-link`, `icon-tile`, `prose`                                                       |
 
 ## Rules for items
 
@@ -62,7 +62,13 @@ pnpm install
 pnpm check
 ```
 
-`pnpm build` writes each item to `public/r/` (ignored by git). To try a change in a project before publishing, run the registry locally and point the project's `components.json` at it:
+The site at `ui.abnormalhq.com` is a Next.js app in `src/`. It renders each item from `registry/` directly, so a change shows up as soon as you save it. Every item needs a demo in `src/demos/<name>.tsx` and a place in `src/groups.ts`; `tests/site.test.ts` enforces both, and each demo's source is also the usage example on its page.
+
+```bash
+pnpm dev
+```
+
+`pnpm build:registry` writes each item to `public/r/` (ignored by git). To try a change in a project before publishing, run the registry locally and point the project's `components.json` at it:
 
 ```bash
 pnpm serve
@@ -72,12 +78,27 @@ pnpm serve
 { "registries": { "@abnormal": "http://localhost:4341/r/{name}.json" } }
 ```
 
+OpenNext writes the prerendered pages into the assets when `pnpm serve` or `pnpm cf:deploy` starts, and a rebuild empties them, so restart `pnpm serve` after rebuilding or the item pages return 500.
+
 ## Deploy
 
-The registry is static files on a Cloudflare Worker (`wrangler.jsonc`), served at `ui.abnormalhq.com`:
+The site and the registry share one Cloudflare Worker (`wrangler.jsonc`), built with OpenNext and served at `ui.abnormalhq.com`. Every page is prerendered, and the registry JSON and fonts are static assets.
 
-```bash
-pnpm cf:deploy
-```
+Cloudflare Workers Builds watches `main` and deploys every push. If any step fails nothing is deployed, and the last good version keeps serving. CI runs the same `pnpm cf:build` on pull requests and `main`, and does not publish anything.
 
 Projects keep their own copy of each item, so a deploy changes nothing until a project reinstalls with `--overwrite`.
+
+### Workers Builds settings
+
+Connect `abnormalhq/ui` to the `abnormal-ui` Worker, with `main` as the production branch, `/` as the root directory and builds for other branches turned off:
+
+- Build command: `pnpm install --frozen-lockfile && pnpm cf:build`
+- Deploy command: `pnpm cf:deploy`
+
+Keep the deploy command: a plain `wrangler deploy` skips the step that writes the prerendered pages into the assets.
+
+| Variable                  | Value     | Why                                                  |
+| ------------------------- | --------- | ---------------------------------------------------- |
+| `PNPM_VERSION`            | `12.16.1` | Matches `packageManager` in `package.json`           |
+| `SKIP_DEPENDENCY_INSTALL` | `1`       | Skips the default install in favor of the frozen one |
+| `NEXT_TELEMETRY_DISABLED` | `1`       | Turns off Next.js build telemetry                    |
