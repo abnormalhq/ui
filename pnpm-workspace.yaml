@@ -1,0 +1,4 @@
+allowBuilds:
+  # wrangler needs their install scripts to run workerd and esbuild locally
+  esbuild: true
+  workerd: true
