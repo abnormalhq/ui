@@ -25,7 +25,7 @@ function InputGroupInput({ className, ...props }: React.ComponentProps<"input">)
     <input
       data-slot="input"
       className={cn(
-        "block w-full min-w-0 flex-auto rounded-control bg-transparent px-3 py-2 text-base text-foreground outline-none placeholder:text-muted-foreground/70",
+        "block w-full min-w-0 flex-auto rounded-control bg-transparent px-3 py-2 text-base text-foreground outline-none placeholder:text-muted-foreground/70 disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
       {...props}
@@ -57,7 +57,7 @@ function InputGroupButton({ className, type = "button", ...props }: React.Compon
       type={type}
       data-slot="input-group-button"
       className={cn(
-        "inline-flex min-h-[30px] shrink-0 items-center justify-center gap-[5px] rounded-chip px-2 text-sm/body font-medium whitespace-nowrap text-muted-foreground transition-[color,background-color] duration-150 hover:bg-control hover:text-foreground focus-visible:outline-offset-0 in-data-[slot=input-group]:last:mr-1 in-data-[slot=input-group]:last:text-foreground",
+        "inline-flex min-h-[30px] shrink-0 items-center justify-center gap-[5px] rounded-chip px-2 text-sm/body font-medium whitespace-nowrap text-muted-foreground transition-[color,background-color] duration-150 hover:bg-control hover:text-foreground focus-visible:outline-offset-0 disabled:pointer-events-none disabled:opacity-50 in-data-[slot=input-group]:last:mr-1 in-data-[slot=input-group]:last:text-foreground",
         className,
       )}
       {...props}

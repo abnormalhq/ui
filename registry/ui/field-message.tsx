@@ -26,7 +26,14 @@ function FieldMessage({
   tone,
   ...props
 }: React.ComponentProps<"p"> & VariantProps<typeof fieldMessageVariants>) {
-  return <p data-slot="field-message" className={cn(fieldMessageVariants({ tone }), className)} {...props} />;
+  return (
+    <p
+      data-slot="field-message"
+      aria-live="polite"
+      className={cn(fieldMessageVariants({ tone }), className)}
+      {...props}
+    />
+  );
 }
 
 export { FieldMessage, fieldMessageVariants };
