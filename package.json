@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "pnpm build && node --test tests/*.test.ts",
     "check": "pnpm typecheck && pnpm test && pnpm format:check",
-    "deploy": "pnpm build && wrangler deploy",
+    "cf:deploy": "pnpm build && wrangler deploy",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

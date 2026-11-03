@@ -77,7 +77,7 @@ pnpm serve
 The registry is static files on a Cloudflare Worker (`wrangler.jsonc`), served at `ui.abnormalhq.com`:
 
 ```bash
-pnpm deploy
+pnpm cf:deploy
 ```
 
 Projects keep their own copy of each item, so a deploy changes nothing until a project reinstalls with `--overwrite`.
