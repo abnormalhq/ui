@@ -14,11 +14,11 @@ const cssEntry = `@import "tailwindcss";
 @import "./abnormal.css";`;
 
 const steps = [
-  { title: "Add the registry to components.json", code: componentsJson },
-  { title: "Install the theme", code: installCommand("theme") },
-  { title: "Import it right after Tailwind", code: cssEntry },
-  { title: "Install components", code: installCommand("button", "dialog") },
-];
+  { title: "Add the registry to components.json", code: componentsJson, lang: "json" },
+  { title: "Install the theme", code: installCommand("theme"), lang: "bash" },
+  { title: "Import it right after Tailwind", code: cssEntry, lang: "css" },
+  { title: "Install components", code: installCommand("button", "dialog"), lang: "bash" },
+] as const;
 
 export default function OverviewPage() {
   return (
@@ -41,12 +41,12 @@ export default function OverviewPage() {
           Get started
         </h2>
         <ol className="grid gap-5">
-          {steps.map(({ title, code }, index) => (
+          {steps.map(({ title, code, lang }, index) => (
             <li key={title} className="grid gap-2">
               <p className="text-base font-medium">
                 {index + 1}. {title}
               </p>
-              <CodeBlock code={code} />
+              <CodeBlock code={code} lang={lang} />
             </li>
           ))}
         </ol>

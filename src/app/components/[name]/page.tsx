@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { extname } from "node:path";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -8,6 +9,7 @@ import { Disclosure, DisclosureContent, DisclosureList, DisclosureTrigger } from
 import { Eyebrow, SectionTitle } from "@/components/ui/section-heading";
 import { catalog, getItem, installCommand, items } from "@/site/catalog";
 import { CodeBlock } from "@/site/components/code-block";
+import type { CodeLang } from "@/site/highlight";
 
 type Props = { params: Promise<{ name: string }> };
 
@@ -39,7 +41,8 @@ export default async function ItemPage({ params }: Props) {
   const group = catalog.find(({ items: members }) => members.includes(item))!;
   // Prerendered at build (dynamicParams is off), so the Worker never reads these files.
   const usage = await readFile(`src/demos/${item.name}.tsx`, "utf8");
-  const source = await readFile(item.files[0]!.path, "utf8");
+  const sourcePath = item.files[0]!.path;
+  const source = await readFile(sourcePath, "utf8");
   const requires = item.registryDependencies?.map((name) => name.replace("@abnormal/", "")) ?? [];
   const packages = item.dependencies ?? [];
 
@@ -60,7 +63,7 @@ export default async function ItemPage({ params }: Props) {
       </Section>
 
       <Section title="Install">
-        <CodeBlock code={installCommand(item.name)} />
+        <CodeBlock code={installCommand(item.name)} lang="bash" />
         {requires.length + packages.length > 0 && (
           <div className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
             <span className="mr-1">Brings in</span>
@@ -77,7 +80,7 @@ export default async function ItemPage({ params }: Props) {
       </Section>
 
       <Section title="Usage">
-        <CodeBlock code={usage} />
+        <CodeBlock code={usage} lang="tsx" />
       </Section>
 
       <DisclosureList>
@@ -86,7 +89,7 @@ export default async function ItemPage({ params }: Props) {
             <span className="min-w-0 flex-1 font-heading text-xl font-semibold">Source</span>
           </DisclosureTrigger>
           <DisclosureContent>
-            <CodeBlock code={source} />
+            <CodeBlock code={source} lang={extname(sourcePath).slice(1) as CodeLang} />
           </DisclosureContent>
         </Disclosure>
       </DisclosureList>

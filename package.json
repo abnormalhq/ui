@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "^1.20.15",
+    "@shikijs/langs": "^4.6.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
@@ -37,6 +38,7 @@
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "shadcn": "^4.23.0",
+    "shiki": "^4.6.0",
     "sonner": "^2.0.8",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
