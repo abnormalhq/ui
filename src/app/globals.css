@@ -1,3 +1,18 @@
 @import "tailwindcss";
 @import "../../registry/styles/abnormal.css";
 @import "../../registry/styles/abnormal-fonts.css";
+
+/* Syntax colors for the code blocks, at least 5.6:1 on --surface. light-dark() follows the color-scheme the theme sets. */
+:root {
+  --shiki-foreground: var(--text);
+  --shiki-background: transparent;
+  --shiki-token-comment: var(--text-secondary);
+  --shiki-token-punctuation: var(--text-secondary);
+  --shiki-token-parameter: var(--text);
+  --shiki-token-keyword: light-dark(#8a2a5e, #e7a0c6);
+  --shiki-token-string: light-dark(#335c24, #a8c48f);
+  --shiki-token-string-expression: light-dark(#335c24, #a8c48f);
+  --shiki-token-link: light-dark(#335c24, #a8c48f);
+  --shiki-token-function: light-dark(#1d5a9c, #8cbcf0);
+  --shiki-token-constant: light-dark(#704800, #e8b85a);
+}
