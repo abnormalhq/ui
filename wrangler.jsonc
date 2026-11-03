@@ -1,18 +1,12 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "abnormal-ui",
-  // The Worker OpenNext generates for the site. The registry JSON and fonts in public/ are static assets, served before it runs.
-  "main": ".open-next/worker.js",
   "compatibility_date": "2026-09-01",
-  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
-  // next-themes inlines its init function into the HTML through toString(): with __name(...) helpers in it, the browser throws.
-  "keep_names": false,
+  // No `main`: the exported site, the registry JSON and the fonts are all static assets, so no Worker code runs.
   "assets": {
-    "directory": ".open-next/assets",
-    "binding": "ASSETS",
+    "directory": "out",
+    "not_found_handling": "404-page",
   },
-  // OpenNext calls itself through this binding.
-  "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "abnormal-ui" }],
   "workers_dev": true,
   "routes": [{ "pattern": "ui.abnormalhq.com", "custom_domain": true }],
 }

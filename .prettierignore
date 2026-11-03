@@ -3,5 +3,5 @@ node_modules/
 public/r/
 pnpm-lock.yaml
 .next/
-.open-next/
+out/
 next-env.d.ts

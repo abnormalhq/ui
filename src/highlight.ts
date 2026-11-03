@@ -6,7 +6,7 @@ export type CodeLang = "bash" | "css" | "json" | "ts" | "tsx";
 // Colors come from the --shiki-* variables in globals.css, so one output serves both themes.
 const theme = createCssVariablesTheme({ name: "abnormal", fontStyle: false });
 
-// Only these grammars and no WASM: the page modules are bundled into the Worker even though every page is prerendered.
+// Only these grammars and no WASM, to keep the build light.
 const highlighter = createHighlighterCore({
   themes: [theme],
   langs: [

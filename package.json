@@ -8,12 +8,12 @@
     "dev": "next dev -p 4342",
     "build:registry": "shadcn build",
     "build": "pnpm build:registry && next build",
-    "serve": "opennextjs-cloudflare build && opennextjs-cloudflare preview --port 4341",
+    "serve": "pnpm build && wrangler dev --port 4341",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "pnpm build:registry && node --test tests/*.test.ts",
+    "test": "pnpm build && node --test tests/*.test.ts",
     "check": "pnpm typecheck && pnpm test",
-    "cf:build": "pnpm check && pnpm format:check && opennextjs-cloudflare build && wrangler deploy --dry-run --outdir .wrangler/dry-run",
-    "cf:deploy": "opennextjs-cloudflare deploy",
+    "cf:build": "pnpm check && pnpm format:check && wrangler deploy --dry-run --outdir .wrangler/dry-run",
+    "cf:deploy": "wrangler deploy",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -22,7 +22,6 @@
     "pnpm": ">=12"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "^1.20.15",
     "@shikijs/langs": "^4.6.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.6.5",

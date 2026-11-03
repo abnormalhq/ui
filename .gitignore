@@ -5,7 +5,7 @@ node_modules/
 # Built by `shadcn build` from registry.json.
 public/r/
 .next/
-.open-next/
+out/
 # Written by next typegen and next dev.
 next-env.d.ts
 .claude/.cc-writes/

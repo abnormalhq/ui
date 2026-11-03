@@ -78,11 +78,9 @@ pnpm serve
 { "registries": { "@abnormal": "http://localhost:4341/r/{name}.json" } }
 ```
 
-OpenNext writes the prerendered pages into the assets when `pnpm serve` or `pnpm cf:deploy` starts, and a rebuild empties them, so restart `pnpm serve` after rebuilding or the item pages return 500.
-
 ## Deploy
 
-The site and the registry share one Cloudflare Worker (`wrangler.jsonc`), built with OpenNext and served at `ui.abnormalhq.com`. Every page is prerendered, and the registry JSON and fonts are static assets.
+The site and the registry share one Cloudflare Worker (`wrangler.jsonc`), served at `ui.abnormalhq.com`. `next build` exports every page to `out/` with the registry JSON and fonts, and all of it is served as static assets, with no Worker code running.
 
 Cloudflare Workers Builds watches `main` and deploys every push. If any step fails nothing is deployed, and the last good version keeps serving. CI runs the same `pnpm cf:build` on pull requests and `main`, and does not publish anything.
 
@@ -94,8 +92,6 @@ Connect `abnormalhq/ui` to the `abnormal-ui` Worker, with `main` as the producti
 
 - Build command: `pnpm install --frozen-lockfile && pnpm cf:build`
 - Deploy command: `pnpm cf:deploy`
-
-Keep the deploy command: a plain `wrangler deploy` skips the step that writes the prerendered pages into the assets.
 
 | Variable                  | Value     | Why                                                  |
 | ------------------------- | --------- | ---------------------------------------------------- |

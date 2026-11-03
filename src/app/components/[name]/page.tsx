@@ -39,7 +39,7 @@ export default async function ItemPage({ params }: Props) {
 
   const { default: Demo } = (await import(`../../../demos/${item.name}.tsx`)) as { default: ComponentType };
   const group = catalog.find(({ items: members }) => members.includes(item))!;
-  // Prerendered at build (dynamicParams is off), so the Worker never reads these files.
+  // Exported at build (dynamicParams is off), so these files are never read at runtime.
   const usage = await readFile(`src/demos/${item.name}.tsx`, "utf8");
   const sourcePath = item.files[0]!.path;
   const source = await readFile(sourcePath, "utf8");

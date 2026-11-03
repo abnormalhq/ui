@@ -11,6 +11,14 @@ test("every registry item is in exactly one group", () => {
   assert.deepEqual(groups.flatMap(({ items }) => items).toSorted(), names.toSorted());
 });
 
+test("the export has a page and a client navigation payload for every registry item", () => {
+  for (const name of names) {
+    assert.ok(existsSync(`out/components/${name}.html`), name);
+    assert.ok(existsSync(`out/components/${name}.txt`), name);
+  }
+  assert.ok(existsSync("out/404.html"));
+});
+
 test("every registry item has a demo, and every demo has an item", () => {
   for (const name of names) assert.ok(existsSync(`src/demos/${name}.tsx`), name);
   for (const file of readdirSync("src/demos")) assert.ok(names.includes(file.replace(/\.tsx$/, "")), file);
