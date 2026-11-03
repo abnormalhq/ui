@@ -197,6 +197,20 @@
       ]
     },
     {
+      "name": "field-message",
+      "type": "registry:ui",
+      "title": "Field Message",
+      "description": "The line under a form field: a dot and one sentence, with the color following the tone.",
+      "dependencies": ["class-variance-authority"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/field-message.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "input",
       "type": "registry:ui",
       "title": "Input",
@@ -205,6 +219,19 @@
       "files": [
         {
           "path": "registry/ui/input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "input-group",
+      "type": "registry:ui",
+      "title": "Input Group",
+      "description": "An input sharing one border with a fixed suffix or quiet text buttons.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/input-group.tsx",
           "type": "registry:ui"
         }
       ]
@@ -287,6 +314,19 @@
       "files": [
         {
           "path": "registry/ui/skeleton.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "spinner",
+      "type": "registry:ui",
+      "title": "Spinner",
+      "description": "A small ring that spins in the current text color.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/spinner.tsx",
           "type": "registry:ui"
         }
       ]

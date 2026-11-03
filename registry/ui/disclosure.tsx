@@ -13,8 +13,16 @@ function Disclosure({ className, ...props }: React.ComponentProps<"details">) {
   );
 }
 
-/** The row itself, with a plus that turns into a close mark while open. */
-function DisclosureTrigger({ className, children, ...props }: React.ComponentProps<"summary">) {
+/**
+ * The row itself, with a plus that turns into a close mark while open.
+ * `indicator` replaces that mark; style it with `group-open/disclosure:` to follow the open state.
+ */
+function DisclosureTrigger({
+  className,
+  children,
+  indicator,
+  ...props
+}: React.ComponentProps<"summary"> & { indicator?: React.ReactNode }) {
   return (
     <summary
       data-slot="disclosure-trigger"
@@ -25,9 +33,11 @@ function DisclosureTrigger({ className, children, ...props }: React.ComponentPro
       {...props}
     >
       {children}
-      <span className="grid size-8 shrink-0 place-items-center rounded-control text-muted-foreground transition-[transform,background-color,color] duration-150 group-open/disclosure:rotate-45 group-open/disclosure:bg-control group-open/disclosure:text-foreground group-hover/trigger:bg-control group-hover/trigger:text-foreground">
-        <PlusIcon className="size-4" aria-hidden="true" />
-      </span>
+      {indicator ?? (
+        <span className="grid size-8 shrink-0 place-items-center rounded-control text-muted-foreground transition-[transform,background-color,color] duration-150 group-open/disclosure:rotate-45 group-open/disclosure:bg-control group-open/disclosure:text-foreground group-hover/trigger:bg-control group-hover/trigger:text-foreground">
+          <PlusIcon className="size-4" aria-hidden="true" />
+        </span>
+      )}
     </summary>
   );
 }

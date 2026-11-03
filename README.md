@@ -37,14 +37,14 @@ pnpm dlx shadcn@latest add @abnormal/button @abnormal/dialog
 
 ## What's in it
 
-| Group      | Items                                                                                              |
-| ---------- | -------------------------------------------------------------------------------------------------- |
-| Foundation | `theme`, `fonts`, `utils`                                                                          |
-| Brand      | `brand-mark`                                                                                       |
-| Controls   | `button`, `input`, `textarea`, `select`, `native-select`, `checkbox`, `switch`, `label`            |
-| Display    | `alert`, `badge`, `card`, `disclosure`, `skeleton`, `status-label`, `table`                        |
-| Overlays   | `alert-dialog`, `context-menu`, `dialog`, `dropdown-menu`, `popover`, `sheet`, `sonner`, `tooltip` |
-| Marketing  | `container`, `section-heading`, `text-link`, `icon-tile`, `prose`                                  |
+| Group      | Items                                                                                                                   |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Foundation | `theme`, `fonts`, `utils`                                                                                               |
+| Brand      | `brand-mark`                                                                                                            |
+| Controls   | `button`, `input`, `input-group`, `field-message`, `textarea`, `select`, `native-select`, `checkbox`, `switch`, `label` |
+| Display    | `alert`, `badge`, `card`, `disclosure`, `skeleton`, `spinner`, `status-label`, `table`                                  |
+| Overlays   | `alert-dialog`, `context-menu`, `dialog`, `dropdown-menu`, `popover`, `sheet`, `sonner`, `tooltip`                      |
+| Marketing  | `container`, `section-heading`, `text-link`, `icon-tile`, `prose`                                                       |
 
 ## Rules for items
 
