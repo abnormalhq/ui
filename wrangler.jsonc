@@ -1,9 +1,18 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // Static hosting only: the registry is the JSON that `shadcn build` writes to public/r, plus the font files.
   "name": "abnormal-ui",
+  // The Worker OpenNext generates for the site. The registry JSON and fonts in public/ are static assets, served before it runs.
+  "main": ".open-next/worker.js",
   "compatibility_date": "2026-09-01",
-  "assets": { "directory": "./public" },
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // next-themes inlines its init function into the HTML through toString(): with __name(...) helpers in it, the browser throws.
+  "keep_names": false,
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS",
+  },
+  // OpenNext calls itself through this binding.
+  "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "abnormal-ui" }],
   "workers_dev": true,
   "routes": [{ "pattern": "ui.abnormalhq.com", "custom_domain": true }],
 }

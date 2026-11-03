@@ -1,4 +1,10 @@
+overrides:
+  # OpenNext's minification tool pins an old glob; the sync API is compatible, so upgrade it in a targeted way to fix the CLI command injection vulnerability.
+  "@node-minify/core@9.0.2>glob": ^13.0.6
+
 allowBuilds:
   # wrangler needs their install scripts to run workerd and esbuild locally
   esbuild: true
   workerd: true
+  sharp: false
+  unrs-resolver: false

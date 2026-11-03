@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ui-dev",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "port": 4342
+    },
+    {
+      "name": "ui-preview",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["serve"],
+      "port": 4341
+    }
+  ]
+}
