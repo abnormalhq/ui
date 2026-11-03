@@ -63,6 +63,7 @@
   --border: #e3e3dc;
   --hover: #efefea;
   --control: #1414120b;
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235c5c55' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   --input: #14141222;
   /* Status colors stay at least 4.5:1 on their own 10-25% tints over the page and popovers. */
   --badge-ink: #704800;
@@ -98,6 +99,7 @@
   --border: #2e2e29;
   --hover: #1c1c19;
   --control: #f0f0ea0d;
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a6a69c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   --input: #f0f0ea1f;
   --badge-ink: #e8b85a;
   --success: #a8c48f;
@@ -128,6 +130,7 @@
     --border: #2e2e29;
     --hover: #1c1c19;
     --control: #f0f0ea0d;
+    --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a6a69c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     --input: #f0f0ea1f;
     --badge-ink: #e8b85a;
     --success: #a8c48f;
