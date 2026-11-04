@@ -25,7 +25,7 @@ pnpm dlx shadcn@latest add @abnormal/theme
 @import "./abnormal.css";
 ```
 
-The theme is written on `<html data-theme="light|dark">`, and follows the system preference until a script has written it.
+The theme is written on `<html data-theme="light|dark">`, and follows the system preference until a script has written it. The `dark:` variant follows the same rule as the tokens, so a page with JavaScript off still gets matching `dark:` utilities on a dark system.
 
 Fonts: projects on `next/font` set `--font-inter`, `--font-bricolage` and `--font-jetbrains-mono`, and the theme picks them up. Other projects install `@abnormal/fonts`, import `abnormal-fonts.css` after the theme, and copy the woff2 files from `https://ui.abnormalhq.com/fonts/` into `public/fonts/`: a registry item can only carry text.
 
