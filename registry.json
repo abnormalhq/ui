@@ -406,7 +406,7 @@
       "name": "tooltip",
       "type": "registry:ui",
       "title": "Tooltip",
-      "description": "A short hint shown on hover or focus.",
+      "description": "A short hint shown on hover or focus. Works on its own; TooltipProvider shares the delay across an area.",
       "dependencies": ["radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
