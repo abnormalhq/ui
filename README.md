@@ -68,6 +68,8 @@ pnpm check
 
 Type checking uses TypeScript 7's `tsc`, like the projects: `@typescript/native` points at TypeScript 7, and `typescript` at the `@typescript/typescript6` compatibility package that Next.js and typescript-eslint load ([the dual-package setup Microsoft recommends](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6-0)). Keep both aliases when upgrading, so items are checked by the same compiler here and in every project.
 
+Development uses the Node.js in `.node-version`. `engines.node` in `package.json` is the lowest release the toolchain supports (22.22.1, which lint-staged needs; `node --test` on `.ts` needs 22.18), and `tests/toolchain.test.ts` fails when a direct dependency starts to need more.
+
 `pnpm test` builds the registry and the site, then runs `node --test` with `tests/support/register.ts`, which resolves the `@/` aliases and compiles `.tsx` the way a project would. Besides the static checks, `tests/server-render.test.tsx` renders items with no DOM, as a Server Component page would, and `tests/components.test.tsx` mounts the stateful ones in happy-dom and clicks them. `tests/types.check.tsx` is only type-checked: it pins props that must stay required, such as `closeLabel`.
 
 The site at `ui.abnormalhq.com` is a Next.js app in `src/`. It renders each item from `registry/` directly, so a change shows up as soon as you save it. Every item needs a demo in `src/demos/<name>.tsx` and a place in `src/groups.ts`; `tests/site.test.ts` enforces both, and each demo's source is also the usage example on its page.

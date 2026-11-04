@@ -4,6 +4,7 @@ import { basename, extname, join } from "node:path";
 import { test } from "node:test";
 import { compile } from "tailwindcss";
 import ts from "typescript";
+import { satisfies } from "./support/semver.ts";
 
 type File = { path: string; type: string; target?: string };
 type Item = {
@@ -96,36 +97,9 @@ test("a dependency's version floor is the version this site is built and tested 
       const name = dependency.slice(0, -range.length - 1);
       assert.equal(range, site[name], `${item.name}: ${dependency} against package.json`);
       const installed: string = JSON.parse(read(join("node_modules", name, "package.json"))).version;
-      assert.ok(satisfiesCaret(installed, range), `${item.name}: ${dependency} against the installed ${installed}`);
+      assert.ok(satisfies(installed, range), `${item.name}: ${dependency} against the installed ${installed}`);
     }
   }
-});
-
-/** `^x.y.z` as npm reads it: at least x.y.z, below the next major (the next minor while x is 0). */
-function satisfiesCaret(version: string, range: string): boolean {
-  const floor = range
-    .match(/^\^(\d+)\.(\d+)\.(\d+)$/)
-    ?.slice(1)
-    .map(Number);
-  const actual = version
-    .match(/^(\d+)\.(\d+)\.(\d+)$/)
-    ?.slice(1)
-    .map(Number);
-  if (!floor || !actual) return false;
-  const pinned = floor[0] > 0 ? 1 : 2;
-  if (actual.slice(0, pinned).some((part, i) => part !== floor[i])) return false;
-  for (let i = pinned; i < 3; i++) if (actual[i] !== floor[i]) return actual[i] > floor[i];
-  return true;
-}
-
-test("the caret check reads ranges as npm does", () => {
-  assert.ok(satisfiesCaret("0.5.2", "^0.5.2"));
-  assert.ok(satisfiesCaret("0.5.9", "^0.5.2"));
-  assert.ok(!satisfiesCaret("0.5.0", "^0.5.2"));
-  assert.ok(!satisfiesCaret("0.6.0", "^0.5.2"));
-  assert.ok(satisfiesCaret("1.9.0", "^1.2.3"));
-  assert.ok(!satisfiesCaret("2.0.0", "^1.2.3"));
-  assert.ok(!satisfiesCaret("1.2.2", "^1.2.3"));
 });
 
 test("the import scan sees scoped packages, side-effect imports and comments", () => {
