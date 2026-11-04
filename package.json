@@ -9,27 +9,37 @@
     "build:registry": "shadcn build",
     "build": "pnpm build:registry && next build",
     "serve": "pnpm build && wrangler dev --port 4341",
+    "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "pnpm build && node --import ./tests/support/register.ts --test tests/*.test.ts tests/*.test.tsx",
-    "check": "pnpm typecheck && pnpm test",
+    "check": "pnpm lint && pnpm typecheck && pnpm test",
     "cf:build": "pnpm check && pnpm format:check && wrangler deploy --dry-run --outdir .wrangler/dry-run",
     "cf:deploy": "wrangler deploy",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   },
   "engines": {
     "node": ">=22.12.0",
     "pnpm": ">=12"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@eslint/compat": "^2.1.1",
     "@happy-dom/global-registrator": "^21.0.4",
     "@shikijs/langs": "^4.6.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.0",
+    "eslint": "^10.14.0",
+    "eslint-config-next": "16.4.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
     "lucide-react": "^1.64.0",
     "next": "16.4.3",
     "next-themes": "^0.4.6",
@@ -41,7 +51,7 @@
     "shiki": "^4.6.0",
     "sonner": "^2.0.8",
     "tailwindcss": "^4.3.3",
-    "typescript": "^6.0.3",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
     "wrangler": "^4.156.0"
   },
   "packageManager": "pnpm@12.16.1"
