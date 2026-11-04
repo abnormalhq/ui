@@ -19,6 +19,17 @@ test("the export has a page and a client navigation payload for every registry i
   assert.ok(existsSync("out/404.html"));
 });
 
+test("the exported table page keeps the row action classes", () => {
+  // The demo is a Server Component. rowActionClassName once came from the "use client" table.tsx, reached it as a
+  // client reference, and the buttons rendered without these classes.
+  const html = readFileSync("out/components/table.html", "utf8");
+  const buttons = [...html.matchAll(/<button(?:\s+[\w-]+(?:="[^"]*")?)*/g)]
+    .map(([tag]) => tag)
+    .filter((tag) => tag.includes('aria-label="More for '));
+  assert.equal(buttons.length, 6, "three rows in each of the two tables");
+  for (const tag of buttons) assert.match(tag, /group-hover\/row:opacity-100/);
+});
+
 test("every registry item has a demo, and every demo has an item", () => {
   for (const name of names) assert.ok(existsSync(`src/demos/${name}.tsx`), name);
   for (const file of readdirSync("src/demos")) assert.ok(names.includes(file.replace(/\.tsx$/, "")), file);

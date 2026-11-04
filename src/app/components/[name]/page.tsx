@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { extname } from "node:path";
+import { basename, extname } from "node:path";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -41,8 +41,7 @@ export default async function ItemPage({ params }: Props) {
   const group = catalog.find(({ items: members }) => members.includes(item))!;
   // Exported at build (dynamicParams is off), so these files are never read at runtime.
   const usage = await readFile(`src/demos/${item.name}.tsx`, "utf8");
-  const sourcePath = item.files[0]!.path;
-  const source = await readFile(sourcePath, "utf8");
+  const sources = await Promise.all(item.files.map(async ({ path }) => ({ path, code: await readFile(path, "utf8") })));
   const requires = item.registryDependencies?.map((name) => name.replace("@abnormal/", "")) ?? [];
   const packages = item.dependencies ?? [];
 
@@ -84,14 +83,19 @@ export default async function ItemPage({ params }: Props) {
       </Section>
 
       <DisclosureList>
-        <Disclosure>
-          <DisclosureTrigger>
-            <span className="min-w-0 flex-1 font-heading text-xl font-semibold">Source</span>
-          </DisclosureTrigger>
-          <DisclosureContent>
-            <CodeBlock code={source} lang={extname(sourcePath).slice(1) as CodeLang} />
-          </DisclosureContent>
-        </Disclosure>
+        {/* An item can bring several files (table brings table-row.ts), and each one is installed. */}
+        {sources.map(({ path, code }) => (
+          <Disclosure key={path}>
+            <DisclosureTrigger>
+              <span className="min-w-0 flex-1 font-heading text-xl font-semibold">
+                {sources.length > 1 ? `Source: ${basename(path)}` : "Source"}
+              </span>
+            </DisclosureTrigger>
+            <DisclosureContent>
+              <CodeBlock code={code} lang={extname(path).slice(1) as CodeLang} />
+            </DisclosureContent>
+          </Disclosure>
+        ))}
       </DisclosureList>
     </article>
   );

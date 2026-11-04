@@ -376,11 +376,15 @@
       "name": "table",
       "type": "registry:ui",
       "title": "Table",
-      "description": "Tables with plain and bordered variants, pinned columns and row click helpers.",
+      "description": "Tables with plain and bordered variants and pinned columns. table-row.ts holds the row action class and row click helper, usable from Server Components.",
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/table.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/table-row.ts",
           "type": "registry:ui"
         }
       ]

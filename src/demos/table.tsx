@@ -1,15 +1,8 @@
 import { MoreHorizontalIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusLabel } from "@/components/ui/status-label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  rowActionClassName,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { rowActionClassName } from "@/components/ui/table-row";
 
 const mailboxes = [
   { address: "hello@example.com", owner: "Support", status: "Enabled", tone: "success" },
@@ -32,7 +25,7 @@ function Mailboxes({ variant }: { variant: "default" | "plain" }) {
       </TableHeader>
       <TableBody>
         {mailboxes.map(({ address, owner, status, tone }) => (
-          <TableRow key={address} className="group/row">
+          <TableRow key={address}>
             <TableCell className="font-medium">{address}</TableCell>
             <TableCell>{owner}</TableCell>
             <TableCell>
