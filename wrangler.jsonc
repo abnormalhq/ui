@@ -2,10 +2,13 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "abnormal-ui",
   "compatibility_date": "2026-09-01",
-  // No `main`: the exported site, the registry JSON and the fonts are all static assets, so no Worker code runs.
+  // Everything is a static asset. The Worker only picks a file for the pages, and renders nothing.
+  "main": "src/worker.ts",
   "assets": {
     "directory": "out",
+    "binding": "ASSETS",
     "not_found_handling": "404-page",
+    "run_worker_first": ["/", "/components/*", "!/components/*.txt"],
   },
   "workers_dev": true,
   "routes": [{ "pattern": "ui.abnormalhq.com", "custom_domain": true }],

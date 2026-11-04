@@ -1,24 +1,8 @@
 import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eyebrow, HeadingMark, SectionTitle } from "@/components/ui/section-heading";
-import { catalog, installCommand, items } from "@/site/catalog";
+import { catalog, items, setupSteps } from "@/site/catalog";
 import { CodeBlock } from "@/site/components/code-block";
-
-const componentsJson = `{
-  "registries": {
-    "@abnormal": "https://ui.abnormalhq.com/r/{name}.json"
-  }
-}`;
-
-const cssEntry = `@import "tailwindcss";
-@import "./abnormal.css";`;
-
-const steps = [
-  { title: "Add the registry to components.json", code: componentsJson, lang: "json" },
-  { title: "Install the theme", code: installCommand("theme"), lang: "bash" },
-  { title: "Import it right after Tailwind", code: cssEntry, lang: "css" },
-  { title: "Install components", code: installCommand("button", "dialog"), lang: "bash" },
-] as const;
 
 export default function OverviewPage() {
   return (
@@ -41,7 +25,7 @@ export default function OverviewPage() {
           Get started
         </h2>
         <ol className="grid gap-5">
-          {steps.map(({ title, code, lang }, index) => (
+          {setupSteps.map(({ title, code, lang }, index) => (
             <li key={title} className="grid gap-2">
               <p className="text-base font-medium">
                 {index + 1}. {title}
