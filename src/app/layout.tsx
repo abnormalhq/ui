@@ -9,8 +9,6 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://ui.abnormalhq.com"),
   title: { default: "Abnormal UI", template: "%s · Abnormal UI" },
   description: "The shadcn registry behind the Abnormal website, onboard and mail.",
-  // An internal tool on a public host.
-  robots: { index: false, follow: false },
 };
 
 const groups = catalog.map(({ title, items }) => ({

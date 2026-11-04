@@ -20,6 +20,12 @@ test("the sitemap lists the overview and every component page", () => {
   assert.deepEqual(urls.toSorted(), [site, ...names.map((name) => `${site}/components/${name}`)].toSorted());
 });
 
+test("the pages in the sitemap can be indexed", () => {
+  for (const file of ["index", ...names.map((name) => `components/${name}`)]) {
+    assert.doesNotMatch(readFileSync(`out/${file}.html`, "utf8"), /<meta name="robots"/, file);
+  }
+});
+
 test("the overview Markdown links every item's Markdown and the registry", () => {
   const markdown = readFileSync("out/md/index.md", "utf8");
   assert.ok(markdown.startsWith("# Abnormal UI\n"));
