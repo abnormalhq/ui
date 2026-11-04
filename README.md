@@ -88,9 +88,25 @@ pnpm serve
 { "registries": { "@abnormal": "http://localhost:4341/r/{name}.json" } }
 ```
 
+## For agents
+
+Checked against the content-site items on [Is Your Site Agent-Ready](https://isitagentready.com/), which you can re-run with `POST https://isitagentready.com/api/scan`.
+
+| Entry               | Where                                      | Built by                                                          |
+| ------------------- | ------------------------------------------ | ----------------------------------------------------------------- |
+| Crawl rules         | `/robots.txt`                              | `public/robots.txt`, with Content Signals and the sitemap         |
+| Sitemap             | `/sitemap.xml`                             | `src/app/sitemap.ts`                                              |
+| Markdown pages      | `/md/index.md`, `/md/components/{name}.md` | `src/app/md/`, exported as files from `src/markdown.ts`           |
+| Content negotiation | A page + `Accept: text/markdown`           | `src/worker.ts`, which serves the Markdown file above             |
+| Discovery header    | `Link` on every page                       | `src/worker.ts`; on `/` it lists the registry and every component |
+
+`Content-Signal` is `search=yes, ai-input=yes, ai-train=no`, the same as the website.
+
+Static assets can't vary on a request header, so negotiation needs the Worker. `pnpm dev` has no Worker: use `pnpm serve` to try these two.
+
 ## Deploy
 
-The site and the registry share one Cloudflare Worker (`wrangler.jsonc`), served at `ui.abnormalhq.com`. `next build` exports every page to `out/` with the registry JSON and fonts, and all of it is served as static assets, with no Worker code running.
+The site and the registry share one Cloudflare Worker (`wrangler.jsonc`), served at `ui.abnormalhq.com`. `next build` exports every page to `out/` with the registry JSON and fonts, and all of it is served as static assets. The Worker runs only on `/` and `/components/*`, and only chooses which file to serve: it never renders.
 
 Cloudflare Workers Builds watches `main` and deploys every push. If any step fails nothing is deployed, and the last good version keeps serving. CI runs the same `pnpm cf:build` on pull requests and `main`, and does not publish anything.
 
