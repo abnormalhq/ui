@@ -6,15 +6,28 @@ import { Button } from "@/components/ui/button";
 
 type Status = "idle" | "copied" | "failed";
 
-const labels: Record<Status, string> = { idle: "Copy", copied: "Copied", failed: "Copy failed" };
+const messages: Record<Status, string> = { idle: "", copied: "Copied", failed: "Copy failed" };
 const icons: Record<Status, ReactNode> = { idle: <CopyIcon />, copied: <CheckIcon />, failed: <XIcon /> };
 
+/**
+ * Copies a code block. The icon shows the outcome; a screen reader hears it once, from the status message, while the
+ * button keeps its name, so the outcome is not announced a second time as a name change of the focused button.
+ */
 export function CopyButton({ code }: { code: string }) {
   const [status, setStatus] = useState<Status>("idle");
   const reset = useRef<ReturnType<typeof setTimeout>>(undefined);
-  useEffect(() => () => clearTimeout(reset.current), []);
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      clearTimeout(reset.current);
+    };
+  }, []);
 
   const show = (next: Status) => {
+    // writeText can settle after the code block has gone, such as on a page change.
+    if (!mounted.current) return;
     setStatus(next);
     clearTimeout(reset.current);
     reset.current = setTimeout(() => setStatus("idle"), 1500);
@@ -26,7 +39,7 @@ export function CopyButton({ code }: { code: string }) {
         variant="ghost"
         size="icon-xs"
         className="absolute top-2 right-2 bg-surface"
-        aria-label={labels[status]}
+        aria-label="Copy"
         onClick={async () => {
           try {
             // There is no clipboard outside a secure context, and writeText rejects without permission or focus.
@@ -41,7 +54,7 @@ export function CopyButton({ code }: { code: string }) {
         {icons[status]}
       </Button>
       <span role="status" className="sr-only">
-        {status === "idle" ? "" : labels[status]}
+        {messages[status]}
       </span>
     </>
   );

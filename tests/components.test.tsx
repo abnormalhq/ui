@@ -273,8 +273,23 @@ test("the site's copy button reports a failed copy instead of throwing", async (
     clipboard(unavailable);
     await mount(<CopyButton code="x" />);
     await click(button("Copy"));
-    assert.ok(button("Copy failed"));
     assert.equal(status(), "Copy failed");
+    // The outcome is announced once, by the status message; the focused button keeps its name.
+    assert.ok(button("Copy"));
+    assert.equal(document.querySelector("button svg")?.getAttribute("class")?.includes("lucide-x"), true);
     await mounted.pop()!.unmount();
   }
+});
+
+test("the site's copy button does nothing when a copy settles after it has gone", async () => {
+  let settle = () => {};
+  const writeText = () => new Promise<void>((resolve) => (settle = resolve));
+  Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+  await mount(<CopyButton code="x" />);
+  await click(button("Copy"));
+  await mounted.pop()!.unmount();
+
+  const setTimeout = mock.method(globalThis, "setTimeout");
+  await act(async () => settle());
+  assert.equal(setTimeout.mock.calls.filter(({ arguments: [, delay] }) => delay === 1500).length, 0);
 });
