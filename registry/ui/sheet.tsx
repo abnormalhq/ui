@@ -23,13 +23,13 @@ function SheetContent({
   children,
   onOpenAutoFocus,
   side = "right",
-  closeLabel = "Close",
+  closeLabel,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
   /** Attached to the right by default (details); `left` is used as the navigation drawer on narrow screens (WebMail's folder column). */
   side?: "left" | "right";
-  /** Accessible name of the close button; pass the translated word. */
-  closeLabel?: string;
+  /** Accessible name of the close button, which always shows; pass the translated word. There is no default, so no English name ships by accident. */
+  closeLabel: string;
 }) {
   return (
     <SheetPrimitive.Portal>
