@@ -116,7 +116,7 @@
       "name": "card",
       "type": "registry:ui",
       "title": "Card",
-      "description": "A thin-bordered panel without a fill, optionally rendered as a link.",
+      "description": "A thin-bordered panel without a fill, optionally rendered as a link. The title takes asChild to match the heading level.",
       "dependencies": ["class-variance-authority", "radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [

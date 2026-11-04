@@ -42,9 +42,14 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-function CardTitle({ className, ...props }: React.ComponentProps<"h2">) {
+/**
+ * An h2 by default. The right level depends on where the card sits, so pass asChild with the element that fits the
+ * outline, such as `<CardTitle asChild><h3>…</h3></CardTitle>` under a section's h2, or a div for no heading at all.
+ */
+function CardTitle({ className, asChild = false, ...props }: React.ComponentProps<"h2"> & { asChild?: boolean }) {
+  const Comp = asChild ? Slot.Root : "h2";
   return (
-    <h2 data-slot="card-title" className={cn("flex items-center gap-2 text-lg font-bold", className)} {...props} />
+    <Comp data-slot="card-title" className={cn("flex items-center gap-2 text-lg font-bold", className)} {...props} />
   );
 }
 
