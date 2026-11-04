@@ -19,7 +19,11 @@ function TooltipProvider({ delayDuration = 300, ...props }: React.ComponentProps
   );
 }
 
-/** Radix throws without a provider, so a Tooltip with none above it brings its own. */
+/**
+ * Radix throws without a provider, so a Tooltip with none above it brings its own. It looks for this file's
+ * TooltipProvider only: under Radix's own Tooltip.Provider it would still bring one and lose the shared delay, so wrap
+ * areas in TooltipProvider from here.
+ */
 function Tooltip({ ...props }: React.ComponentProps<typeof TooltipPrimitive.Root>) {
   const root = <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
   return React.useContext(TooltipProviderContext) ? root : <TooltipProvider>{root}</TooltipProvider>;
