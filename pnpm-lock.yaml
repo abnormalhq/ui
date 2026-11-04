@@ -200,7 +200,7 @@ importers:
         specifier: ^0.7.1
         version: 0.7.1
       cn:
-        specifier: ^0.5.0
+        specifier: ^0.5.2
         version: 0.5.2
       eslint:
         specifier: ^10.14.0
@@ -215,7 +215,7 @@ importers:
         specifier: ^17.6.0
         version: 17.6.0
       lucide-react:
-        specifier: ^1.64.0
+        specifier: ^1.66.0
         version: 1.66.0(@types/react@19.3.0)(react@19.3.1)
       next:
         specifier: 16.4.3
