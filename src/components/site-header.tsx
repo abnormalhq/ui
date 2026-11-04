@@ -66,7 +66,7 @@ function MobileNav({ groups }: { groups: NavGroup[] }) {
           <MenuIcon />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" aria-describedby={undefined}>
+      <SheetContent side="left" closeLabel="Close navigation" aria-describedby={undefined}>
         <SheetHeader>
           <SheetTitle>Abnormal UI</SheetTitle>
         </SheetHeader>

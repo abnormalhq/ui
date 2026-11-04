@@ -14,7 +14,22 @@
  *
  * The theme is written on <html data-theme="light|dark">. Before any script runs it follows the system preference.
  */
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+ * dark: follows the same rule as the tokens below: data-theme="dark", or the system preference while no script has
+ * written data-theme="light". Without the second half a dark system with JS off would get dark tokens but light dark:
+ * utilities, such as a yellow band under light text.
+ */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
 
 @custom-variant data-open {
   &:where([data-state="open"]),

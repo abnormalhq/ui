@@ -1,0 +1,41 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Shanghai
+    # Open a PR only a few days after a new version is released, to avoid versions that are withdrawn or poisoned right after release.
+    cooldown:
+      default-days: 3
+      semver-major-days: 14
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: chore
+      include: scope
+    # minor / patch are combined into one PR; majors are still raised individually, to review breaking changes one by one.
+    groups:
+      npm-minor-patch:
+        update-types: [minor, patch]
+    ignore:
+      # typescript-eslint does not support TS 7 yet, so typescript stays on 6.x (it is the @typescript/typescript6 alias in package.json).
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Shanghai
+    cooldown:
+      default-days: 3
+    commit-message:
+      prefix: ci
+    groups:
+      github-actions:
+        patterns: ["*"]

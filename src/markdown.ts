@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { extname } from "node:path";
+import { basename, extname } from "node:path";
 import { catalog, getItem, installCommand, items, type Item, setupSteps, siteUrl } from "@/site/catalog";
 
 const codeBlock = (code: string, lang: string) => `\`\`\`${lang}\n${code.trimEnd()}\n\`\`\``;
@@ -26,8 +26,7 @@ export function overviewMarkdown() {
 export async function itemMarkdown(item: Item) {
   // Route handlers are exported at build, so these files are never read at runtime.
   const usage = await readFile(`src/demos/${item.name}.tsx`, "utf8");
-  const sourcePath = item.files[0]!.path;
-  const source = await readFile(sourcePath, "utf8");
+  const sources = await Promise.all(item.files.map(async ({ path }) => ({ path, code: await readFile(path, "utf8") })));
   const requires = item.registryDependencies?.map((name) => getItem(name.replace("@abnormal/", ""))!) ?? [];
   const brings = [...requires.map(itemLink), ...(item.dependencies ?? []).map((name) => `\`${name}\``)];
 
@@ -40,7 +39,10 @@ export async function itemMarkdown(item: Item) {
     ...(brings.length > 0 ? [`Brings in ${brings.join(", ")}.`] : []),
     "## Usage",
     codeBlock(usage, "tsx"),
-    "## Source",
-    codeBlock(source, extname(sourcePath).slice(1)),
+    // An item can bring several files (table brings table-row.ts), and each one is installed, as on the page.
+    ...sources.flatMap(({ path, code }) => [
+      sources.length > 1 ? `## Source: ${basename(path)}` : "## Source",
+      codeBlock(code, extname(path).slice(1)),
+    ]),
   ].join("\n\n");
 }

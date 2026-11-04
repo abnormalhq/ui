@@ -4,13 +4,29 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Tooltip as TooltipPrimitive } from "radix-ui";
 
-/** Tooltip: shares the popover style with menus, with a soft shadow and hairline border; fades in from 4px below like menus. */
+/** Set by TooltipProvider, so a Tooltip can tell whether one is above it. */
+const TooltipProviderContext = React.createContext(false);
+
+/**
+ * Tooltip: shares the popover style with menus, with a soft shadow and hairline border; fades in from 4px below like menus.
+ * TooltipProvider is optional. Wrap an area in one to share the open delay, and the skip-delay window that lets the next tooltip open at once.
+ */
 function TooltipProvider({ delayDuration = 300, ...props }: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
-  return <TooltipPrimitive.Provider data-slot="tooltip-provider" delayDuration={delayDuration} {...props} />;
+  return (
+    <TooltipProviderContext.Provider value={true}>
+      <TooltipPrimitive.Provider data-slot="tooltip-provider" delayDuration={delayDuration} {...props} />
+    </TooltipProviderContext.Provider>
+  );
 }
 
+/**
+ * Radix throws without a provider, so a Tooltip with none above it brings its own. It looks for this file's
+ * TooltipProvider only: under Radix's own Tooltip.Provider it would still bring one and lose the shared delay, so wrap
+ * areas in TooltipProvider from here.
+ */
 function Tooltip({ ...props }: React.ComponentProps<typeof TooltipPrimitive.Root>) {
-  return <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
+  const root = <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
+  return React.useContext(TooltipProviderContext) ? root : <TooltipProvider>{root}</TooltipProvider>;
 }
 
 function TooltipTrigger({ ...props }: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {

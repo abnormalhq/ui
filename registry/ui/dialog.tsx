@@ -37,17 +37,34 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
   );
 }
 
+/**
+ * The close buttons have no built-in copy: closeLabel is required whenever the button can show, so a forgotten
+ * translation fails the type check instead of shipping an English name. DialogContent shows its button by default.
+ */
+type ContentCloseProps =
+  | {
+      showCloseButton?: true;
+      /** Accessible name of the close button; pass the translated word. */
+      closeLabel: string;
+    }
+  | { showCloseButton: false; closeLabel?: string };
+
+/** DialogFooter shows its button only when asked. */
+type FooterCloseProps =
+  | { showCloseButton?: false; closeLabel?: string }
+  | {
+      showCloseButton: true;
+      /** Text of the close button; pass the translated word. */
+      closeLabel: string;
+    };
+
 function DialogContent({
   className,
   children,
   showCloseButton = true,
-  closeLabel = "Close",
+  closeLabel,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  showCloseButton?: boolean;
-  /** Accessible name of the close button; pass the translated word. */
-  closeLabel?: string;
-}) {
+}: React.ComponentProps<typeof DialogPrimitive.Content> & ContentCloseProps) {
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -80,13 +97,10 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
 function DialogFooter({
   className,
   showCloseButton = false,
-  closeLabel = "Close",
+  closeLabel,
   children,
   ...props
-}: React.ComponentProps<"div"> & {
-  showCloseButton?: boolean;
-  closeLabel?: string;
-}) {
+}: React.ComponentProps<"div"> & FooterCloseProps) {
   return (
     <div
       data-slot="dialog-footer"

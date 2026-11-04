@@ -3,13 +3,28 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 export default function TooltipDemo() {
   return (
-    <TooltipProvider>
+    <div className="flex flex-wrap items-center gap-3">
       <Tooltip>
         <TooltipTrigger asChild>
           <Button variant="outline">Hover me</Button>
         </TooltipTrigger>
         <TooltipContent>Archived after 30 days</TooltipContent>
       </Tooltip>
-    </TooltipProvider>
+      {/* A provider shares the delay: once one of these is open, moving to the next opens it at once. */}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline">Inbox</Button>
+          </TooltipTrigger>
+          <TooltipContent>12 unread</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline">Spam</Button>
+          </TooltipTrigger>
+          <TooltipContent>Emptied every 30 days</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </div>
   );
 }

@@ -25,7 +25,7 @@ pnpm dlx shadcn@latest add @abnormal/theme
 @import "./abnormal.css";
 ```
 
-The theme is written on `<html data-theme="light|dark">`, and follows the system preference until a script has written it.
+The theme is written on `<html data-theme="light|dark">`, and follows the system preference until a script has written it. The `dark:` variant follows the same rule as the tokens, so a page with JavaScript off still gets matching `dark:` utilities on a dark system.
 
 Fonts: projects on `next/font` set `--font-inter`, `--font-bricolage` and `--font-jetbrains-mono`, and the theme picks them up. Other projects install `@abnormal/fonts`, import `abnormal-fonts.css` after the theme, and copy the woff2 files from `https://ui.abnormalhq.com/fonts/` into `public/fonts/`: a registry item can only carry text.
 
@@ -48,7 +48,9 @@ pnpm dlx shadcn@latest add @abnormal/button @abnormal/dialog
 
 ## Rules for items
 
-Items stay generic. A component imports only `@/lib/utils`, `@/components/ui/*` and its declared packages: no product code, no `next/*`, and no built-in copy, so anything a user reads comes in through a prop (`closeLabel` on `Dialog` and `Sheet`). `tests/registry.test.ts` enforces this.
+Items stay generic. A component imports only `@/lib/utils`, `@/components/ui/*` and its declared packages: no product code, no `next/*`, and no built-in copy, so anything a user reads comes in through a prop (`closeLabel` on `Dialog` and `Sheet`, required whenever the close button shows). That rules out a default or fallback for a label prop (`closeLabel = "Close"`, `closeLabel ?? "Close"`), a literal `aria-label` and literal `sr-only` text. `tests/registry.test.ts` enforces this, and checks every file of an item: an item can bring several, and each one's imports, scoped packages and side-effect imports included, must be declared.
+
+A file with the `"use client"` directive exports components only: PascalCase functions, or `forwardRef`/`memo` of one, and no constants, `cva()` variants, contexts or re-exports. A Server Component receives every export of such a file as a client reference, so a class string or helper from it silently stops working there; helpers live in a file without the directive, such as `table-row.ts` next to `table.tsx`.
 
 When editing the theme, keep two things in step, both also tested: the dark values in `:root[data-theme="dark"]` and in the system preference fallback, and any new `--radius-*`, `--shadow-*` or `--animate-*` token with `CN_THEME` in `registry/lib/utils.ts`.
 
@@ -61,6 +63,14 @@ pnpm install
 ```bash
 pnpm check
 ```
+
+`pnpm check` runs ESLint, the type check and the tests. ESLint uses the rules the projects run on their installed copies (`eslint-config-next` core-web-vitals and TypeScript, so react-hooks and jsx-a11y), so a problem in an item fails here before a project reinstalls it. Commits run lint-staged (ESLint and Prettier on the staged files) and commitlint, as in the website, onboard and mail, and Dependabot proposes dependency updates weekly.
+
+Type checking uses TypeScript 7's `tsc`, like the projects: `@typescript/native` points at TypeScript 7, and `typescript` at the `@typescript/typescript6` compatibility package that Next.js and typescript-eslint load ([the dual-package setup Microsoft recommends](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6-0)). Keep both aliases when upgrading, so items are checked by the same compiler here and in every project. `tsconfig.json` sets `useDefineForClassFields` to `true` explicitly, as the projects do: tsc and the tests already give class fields define semantics for ES2022, but Next.js's SWC reads only an explicit value and compiles them as assignments otherwise.
+
+Development uses the Node.js in `.node-version`. `engines.node` in `package.json` is the lowest release the toolchain supports (22.22.1, which lint-staged needs; `node --test` on `.ts` needs 22.18), and `tests/toolchain.test.ts` fails when a direct dependency starts to need more.
+
+`pnpm test` builds the registry and the site, then runs `node --test` with `tests/support/register.ts`, which resolves the `@/` aliases and compiles `.tsx` the way a project would. Besides the static checks, `tests/server-render.test.tsx` renders items with no DOM, as a Server Component page would, and `tests/components.test.tsx` mounts the stateful ones in happy-dom and clicks them. `tests/types.check.tsx` is only type-checked: it pins props that must stay required, such as `closeLabel`.
 
 The site at `ui.abnormalhq.com` is a Next.js app in `src/`. It renders each item from `registry/` directly, so a change shows up as soon as you save it. Every item needs a demo in `src/demos/<name>.tsx` and a place in `src/groups.ts`; `tests/site.test.ts` enforces both, and each demo's source is also the usage example on its page.
 

@@ -3,7 +3,9 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import worker from "../src/worker.ts";
 
-const registry: { items: { name: string; title: string }[] } = JSON.parse(readFileSync("registry.json", "utf8"));
+const registry: { items: { name: string; title: string; files: { path: string }[] }[] } = JSON.parse(
+  readFileSync("registry.json", "utf8"),
+);
 const names = registry.items.map(({ name }) => name);
 const site = "https://ui.abnormalhq.com";
 
@@ -41,6 +43,17 @@ test("each item's Markdown has its install command and its demo's source", () =>
     assert.ok(markdown.includes(readFileSync(`src/demos/${name}.tsx`, "utf8").trimEnd()), name);
     assert.equal(markdown.split("```").length % 2, 1, `${name} has unbalanced code fences`);
   }
+});
+
+test("each item's Markdown carries the source of every file it installs", () => {
+  for (const { name, files } of registry.items) {
+    const markdown = readFileSync(`out/md/components/${name}.md`, "utf8");
+    for (const { path } of files)
+      assert.ok(markdown.includes(readFileSync(path, "utf8").trimEnd()), `${name}: ${path}`);
+  }
+  // table brings table-row.ts, so its Markdown needs a heading per file.
+  const table = readFileSync("out/md/components/table.md", "utf8");
+  assert.ok(table.includes("## Source: table.tsx\n") && table.includes("## Source: table-row.ts\n"));
 });
 
 /** Runs the Worker against a stand-in for the assets binding that echoes the path it was asked for. */

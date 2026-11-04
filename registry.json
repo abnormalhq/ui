@@ -35,7 +35,7 @@
       "type": "registry:lib",
       "title": "Utils",
       "description": "The cn class merger, taught the theme's custom radius, shadow and animation names.",
-      "dependencies": ["cn@^0.5.0"],
+      "dependencies": ["cn@^0.5.2"],
       "files": [
         {
           "path": "registry/lib/utils.ts",
@@ -116,7 +116,7 @@
       "name": "card",
       "type": "registry:ui",
       "title": "Card",
-      "description": "A thin-bordered panel without a fill, optionally rendered as a link.",
+      "description": "A thin-bordered panel without a fill, optionally rendered as a link. The title takes asChild to match the heading level.",
       "dependencies": ["class-variance-authority", "radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
@@ -363,7 +363,7 @@
       "name": "switch",
       "type": "registry:ui",
       "title": "Switch",
-      "description": "An on and off toggle.",
+      "description": "An on and off toggle, controlled or uncontrolled, that submits like a checkbox when given a name and goes back to its default on a form reset.",
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
@@ -376,11 +376,15 @@
       "name": "table",
       "type": "registry:ui",
       "title": "Table",
-      "description": "Tables with plain and bordered variants, pinned columns and row click helpers.",
+      "description": "Tables with plain and bordered variants and pinned columns. table-row.ts holds the row action class and row click helper, usable from Server Components.",
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/table.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/table-row.ts",
           "type": "registry:ui"
         }
       ]
@@ -402,7 +406,7 @@
       "name": "tooltip",
       "type": "registry:ui",
       "title": "Tooltip",
-      "description": "A short hint shown on hover or focus.",
+      "description": "A short hint shown on hover or focus. Works on its own; TooltipProvider shares the delay across an area.",
       "dependencies": ["radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [

@@ -12,6 +12,7 @@ const TableVariantContext = React.createContext<TableVariant>("default");
  * An easy-to-scan data table, keeping horizontal scrolling and clear row-selection feedback.
  * When there is content to the right of the container not yet revealed it carries `data-overflow="end"`, from which `pinned` columns draw a shadow separator on their left.
  * When the container has a limited height (ListSection on list pages) it is also the vertical scroll container: the plain header sticks to the top, and after scrolling down it carries `data-scrolled`, drawing a thin line under the header.
+ * The row helpers (`rowActionClassName`, `rowClickHandler`) are in table-row.ts: this module is "use client", so it exports components only.
  */
 function Table({
   className,
@@ -103,32 +104,6 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
   );
 }
 
-/**
- * Secondary actions inside a row (copy, edit, ⋯ menu): hidden normally, shown only when the mouse is over the row, keyboard focus is on the button, the menu is open, or it was just copied;
- * touch screens have no hover, so they are always shown.
- */
-const rowActionClassName =
-  "opacity-0 transition-opacity duration-150 group-hover/row:opacity-100 group-focus-within/row:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100 data-[feedback=copied]:opacity-100 [@media(hover:none)]:opacity-100";
-
-/** The click targets that open the details do not include these: buttons, links and inputs in the row keep handling their own clicks. */
-const ROW_IGNORE =
-  "a,button,input,textarea,select,label,summary,[role=checkbox],[role=combobox],[role=menuitem],[role=option],[data-row-ignore]";
-
-/**
- * Click the whole row to open details: clicks on buttons, links or inputs in the row, or while selecting text, do not count;
- * clicks inside a dialog popped out of the row (Portal) also bubble up along the React tree, so only clicks that really land inside this row's DOM are accepted.
- * Keyboard users use the links / buttons the row already has; this is only a shortcut for the mouse.
- */
-function rowClickHandler(activate: (event: React.MouseEvent<HTMLTableRowElement>) => void) {
-  return (event: React.MouseEvent<HTMLTableRowElement>) => {
-    if (event.defaultPrevented || event.button !== 0) return;
-    const target = event.target as Element;
-    if (!event.currentTarget.contains(target) || target.closest(ROW_IGNORE)) return;
-    if (window.getSelection()?.toString()) return;
-    activate(event);
-  };
-}
-
 function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   const variant = React.useContext(TableVariantContext);
   return (
@@ -209,15 +184,4 @@ function TableCaption({ className, ...props }: React.ComponentProps<"caption">) 
   );
 }
 
-export {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableCaption,
-  rowActionClassName,
-  rowClickHandler,
-};
+export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption };

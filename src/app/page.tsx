@@ -44,7 +44,10 @@ export default function OverviewPage() {
               <Card key={item.name} asChild variant="interactive">
                 <Link href={`/components/${item.name}`}>
                   <CardHeader className="pb-4">
-                    <CardTitle className="text-base font-semibold">{item.title}</CardTitle>
+                    {/* Under the group's h2, so each card title is an h3. */}
+                    <CardTitle asChild className="text-base font-semibold">
+                      <h3>{item.title}</h3>
+                    </CardTitle>
                     <CardDescription>{item.description}</CardDescription>
                   </CardHeader>
                 </Link>

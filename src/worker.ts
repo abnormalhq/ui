@@ -40,7 +40,7 @@ function wantsMarkdown(request: Request) {
   return markdown > 0 && markdown >= weight(accept, "text/html");
 }
 
-export default {
+const worker = {
   async fetch(request: Request, env: Env) {
     const url = new URL(request.url);
     const page = pages.get(url.pathname);
@@ -55,3 +55,5 @@ export default {
     return response;
   },
 };
+
+export default worker;
