@@ -363,7 +363,7 @@
       "name": "switch",
       "type": "registry:ui",
       "title": "Switch",
-      "description": "An on and off toggle, controlled or uncontrolled, that submits like a checkbox when given a name.",
+      "description": "An on and off toggle, controlled or uncontrolled, that submits like a checkbox when given a name and goes back to its default on a form reset.",
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {

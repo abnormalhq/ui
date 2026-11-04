@@ -2,7 +2,7 @@
 import { click, render } from "./support/render.tsx";
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
-import { act } from "react";
+import { act, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
@@ -84,6 +84,85 @@ test("a controlled Switch reports the change and waits for its owner", async () 
   // A disabled switch is left out of the form, like a disabled checkbox.
   const data = new FormData(container.querySelector("form")!);
   assert.deepEqual([...data.keys()], []);
+});
+
+test("a form reset puts an uncontrolled Switch back to its default, and its form data with it", async () => {
+  const onCheckedChange = mock.fn();
+  const settings = (digestDefault: boolean) => (
+    <>
+      <form id="settings">
+        <Switch
+          name="digest"
+          defaultChecked={digestDefault}
+          onCheckedChange={onCheckedChange}
+          aria-label="Weekly digest"
+        />
+        <Switch name="notify" checked onCheckedChange={() => {}} aria-label="Notify" />
+      </form>
+      {/* Outside the form, joined to it by the form attribute. */}
+      <Switch form="settings" name="sms" aria-label="Text messages" />
+    </>
+  );
+  const { container, rerender } = await mount(settings(false));
+  const form = container.querySelector("form")!;
+  const names = ["Weekly digest", "Notify", "Text messages"];
+  const shown = () => names.map((name) => button(name).getAttribute("aria-checked"));
+  const submitted = () => [...new FormData(form).keys()];
+
+  await click(button("Weekly digest"));
+  await click(button("Text messages"));
+  assert.deepEqual(shown(), ["true", "true", "true"]);
+  assert.deepEqual(submitted(), ["digest", "notify", "sms"]);
+
+  // Like a checkbox, an uncontrolled switch goes back to its default without a change event; the controlled one
+  // keeps what its owner says. Either way the form submits what the switch shows.
+  await act(async () => form.reset());
+  assert.deepEqual(shown(), ["false", "true", "false"]);
+  assert.deepEqual(submitted(), ["notify"]);
+  assert.equal(onCheckedChange.mock.callCount(), 1);
+
+  // An untouched switch follows a new default, as a checkbox follows its checked attribute, so a reset lands on the
+  // default the page renders now.
+  await rerender(settings(true));
+  assert.deepEqual(shown(), ["true", "true", "false"]);
+  await click(button("Weekly digest"));
+  assert.deepEqual(submitted(), ["notify"]);
+  await act(async () => form.reset());
+  assert.deepEqual(shown(), ["true", "true", "false"]);
+  assert.deepEqual(submitted(), ["digest", "notify"]);
+});
+
+test("a Switch still submits what it shows after React resets the form of a finished action", async () => {
+  const submitted: (string | null)[] = [];
+  function Settings() {
+    // The saved value comes back as the new default, the way a Server Action's revalidated page would bring it.
+    const [saved, setSaved] = useState(false);
+    return (
+      <form
+        action={async (data) => {
+          submitted.push(data.get("digest") as string | null);
+          setSaved(data.get("digest") === "on");
+        }}
+      >
+        <Switch name="digest" defaultChecked={saved} aria-label="Weekly digest" />
+        <input name="note" defaultValue="" aria-label="Note" />
+        <button type="submit">Save</button>
+      </form>
+    );
+  }
+  const { container } = await mount(<Settings />);
+  const form = container.querySelector("form")!;
+  const submit = () => act(async () => form.requestSubmit(button("Save")));
+
+  await click(button("Weekly digest"));
+  await submit();
+  assert.equal(button("Weekly digest").getAttribute("aria-checked"), "true");
+  assert.equal(new FormData(form).get("digest"), "on");
+
+  // Editing another field and saving again keeps the switch on.
+  container.querySelector<HTMLInputElement>('[name="note"]')!.value = "Mondays";
+  await submit();
+  assert.deepEqual(submitted, ["on", "on"]);
 });
 
 test("rowClickHandler opens the row, but not from its buttons, other mouse buttons or a text selection", async () => {

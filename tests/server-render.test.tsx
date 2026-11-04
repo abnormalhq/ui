@@ -31,15 +31,21 @@ test("CardTitle is an h2 unless the page asks for another level", () => {
   assert.match(html, /^<h3 data-slot="card-title" class="[^"]*text-base[^"]*">Storage<\/h3>$/);
 });
 
-test("a named Switch renders the checkbox a form submits", () => {
+test("a named Switch renders the input a form submits while it is on", () => {
   const html = renderToStaticMarkup(<Switch name="digest" defaultChecked aria-label="Weekly digest" />);
-  assert.match(html, /<button[^>]*role="switch"[^>]*aria-checked="true"/);
+  // One element, so sibling selectors and space-x-* see the same markup with or without a name.
+  assert.match(
+    html,
+    /^<button[^>]*role="switch"[^>]*aria-checked="true"[^>]*><span[^>]*><\/span><input type="hidden" name="digest" value="on"\/><\/button>$/,
+  );
   assert.match(html, /<button[^>]*class="peer /);
-  const input = html.match(/<input[^>]*>/)?.[0] ?? "";
-  for (const attribute of ['type="checkbox"', 'hidden=""', 'name="digest"', 'value="on"', 'checked=""']) {
-    assert.ok(input.includes(attribute), `${input} has ${attribute}`);
+  for (const off of [
+    <Switch key="unnamed" defaultChecked aria-label="No name" />,
+    <Switch key="off" name="digest" aria-label="Off" />,
+    <Switch key="disabled" name="digest" defaultChecked disabled aria-label="Disabled" />,
+  ]) {
+    assert.doesNotMatch(renderToStaticMarkup(off), /<input/);
   }
-  assert.doesNotMatch(renderToStaticMarkup(<Switch aria-label="No name" />), /<input/);
 });
 
 test("the row action class reaches markup rendered on the server", () => {
