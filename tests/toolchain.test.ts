@@ -24,6 +24,14 @@ test("engines.node is a floor every tool this site runs supports", () => {
   assert.ok(satisfies(pinned, manifest.engines.node), `.node-version ${pinned} is inside engines.node`);
 });
 
+test("tsconfig pins the class-field semantics, so Next compiles fields as tsc and the tests do", () => {
+  // Next's SWC reads only an explicit useDefineForClassFields and compiles [[Set]] fields without it, while tsc, node
+  // --test and the test loader's TypeScript transpile use define semantics for an ES2022 target.
+  const { compilerOptions } = JSON.parse(readFileSync("tsconfig.json", "utf8"));
+  assert.equal(compilerOptions.target, "ES2022");
+  assert.equal(compilerOptions.useDefineForClassFields, true);
+});
+
 test("the range check reads ranges as npm does", () => {
   assert.ok(satisfies("0.5.2", "^0.5.2"));
   assert.ok(satisfies("0.5.9", "^0.5.2"));
