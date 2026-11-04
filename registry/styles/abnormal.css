@@ -11,6 +11,7 @@
  * - Cards have no fill (card is the page color); layering comes from thin borders.
  * - control and input are semi-transparent ink, so they read the same over the page, the sidebar and popovers.
  * - hover is opaque: pinned table columns rely on it to cover the content scrolling underneath.
+ *   Floating surfaces (menus, selects, popovers, dialogs) use popover-hover: in dark mode hover is the popover color.
  *
  * The theme is written on <html data-theme="light|dark">. Before any script runs it follows the system preference.
  */
@@ -77,6 +78,7 @@
   --text-secondary: #5c5c55;
   --border: #e3e3dc;
   --hover: #efefea;
+  --popover-hover: #efefea;
   --control: #1414120b;
   --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235c5c55' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   --input: #14141222;
@@ -113,6 +115,8 @@
   --text-secondary: #a6a69c;
   --border: #2e2e29;
   --hover: #1c1c19;
+  /* hover equals the dark popover color, so rows inside popovers need a step lighter. Text 12.8:1, secondary text 6.0:1. */
+  --popover-hover: #292924;
   --control: #f0f0ea0d;
   --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a6a69c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   --input: #f0f0ea1f;
@@ -144,6 +148,7 @@
     --text-secondary: #a6a69c;
     --border: #2e2e29;
     --hover: #1c1c19;
+    --popover-hover: #292924;
     --control: #f0f0ea0d;
     --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a6a69c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     --input: #f0f0ea1f;
@@ -387,6 +392,10 @@
     font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  /* Hovered and highlighted rows inside anything painted with the popover color use popover-hover. */
+  .bg-popover {
+    --accent: var(--popover-hover);
   }
   h1,
   h2,
