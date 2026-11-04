@@ -10,7 +10,7 @@
     "build": "pnpm build:registry && next build",
     "serve": "pnpm build && wrangler dev --port 4341",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "pnpm build && node --test tests/*.test.ts",
+    "test": "pnpm build && node --import ./tests/support/register.ts --test tests/*.test.ts tests/*.test.tsx",
     "check": "pnpm typecheck && pnpm test",
     "cf:build": "pnpm check && pnpm format:check && wrangler deploy --dry-run --outdir .wrangler/dry-run",
     "cf:deploy": "wrangler deploy",
@@ -22,6 +22,7 @@
     "pnpm": ">=12"
   },
   "devDependencies": {
+    "@happy-dom/global-registrator": "^21.0.4",
     "@shikijs/langs": "^4.6.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.6.5",

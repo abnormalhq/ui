@@ -48,7 +48,7 @@ pnpm dlx shadcn@latest add @abnormal/button @abnormal/dialog
 
 ## Rules for items
 
-Items stay generic. A component imports only `@/lib/utils`, `@/components/ui/*` and its declared packages: no product code, no `next/*`, and no built-in copy, so anything a user reads comes in through a prop (`closeLabel` on `Dialog` and `Sheet`, required whenever the close button shows). `tests/registry.test.ts` enforces this.
+Items stay generic. A component imports only `@/lib/utils`, `@/components/ui/*` and its declared packages: no product code, no `next/*`, and no built-in copy, so anything a user reads comes in through a prop (`closeLabel` on `Dialog` and `Sheet`, required whenever the close button shows). `tests/registry.test.ts` enforces this, and checks every file of an item: an item can bring several, and each one's imports, scoped packages and side-effect imports included, must be declared.
 
 A file that starts with `"use client"` exports components only. A Server Component receives every export of such a file as a client reference, so a class string or helper from it silently stops working there; helpers live in a file without the directive, such as `table-row.ts` next to `table.tsx`.
 
@@ -63,6 +63,8 @@ pnpm install
 ```bash
 pnpm check
 ```
+
+`pnpm test` builds the registry and the site, then runs `node --test` with `tests/support/register.ts`, which resolves the `@/` aliases and compiles `.tsx` the way a project would. Besides the static checks, `tests/server-render.test.tsx` renders items with no DOM, as a Server Component page would, and `tests/components.test.tsx` mounts the stateful ones in happy-dom and clicks them. `tests/types.check.tsx` is only type-checked: it pins props that must stay required, such as `closeLabel`.
 
 The site at `ui.abnormalhq.com` is a Next.js app in `src/`. It renders each item from `registry/` directly, so a change shows up as soon as you save it. Every item needs a demo in `src/demos/<name>.tsx` and a place in `src/groups.ts`; `tests/site.test.ts` enforces both, and each demo's source is also the usage example on its page.
 
