@@ -48,9 +48,9 @@ pnpm dlx shadcn@latest add @abnormal/button @abnormal/dialog
 
 ## Rules for items
 
-Items stay generic. A component imports only `@/lib/utils`, `@/components/ui/*` and its declared packages: no product code, no `next/*`, and no built-in copy, so anything a user reads comes in through a prop (`closeLabel` on `Dialog` and `Sheet`, required whenever the close button shows). `tests/registry.test.ts` enforces this, and checks every file of an item: an item can bring several, and each one's imports, scoped packages and side-effect imports included, must be declared.
+Items stay generic. A component imports only `@/lib/utils`, `@/components/ui/*` and its declared packages: no product code, no `next/*`, and no built-in copy, so anything a user reads comes in through a prop (`closeLabel` on `Dialog` and `Sheet`, required whenever the close button shows). That rules out a default or fallback for a label prop (`closeLabel = "Close"`, `closeLabel ?? "Close"`), a literal `aria-label` and literal `sr-only` text. `tests/registry.test.ts` enforces this, and checks every file of an item: an item can bring several, and each one's imports, scoped packages and side-effect imports included, must be declared.
 
-A file that starts with `"use client"` exports components only. A Server Component receives every export of such a file as a client reference, so a class string or helper from it silently stops working there; helpers live in a file without the directive, such as `table-row.ts` next to `table.tsx`.
+A file with the `"use client"` directive exports components only: PascalCase functions, or `forwardRef`/`memo` of one, and no constants, `cva()` variants, contexts or re-exports. A Server Component receives every export of such a file as a client reference, so a class string or helper from it silently stops working there; helpers live in a file without the directive, such as `table-row.ts` next to `table.tsx`.
 
 When editing the theme, keep two things in step, both also tested: the dark values in `:root[data-theme="dark"]` and in the system preference fallback, and any new `--radius-*`, `--shadow-*` or `--animate-*` token with `CN_THEME` in `registry/lib/utils.ts`.
 

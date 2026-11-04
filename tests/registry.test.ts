@@ -95,6 +95,59 @@ test("the import scan sees scoped packages, side-effect imports and comments", (
   assert.equal("@scope/name@^1.2.0".replace(/(?!^)@[^@/]+$/, ""), "@scope/name");
 });
 
+const isText = (node: ts.Node | undefined) =>
+  node !== undefined &&
+  (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node) || ts.isTemplateExpression(node));
+/** closeLabel, props.label, aria-label: a name that carries words a screen reader speaks. */
+const isLabelName = (node: ts.Node | undefined) =>
+  node !== undefined &&
+  /label$/i.test(ts.isPropertyAccessExpression(node) ? node.name.text : ts.isIdentifier(node) ? node.text : "");
+
+/**
+ * Words a component would speak in one language whatever the project's language is, as messages: a label prop's
+ * default (`closeLabel = "Close"`), a fallback (`closeLabel ?? "Close"`, `label || "Close"`, `label ? label : "Close"`),
+ * a literal label attribute (`aria-label="Close"`, `aria-label={"Close"}`) and literal screen-reader-only text.
+ */
+function builtInLabels(path: string, text: string) {
+  const file = ts.createSourceFile(path, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const problems: string[] = [];
+  const report = (node: ts.Node) => problems.push(`${path}: ${node.getText()}`);
+  const visit = (node: ts.Node) => {
+    if ((ts.isBindingElement(node) || ts.isParameter(node)) && isLabelName(node.name) && isText(node.initializer)) {
+      report(node);
+    } else if (
+      ts.isBinaryExpression(node) &&
+      [ts.SyntaxKind.QuestionQuestionToken, ts.SyntaxKind.BarBarToken].includes(node.operatorToken.kind) &&
+      isLabelName(node.left) &&
+      isText(node.right)
+    ) {
+      report(node);
+    } else if (
+      ts.isConditionalExpression(node) &&
+      isLabelName(node.condition) &&
+      [node.whenTrue, node.whenFalse].some(isText)
+    ) {
+      report(node);
+    } else if (ts.isJsxAttribute(node) && isLabelName(node.name)) {
+      const value =
+        node.initializer && ts.isJsxExpression(node.initializer) ? node.initializer.expression : node.initializer;
+      if (isText(value)) report(node);
+    } else if (ts.isJsxElement(node) && /\bsr-only\b/.test(node.openingElement.attributes.getText())) {
+      if (
+        node.children.some(
+          (child) =>
+            (ts.isJsxText(child) && child.text.trim()) || (ts.isJsxExpression(child) && isText(child.expression)),
+        )
+      ) {
+        report(node);
+      }
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(file);
+  return problems;
+}
+
 test("components stay generic: no product code, framework router or copy", () => {
   for (const item of code) {
     for (const { path, text } of sources(item)) {
@@ -102,38 +155,129 @@ test("components stay generic: no product code, framework router or copy", () =>
         assert.match(specifier, /^@\/(lib\/utils|components\/ui\/)/, `${path}: ${specifier}`);
       }
       assert.ok(!importsOf(text).some((specifier) => specifier.startsWith("next/")), path);
-      // Labels come in through props: no `closeLabel = "Close"` style default, and no literal aria-label.
-      assert.doesNotMatch(text, /\b\w*[lL]abel\s*=\s*["'`]/, `${path}: a label prop has a built-in default`);
-      assert.doesNotMatch(text, /aria-label="/, `${path}: a literal aria-label`);
+      // Labels come in through props, in the project's language.
+      assert.deepEqual(builtInLabels(path, text), []);
     }
   }
 });
+
+test("the label check sees defaults, fallbacks, literal attributes and screen-reader text", () => {
+  const cases: [string, number][] = [
+    ['function A({ closeLabel = "Close" }: P) {}', 1],
+    ["function A(label = `Close`) {}", 1],
+    ['const a = closeLabel ?? "Close";', 1],
+    ['const a = props.label || "Close";', 1],
+    ['const a = closeLabel ? closeLabel : "Close";', 1],
+    ['const a = <button aria-label="Close" />;', 1],
+    ['const a = <button aria-label={"Close"} />;', 1],
+    ["const a = <Dialog closeLabel={`Close`} />;", 1],
+    ['const a = <span className="sr-only">Close</span>;', 1],
+    // Fine: the words come from props, and className strings or other defaults are not labels.
+    ['function A({ closeLabel, size = "sm" }: P) { return <span className="sr-only">{closeLabel}</span>; }', 0],
+    ['const a = <button aria-label={closeLabel} className="sr-only" />;', 0],
+    ['const a = labelId ?? "x"; const b = showLabel ? 1 : 2;', 0],
+  ];
+  for (const [text, count] of cases) assert.equal(builtInLabels("x.tsx", text).length, count, text);
+});
+
+/** The directive prologue: the string statements before any code. Comments above them do not count. */
+const directivesOf = (file: ts.SourceFile) => {
+  const directives: string[] = [];
+  for (const statement of file.statements) {
+    if (!ts.isExpressionStatement(statement) || !ts.isStringLiteral(statement.expression)) break;
+    directives.push(statement.expression.text);
+  }
+  return directives;
+};
+
+/** A component name: PascalCase with a lowercase letter, so a SCREAMING_CASE constant such as ROW_IGNORE is not one. */
+const isComponentName = (name: string) => /^[A-Z][A-Za-z0-9]*$/.test(name) && /[a-z]/.test(name);
+
+/** A function, or forwardRef/memo/lazy of one: what React can render. A cva() call, a string or a context is not. */
+const isComponentValue = (node: ts.Node | undefined): boolean =>
+  node !== undefined &&
+  (ts.isFunctionDeclaration(node) ||
+    ts.isArrowFunction(node) ||
+    ts.isFunctionExpression(node) ||
+    (ts.isCallExpression(node) && /^(React\.)?(forwardRef|memo|lazy)$/.test(node.expression.getText())));
+
+/** The exports of a "use client" file that are not components, as messages; empty for a file without the directive. */
+function nonComponentExports(path: string, text: string) {
+  const file = ts.createSourceFile(path, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  if (!directivesOf(file).includes("use client")) return [];
+  const local = new Map<string, ts.Node | undefined>();
+  for (const statement of file.statements) {
+    if (ts.isFunctionDeclaration(statement) && statement.name) local.set(statement.name.text, statement);
+    if (ts.isVariableStatement(statement)) {
+      for (const { name, initializer } of statement.declarationList.declarations)
+        if (ts.isIdentifier(name)) local.set(name.text, initializer);
+    }
+  }
+  const problems: string[] = [];
+  const check = (name: string, value: ts.Node | undefined) => {
+    if (!isComponentName(name) || !isComponentValue(value)) problems.push(`${path} exports ${name}`);
+  };
+  for (const statement of file.statements) {
+    if (ts.isExportDeclaration(statement)) {
+      if (statement.isTypeOnly) continue;
+      // A re-export cannot be checked here, and `export *` could carry anything.
+      if (statement.moduleSpecifier || !statement.exportClause || !ts.isNamedExports(statement.exportClause)) {
+        problems.push(`${path} re-exports ${statement.getText()}`);
+        continue;
+      }
+      for (const element of statement.exportClause.elements) {
+        if (!element.isTypeOnly) check(element.name.text, local.get((element.propertyName ?? element.name).getText()));
+      }
+    } else if (ts.isExportAssignment(statement)) {
+      const value = ts.isIdentifier(statement.expression) ? local.get(statement.expression.text) : statement.expression;
+      check(ts.isIdentifier(statement.expression) ? statement.expression.text : "default", value);
+    } else if (
+      ts.canHaveModifiers(statement) &&
+      ts.getModifiers(statement)?.some(({ kind }) => kind === ts.SyntaxKind.ExportKeyword)
+    ) {
+      if (ts.isFunctionDeclaration(statement) && statement.name) check(statement.name.text, statement);
+      else if (ts.isVariableStatement(statement)) {
+        for (const { name, initializer } of statement.declarationList.declarations)
+          check(ts.isIdentifier(name) ? name.text : name.getText(), initializer);
+      } else if (!ts.isInterfaceDeclaration(statement) && !ts.isTypeAliasDeclaration(statement)) {
+        problems.push(`${path} exports ${statement.getText().split("\n")[0]}`);
+      }
+    }
+  }
+  return problems;
+}
 
 test('a "use client" file exports components only', () => {
   // A Server Component gets every export of such a file as a client reference: a class string arrives as an object
   // that cn drops, and a helper cannot be called. Helpers go in a file without the directive.
   for (const item of code) {
-    for (const { path, text } of sources(item)) {
-      if (!/^["']use client["']/.test(text)) continue;
-      const file = ts.createSourceFile(path, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
-      const exported: string[] = [];
-      for (const statement of file.statements) {
-        if (ts.isExportDeclaration(statement) && !statement.isTypeOnly && statement.exportClause) {
-          if (!ts.isNamedExports(statement.exportClause)) continue;
-          for (const element of statement.exportClause.elements)
-            if (!element.isTypeOnly) exported.push(element.name.text);
-        }
-        const modifiers = ts.canHaveModifiers(statement) ? ts.getModifiers(statement) : undefined;
-        if (!modifiers?.some(({ kind }) => kind === ts.SyntaxKind.ExportKeyword)) continue;
-        if (ts.isFunctionDeclaration(statement) && statement.name) exported.push(statement.name.text);
-        if (ts.isVariableStatement(statement)) {
-          for (const { name } of statement.declarationList.declarations)
-            if (ts.isIdentifier(name)) exported.push(name.text);
-        }
-      }
-      for (const name of exported) assert.match(name, /^[A-Z]/, `${path} exports ${name}`);
-    }
+    for (const { path, text } of sources(item)) assert.deepEqual(nonComponentExports(path, text), []);
   }
+});
+
+test('the "use client" export check sees constants, non-components and a directive under a comment', () => {
+  const client = (body: string) => `// A note above the directive.\n"use client";\n${body}`;
+  const cases: [string, string[]][] = [
+    [client('export const ROW_IGNORE = "[data-row-ignore]";'), ["x.tsx exports ROW_IGNORE"]],
+    [
+      client("const TableVariants = { plain: 1 };\nfunction Table() {}\nexport { Table, TableVariants };"),
+      ["x.tsx exports TableVariants"],
+    ],
+    [
+      client("const ButtonContext = React.createContext(null);\nexport { ButtonContext };"),
+      ["x.tsx exports ButtonContext"],
+    ],
+    [client("function rowClickHandler() {}\nexport { rowClickHandler };"), ["x.tsx exports rowClickHandler"]],
+    [client('export * from "./table-row";'), ['x.tsx re-exports export * from "./table-row";']],
+    [
+      client(
+        "const Toaster = () => null;\nfunction QRCode() {}\nexport type { Props } from './p';\nexport { Toaster, QRCode };",
+      ),
+      [],
+    ],
+    ['export const ROW_IGNORE = "[data-row-ignore]";', []],
+  ];
+  for (const [text, problems] of cases) assert.deepEqual(nonComponentExports("x.tsx", text), problems, text);
 });
 
 test("cn knows every custom token in the theme", () => {
