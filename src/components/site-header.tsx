@@ -1,31 +1,23 @@
 "use client";
 
-import { MenuIcon, MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
+import { MenuIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
 import { BrandMark, BrandName } from "@/components/ui/brand-mark";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Sheet, SheetBody, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { TextLink } from "@/components/ui/text-link";
+import { ThemePicker, type ThemePreference } from "@/components/ui/theme-picker";
 import { SiteNav, type NavGroup } from "@/site/components/site-nav";
 
-const themes = [
-  { value: "system", label: "System", Icon: MonitorIcon },
-  { value: "light", label: "Light", Icon: SunIcon },
-  { value: "dark", label: "Dark", Icon: MoonIcon },
-];
+const labels: Record<ThemePreference, string> = { system: "System", light: "Light", dark: "Dark" };
+const isPreference = (value: string | undefined): value is ThemePreference => value !== undefined && value in labels;
 
 const subscribe = () => () => {};
 
-function ThemePicker() {
+/** The registry's ThemePicker over next-themes, which is what the site uses to keep the preference. */
+function SiteThemePicker() {
   const { theme, setTheme } = useTheme();
   // The stored choice is unknown in the static HTML, so it stays on System until hydration.
   const hydrated = useSyncExternalStore(
@@ -33,26 +25,9 @@ function ThemePicker() {
     () => true,
     () => false,
   );
-  const current = (hydrated && themes.find(({ value }) => value === theme)) || themes[0]!;
-
+  const value = hydrated && isPreference(theme) ? theme : undefined;
   return (
-    <DropdownMenu modal={false}>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={`Theme: ${current.label}`}>
-          <current.Icon />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-36">
-        <DropdownMenuRadioGroup value={current.value} onValueChange={setTheme}>
-          {themes.map(({ value, label, Icon }) => (
-            <DropdownMenuRadioItem key={value} value={value}>
-              <Icon />
-              {label}
-            </DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <ThemePicker value={value} onValueChange={setTheme} labels={labels} label={`Theme: ${labels[value ?? "system"]}`} />
   );
 }
 
@@ -92,7 +67,7 @@ export function SiteHeader({ groups }: { groups: NavGroup[] }) {
           <TextLink href="/r/registry.json" className="text-sm max-[37.4375rem]:hidden">
             registry.json
           </TextLink>
-          <ThemePicker />
+          <SiteThemePicker />
         </div>
       </div>
     </header>

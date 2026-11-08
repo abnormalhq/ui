@@ -3,14 +3,15 @@ import { cn } from "@/lib/utils";
 
 /**
  * An input sharing one border with what belongs to it: a fixed suffix such as a domain, or quiet text buttons.
- * The group draws the border and the focus ring, so the input inside is bare.
+ * The group draws the border and the focus ring, so the input inside is bare. The ring follows the input only: a
+ * button inside draws its own, so the two never show together.
  */
 function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="input-group"
       className={cn(
-        "flex min-h-8 items-center rounded-control border border-input bg-control transition-[border-color] duration-150 hover:border-[color-mix(in_oklab,var(--input),var(--text)_15%)] focus-within:border-[color-mix(in_oklab,var(--input),var(--text)_30%)] focus-within:outline-2 focus-within:-outline-offset-1 focus-within:outline-ring focus-within:outline-solid has-aria-invalid:border-destructive",
+        "flex min-h-8 items-center rounded-control border border-input bg-control transition-[border-color] duration-150 hover:border-[color-mix(in_oklab,var(--input),var(--text)_15%)] focus-within:border-[color-mix(in_oklab,var(--input),var(--text)_30%)] has-[[data-slot=input]:focus-visible]:outline-2 has-[[data-slot=input]:focus-visible]:-outline-offset-1 has-[[data-slot=input]:focus-visible]:outline-ring has-[[data-slot=input]:focus-visible]:outline-solid has-aria-invalid:border-destructive",
         "[&>[data-slot=input-group-button]+[data-slot=input-group-button]]:relative [&>[data-slot=input-group-button]+[data-slot=input-group-button]]:before:absolute [&>[data-slot=input-group-button]+[data-slot=input-group-button]]:before:inset-y-2 [&>[data-slot=input-group-button]+[data-slot=input-group-button]]:before:-left-px [&>[data-slot=input-group-button]+[data-slot=input-group-button]]:before:w-px [&>[data-slot=input-group-button]+[data-slot=input-group-button]]:before:bg-border",
         className,
       )}
@@ -25,7 +26,7 @@ function InputGroupInput({ className, ...props }: React.ComponentProps<"input">)
     <input
       data-slot="input"
       className={cn(
-        "block w-full min-w-0 flex-auto rounded-control bg-transparent px-3 py-2 text-base text-foreground outline-none placeholder:text-muted-foreground/70 disabled:cursor-not-allowed disabled:opacity-50",
+        "block w-full min-w-0 flex-auto rounded-control bg-transparent px-3 py-2 text-base text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
       {...props}

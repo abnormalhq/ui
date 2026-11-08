@@ -33,6 +33,12 @@ const packageOf = (specifier: string) =>
     .slice(0, specifier.startsWith("@") ? 2 : 1)
     .join("/");
 const moduleName = (path: string) => basename(path, extname(path));
+/** The item each module under @/components/ui belongs to: table-row.ts is part of table, so importing it needs @abnormal/table. */
+const itemOf = new Map(
+  registry.items.flatMap((item) =>
+    item.files.filter(({ path }) => isCode(path)).map(({ path }) => [moduleName(path), item.name]),
+  ),
+);
 
 test("every item has a source file and a built JSON file that carries all of its files", () => {
   for (const item of registry.items) {
@@ -73,7 +79,7 @@ test("items declare exactly what their files import", () => {
         assert.doesNotMatch(specifier, /^\./, `${path}: relative imports are not rewritten on install`);
         const component = specifier.match(/^@\/components\/ui\/([a-z-]+)$/)?.[1];
         if (specifier === "@/lib/utils") internal.add("@abnormal/utils");
-        else if (component && !own.has(component)) internal.add(`@abnormal/${component}`);
+        else if (component && !own.has(component)) internal.add(`@abnormal/${itemOf.get(component) ?? component}`);
         else if (!specifier.startsWith("@/")) external.add(packageOf(specifier));
       }
     }

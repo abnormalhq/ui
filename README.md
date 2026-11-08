@@ -37,20 +37,23 @@ pnpm dlx shadcn@latest add @abnormal/button @abnormal/dialog
 
 ## What's in it
 
-| Group      | Items                                                                                                                   |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Foundation | `theme`, `fonts`, `utils`                                                                                               |
-| Brand      | `brand-mark`                                                                                                            |
-| Controls   | `button`, `input`, `input-group`, `field-message`, `textarea`, `select`, `native-select`, `checkbox`, `switch`, `label` |
-| Display    | `alert`, `badge`, `card`, `disclosure`, `skeleton`, `spinner`, `status-label`, `table`                                  |
-| Overlays   | `alert-dialog`, `context-menu`, `dialog`, `dropdown-menu`, `popover`, `sheet`, `sonner`, `tooltip`                      |
-| Marketing  | `container`, `section-heading`, `text-link`, `icon-tile`, `prose`                                                       |
+| Group      | Items                                                                                                                                                            |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Foundation | `theme`, `fonts`, `utils`                                                                                                                                        |
+| Brand      | `brand-mark`                                                                                                                                                     |
+| Controls   | `button`, `input`, `input-group`, `field-message`, `textarea`, `select`, `native-select`, `checkbox`, `radio-group`, `switch`, `toggle`, `toggle-group`, `label` |
+| Display    | `alert`, `badge`, `card`, `disclosure`, `progress`, `separator`, `skeleton`, `spinner`, `status-label`, `table`                                                  |
+| Overlays   | `alert-dialog`, `confirm-dialog`, `context-menu`, `dialog`, `guarded-dialog`, `dropdown-menu`, `info-hint`, `popover`, `sheet`, `sonner`, `tooltip`              |
+| Patterns   | `copy-button`, `link-row`, `theme-picker`                                                                                                                        |
+| Marketing  | `container`, `section-heading`, `text-link`, `icon-tile`, `prose`                                                                                                |
+
+Patterns are the pieces the projects kept rewriting: they hold no product state (`ThemePicker` takes the saved preference and hands back the choice; `LinkRow` takes the router's `navigate`), and every word they show comes in as a prop.
 
 ## Rules for items
 
 Items stay generic. A component imports only `@/lib/utils`, `@/components/ui/*` and its declared packages: no product code, no `next/*`, and no built-in copy, so anything a user reads comes in through a prop (`closeLabel` on `Dialog` and `Sheet`, required whenever the close button shows). That rules out a default or fallback for a label prop (`closeLabel = "Close"`, `closeLabel ?? "Close"`), a literal `aria-label` and literal `sr-only` text. `tests/registry.test.ts` enforces this, and checks every file of an item: an item can bring several, and each one's imports, scoped packages and side-effect imports included, must be declared.
 
-A file with the `"use client"` directive exports components only: PascalCase functions, or `forwardRef`/`memo` of one, and no constants, `cva()` variants, contexts or re-exports. A Server Component receives every export of such a file as a client reference, so a class string or helper from it silently stops working there; helpers live in a file without the directive, such as `table-row.ts` next to `table.tsx`.
+A file with the `"use client"` directive exports components only: PascalCase functions, or `forwardRef`/`memo` of one, and no constants, `cva()` variants, contexts or re-exports. A Server Component receives every export of such a file as a client reference, so a class string or helper from it silently stops working there; helpers live in a file without the directive, such as `table-row.ts` next to `table.tsx` and `use-open-count.ts` next to `guarded-dialog.tsx`. Another item imports such a file by its module name (`@/components/ui/table-row`) and declares the item that brings it (`@abnormal/table`).
 
 When editing the theme, keep two things in step, both also tested: the dark values in `:root[data-theme="dark"]` and in the system preference fallback, and any new `--radius-*`, `--shadow-*` or `--animate-*` token with `CN_THEME` in `registry/lib/utils.ts`.
 
@@ -72,7 +75,7 @@ Development uses the Node.js in `.node-version`. `engines.node` in `package.json
 
 `pnpm test` builds the registry and the site, then runs `node --test` with `tests/support/register.ts`, which resolves the `@/` aliases and compiles `.tsx` the way a project would. Besides the static checks, `tests/server-render.test.tsx` renders items with no DOM, as a Server Component page would, and `tests/components.test.tsx` mounts the stateful ones in happy-dom and clicks them. `tests/types.check.tsx` is only type-checked: it pins props that must stay required, such as `closeLabel`.
 
-The site at `ui.abnormalhq.com` is a Next.js app in `src/`. It renders each item from `registry/` directly, so a change shows up as soon as you save it. Every item needs a demo in `src/demos/<name>.tsx` and a place in `src/groups.ts`; `tests/site.test.ts` enforces both, and each demo's source is also the usage example on its page.
+The site at `ui.abnormalhq.com` is a Next.js app in `src/`. It renders each item from `registry/` directly, so a change shows up as soon as you save it. Every item needs a demo in `src/demos/<name>.tsx` and a place in `src/groups.ts`; `tests/site.test.ts` enforces both, and each demo's source is also the usage example on its page. The page also reads the item's source: the block comments at the top level become its design notes, and the `variants` of each `cva()` call become its variants table (`src/notes.ts`), so the reasoning in a comment reaches the page and the Markdown without being written twice.
 
 ```bash
 pnpm dev

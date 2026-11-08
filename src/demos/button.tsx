@@ -23,6 +23,10 @@ export default function ButtonDemo() {
           <PlusIcon />
         </Button>
         <Button disabled>Disabled</Button>
+        <Button loading>Saving</Button>
+        <Button size="icon" variant="outline" loading aria-label="Adding">
+          <PlusIcon />
+        </Button>
       </div>
     </div>
   );

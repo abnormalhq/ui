@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { basename, extname } from "node:path";
 import { catalog, getItem, installCommand, items, type Item, setupSteps, siteUrl } from "@/site/catalog";
+import { designNotes, variantsOf } from "@/site/notes";
 
 const codeBlock = (code: string, lang: string) => `\`\`\`${lang}\n${code.trimEnd()}\n\`\`\``;
 
@@ -29,11 +30,26 @@ export async function itemMarkdown(item: Item) {
   const sources = await Promise.all(item.files.map(async ({ path }) => ({ path, code: await readFile(path, "utf8") })));
   const requires = item.registryDependencies?.map((name) => getItem(name.replace("@abnormal/", ""))!) ?? [];
   const brings = [...requires.map(itemLink), ...(item.dependencies ?? []).map((name) => `\`${name}\``)];
+  const code = sources.filter(({ path }) => /\.tsx?$/.test(path));
+  const notes = code.flatMap(({ code: text }) => designNotes(text));
+  const variants = code.flatMap(({ code: text }) => variantsOf(text));
 
   return [
     `# ${item.title}`,
     item.description,
     `Registry item: [${item.name}.json](${siteUrl}/r/${item.name}.json)`,
+    ...(notes.length > 0 ? ["## Design notes", notes.map((note) => `- ${note}`).join("\n")] : []),
+    ...(variants.length > 0
+      ? [
+          "## Variants",
+          variants
+            .map(
+              ({ name, options, defaultOption }) =>
+                `- \`${name}\`: ${options.map((option) => `\`${option}\``).join(", ")}${defaultOption ? ` (default \`${defaultOption}\`)` : ""}`,
+            )
+            .join("\n"),
+        ]
+      : []),
     "## Install",
     codeBlock(installCommand(item.name), "bash"),
     ...(brings.length > 0 ? [`Brings in ${brings.join(", ")}.`] : []),

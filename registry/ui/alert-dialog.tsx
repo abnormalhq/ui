@@ -91,16 +91,27 @@ function AlertDialogDescription({
   );
 }
 
+/**
+ * The confirm button. `loading` shows the work it started, for a dialog that closes only when that work is done.
+ * Under asChild the child's own props win over the Button's, so the disabled state is set here, on the primitive.
+ */
 function AlertDialogAction({
   className,
   variant = "default",
   size = "default",
+  loading,
+  disabled,
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Action> &
-  Pick<React.ComponentProps<typeof Button>, "variant" | "size">) {
+  Pick<React.ComponentProps<typeof Button>, "variant" | "size" | "loading">) {
   return (
-    <Button variant={variant} size={size} asChild>
-      <AlertDialogPrimitive.Action data-slot="alert-dialog-action" className={cn(className)} {...props} />
+    <Button variant={variant} size={size} loading={loading} asChild>
+      <AlertDialogPrimitive.Action
+        data-slot="alert-dialog-action"
+        className={cn(className)}
+        disabled={disabled || loading}
+        {...props}
+      />
     </Button>
   );
 }

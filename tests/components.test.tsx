@@ -3,13 +3,16 @@ import { click, render } from "./support/render.tsx";
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
 import { act, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/components/ui/dialog";
+import { LinkRow } from "@/components/ui/link-row";
+import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { rowClickHandler } from "@/components/ui/table-row";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { CopyButton } from "@/site/components/copy-button";
+import { CopyButton } from "@/components/ui/copy-button";
 
 const mounted: { unmount: () => Promise<void> }[] = [];
 const mount = async (ui: React.ReactNode) => {
@@ -29,6 +32,75 @@ const button = (name: string) => {
   assert.ok(match, `a button named ${name}`);
   return match;
 };
+
+test("a loading Button stops activation, as a link too, and lets it through again when done", async () => {
+  const onClick = mock.fn();
+  const { container, rerender } = await mount(
+    <Button asChild loading>
+      <a href="#next" onClick={onClick}>
+        Continue
+      </a>
+    </Button>,
+  );
+  const link = container.querySelector("a")!;
+  assert.equal(link.getAttribute("aria-disabled"), "true");
+  const blocked = new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 });
+  await act(async () => void link.dispatchEvent(blocked));
+  assert.equal(onClick.mock.callCount(), 0);
+  assert.equal(blocked.defaultPrevented, true);
+
+  await rerender(
+    <Button asChild>
+      <a href="#next" onClick={onClick}>
+        Continue
+      </a>
+    </Button>,
+  );
+  await click(container.querySelector("a")!);
+  assert.equal(onClick.mock.callCount(), 1);
+});
+
+test("a Progress bar scales to its max, and sweeps without a value", async () => {
+  const { container, rerender } = await mount(<Progress value={50} max={200} aria-label="Import" />);
+  const bar = () => container.querySelector<HTMLElement>('[data-slot="progress-indicator"]')!;
+  assert.equal(bar().style.transform, "translateX(-75%)");
+  assert.equal(container.querySelector('[role="progressbar"]')?.getAttribute("aria-valuemax"), "200");
+  await rerender(<Progress aria-label="Import" />);
+  assert.match(bar().className, /animate-progress-sweep/);
+});
+
+test("a LinkRow runs the row's own onClick first and stays put when it prevents the default", async () => {
+  const navigate = mock.fn();
+  const clicks: boolean[] = [];
+  await mount(
+    <Table>
+      <TableBody>
+        <LinkRow href="/one" navigate={navigate}>
+          <TableCell>one</TableCell>
+        </LinkRow>
+        <LinkRow
+          href="/two"
+          navigate={navigate}
+          onClick={(event) => {
+            clicks.push(true);
+            event.preventDefault();
+          }}
+        >
+          <TableCell>two</TableCell>
+        </LinkRow>
+      </TableBody>
+    </Table>,
+  );
+  const cell = (text: string) => [...document.querySelectorAll("td")].find((td) => td.textContent === text)!;
+  await click(cell("one"));
+  assert.deepEqual(
+    navigate.mock.calls.map(({ arguments: args }) => args),
+    [["/one"]],
+  );
+  await click(cell("two"));
+  assert.deepEqual(clicks, [true]);
+  assert.equal(navigate.mock.callCount(), 1);
+});
 
 test("a Tooltip works without a TooltipProvider, and inside one", async () => {
   await mount(
@@ -257,13 +329,15 @@ test("Dialog and Sheet name their close buttons with the label they are given", 
   assert.ok(button("Close details"));
 });
 
-test("the site's copy button reports a failed copy instead of throwing", async () => {
+const copy = (text: string) => <CopyButton text={text} label="Copy" copiedLabel="Copied" failedLabel="Copy failed" />;
+
+test("the copy button reports a failed copy instead of throwing", async () => {
   const clipboard = (value: unknown) => Object.defineProperty(navigator, "clipboard", { configurable: true, value });
   const status = () => document.querySelector('[role="status"]')?.textContent;
 
   const writeText = mock.fn(async () => {});
   clipboard({ writeText });
-  await mount(<CopyButton code="pnpm dlx shadcn@latest add @abnormal/button" />);
+  await mount(copy("pnpm dlx shadcn@latest add @abnormal/button"));
   await click(button("Copy"));
   assert.deepEqual(writeText.mock.calls[0]?.arguments, ["pnpm dlx shadcn@latest add @abnormal/button"]);
   assert.equal(status(), "Copied");
@@ -271,7 +345,7 @@ test("the site's copy button reports a failed copy instead of throwing", async (
 
   for (const unavailable of [{ writeText: async () => Promise.reject(new Error("Denied")) }, undefined]) {
     clipboard(unavailable);
-    await mount(<CopyButton code="x" />);
+    await mount(copy("x"));
     await click(button("Copy"));
     assert.equal(status(), "Copy failed");
     // The outcome is announced once, by the status message; the focused button keeps its name.
@@ -281,11 +355,11 @@ test("the site's copy button reports a failed copy instead of throwing", async (
   }
 });
 
-test("the site's copy button does nothing when a copy settles after it has gone", async () => {
+test("the copy button does nothing when a copy settles after it has gone", async () => {
   let settle = () => {};
   const writeText = () => new Promise<void>((resolve) => (settle = resolve));
   Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
-  await mount(<CopyButton code="x" />);
+  await mount(copy("x"));
   await click(button("Copy"));
   await mounted.pop()!.unmount();
 

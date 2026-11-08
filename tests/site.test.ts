@@ -49,3 +49,36 @@ test("every code language highlights into the theme's variables", async () => {
     assert.doesNotMatch(html, /<pre/, lang);
   }
 });
+
+test("the item pages read the design notes and the cva variants out of the sources", async () => {
+  const { designNotes, variantsOf } = await import("../src/notes.ts");
+  const button = readFileSync("registry/ui/button.tsx", "utf8");
+  assert.match(designNotes(button)[0]!, /^A uniform 32px height/);
+  assert.deepEqual(variantsOf(button), [
+    {
+      name: "variant",
+      options: ["default", "outline", "secondary", "ghost", "destructive", "link"],
+      defaultOption: "default",
+    },
+    {
+      name: "size",
+      options: ["default", "xs", "sm", "lg", "icon", "icon-xs", "icon-sm", "icon-lg"],
+      defaultOption: "default",
+    },
+  ]);
+  // Class strings carry "hover:" and comments carry "progress:", and neither is a variant.
+  const label = readFileSync("registry/ui/status-label.tsx", "utf8");
+  assert.deepEqual(
+    variantsOf(label).map(({ name, options }) => [name, options]),
+    [
+      ["variant", ["badge", "dot"]],
+      ["tone", ["pending", "success", "muted", "destructive"]],
+    ],
+  );
+  assert.deepEqual(variantsOf(readFileSync("registry/ui/table.tsx", "utf8")), []);
+  // Every page and its Markdown show them.
+  const html = readFileSync("out/components/button.html", "utf8");
+  assert.match(html, /Design notes/);
+  assert.match(html, /A uniform 32px height/);
+  assert.match(readFileSync("out/md/components/button.md", "utf8"), /## Variants\n\n- `variant`: `default`, `outline`/);
+});
