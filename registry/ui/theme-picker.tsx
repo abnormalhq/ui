@@ -59,6 +59,7 @@ function ThemePicker({
   labels,
   label,
   align = "end",
+  onOpenChange,
   variant = "ghost",
   size = "icon",
   ...props
@@ -66,10 +67,12 @@ function ThemePicker({
   /** The button's accessible name, such as "Theme" or "Theme: dark". */
   label: string;
   align?: "start" | "center" | "end";
+  /** The menu opening or closing, for a header that closes its other menus when this one opens. */
+  onOpenChange?: (open: boolean) => void;
 } & Omit<React.ComponentProps<typeof Button>, "value" | "onChange" | "children" | "aria-label" | "asChild">) {
   const Icon = icons[value ?? "system"];
   return (
-    <DropdownMenu modal={false}>
+    <DropdownMenu modal={false} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button variant={variant} size={size} aria-label={label} {...props}>
           <Icon />

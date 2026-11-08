@@ -5,6 +5,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { renderToStaticMarkup } from "react-dom/server";
+import { AlertDialog, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -64,6 +65,18 @@ test("a loading Button is disabled, busy and led by a spinner, with asChild too"
     /^<a href="\/next"[^>]*aria-busy="true"[^>]*><span[^>]*data-slot="spinner"[^>]*><\/span>Continue<\/a>$/,
   );
   assert.doesNotMatch(renderToStaticMarkup(<Button>Save</Button>), /data-slot="spinner"|aria-busy="true"/);
+});
+
+test("a loading AlertDialogAction is disabled even though the child sets disabled itself", () => {
+  const html = renderToStaticMarkup(
+    <AlertDialog open>
+      <AlertDialogAction loading disabled={false}>
+        Delete
+      </AlertDialogAction>
+    </AlertDialog>,
+  );
+  assert.match(html, /<button[^>]*disabled=""[^>]*>/);
+  assert.match(html, /<button[^>]*aria-busy="true"[^>]*>/);
 });
 
 test("the row action class reaches markup rendered on the server", () => {

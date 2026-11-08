@@ -20,12 +20,14 @@ const BUBBLE_ROOM = 32;
  * viewport coordinates, so a clipping container (a scrolling table, a floating window) cannot cut it off.
  * The button keeps its name throughout; a status region announces the outcome once, so a screen reader does not
  * hear it a second time as a name change. With children it is a text button ("Copy address") and shows no bubble.
+ * `write` replaces the clipboard call, for a page that needs a fallback outside secure contexts; it throws to fail.
  */
 function CopyButton({
   text,
   label,
   copiedLabel,
   failedLabel,
+  write,
   children,
   variant = "ghost",
   size,
@@ -41,6 +43,8 @@ function CopyButton({
   copiedLabel: string;
   /** Announced and shown when the clipboard refused, such as "Copy failed". */
   failedLabel: string;
+  /** How to copy, instead of navigator.clipboard; reject or throw when it could not. */
+  write?: (text: string) => void | Promise<void>;
 }) {
   const [feedback, setFeedback] = React.useState<Feedback>("idle");
   const [anchor, setAnchor] = React.useState<Anchor | null>(null);
@@ -88,9 +92,12 @@ function CopyButton({
           const below = rect.top < BUBBLE_ROOM;
           setAnchor({ x: rect.left + rect.width / 2, y: below ? rect.bottom : rect.top, below });
           try {
-            // There is no clipboard outside a secure context, and writeText rejects without permission or focus.
-            if (!navigator.clipboard) throw new Error("Clipboard unavailable");
-            await navigator.clipboard.writeText(text);
+            if (write) await write(text);
+            else {
+              // There is no clipboard outside a secure context, and writeText rejects without permission or focus.
+              if (!navigator.clipboard) throw new Error("Clipboard unavailable");
+              await navigator.clipboard.writeText(text);
+            }
             show("copied");
           } catch {
             show("failed");
