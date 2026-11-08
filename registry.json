@@ -102,9 +102,9 @@
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
-      "description": "The 32px button with primary, outline, secondary, ghost, destructive and link variants.",
+      "description": "The 32px button with primary, outline, secondary, ghost, destructive and link variants, and a loading state.",
       "dependencies": ["class-variance-authority", "radix-ui"],
-      "registryDependencies": ["@abnormal/utils"],
+      "registryDependencies": ["@abnormal/spinner", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/button.tsx",
@@ -141,6 +141,19 @@
       ]
     },
     {
+      "name": "confirm-dialog",
+      "type": "registry:ui",
+      "title": "Confirm Dialog",
+      "description": "A second look before an action, controlled or behind a button, with focus returning to what opened it.",
+      "registryDependencies": ["@abnormal/alert-dialog", "@abnormal/button", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/confirm-dialog.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "context-menu",
       "type": "registry:ui",
       "title": "Context Menu",
@@ -150,6 +163,20 @@
       "files": [
         {
           "path": "registry/ui/context-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "copy-button",
+      "type": "registry:ui",
+      "title": "Copy Button",
+      "description": "Copies a value and shows the outcome in the icon, a bubble and a status region, with every word passed in.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/copy-button.tsx",
           "type": "registry:ui"
         }
       ]
@@ -211,6 +238,37 @@
       ]
     },
     {
+      "name": "guarded-dialog",
+      "type": "registry:ui",
+      "title": "Guarded Dialog",
+      "description": "A dialog that cannot be closed while it is saving, with a hook that keys its form per open.",
+      "registryDependencies": ["@abnormal/dialog", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/guarded-dialog.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/use-open-count.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "info-hint",
+      "type": "registry:ui",
+      "title": "Info Hint",
+      "description": "The small ⓘ next to a title: a note that opens on hover and focus, and toggles on a tap.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/tooltip", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/info-hint.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "input",
       "type": "registry:ui",
       "title": "Input",
@@ -251,6 +309,19 @@
       ]
     },
     {
+      "name": "link-row",
+      "type": "registry:ui",
+      "title": "Link Row",
+      "description": "A table row that opens its page when clicked anywhere, keeping the real link for the keyboard and new tabs.",
+      "registryDependencies": ["@abnormal/table", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/link-row.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "native-select",
       "type": "registry:ui",
       "title": "Native Select",
@@ -278,6 +349,34 @@
       ]
     },
     {
+      "name": "progress",
+      "type": "registry:ui",
+      "title": "Progress",
+      "description": "A thin bar in the signal color, determinate from 0 to 100 or sweeping while indeterminate.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/progress.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio Group",
+      "description": "One choice among a few: a quiet ring that fills with an ink dot, moved with the arrow keys.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/radio-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "select",
       "type": "registry:ui",
       "title": "Select",
@@ -287,6 +386,19 @@
       "files": [
         {
           "path": "registry/ui/select.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator",
+      "description": "A hairline between groups, horizontal or vertical, decorative unless told otherwise.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/separator.tsx",
           "type": "registry:ui"
         }
       ]
@@ -319,6 +431,20 @@
       ]
     },
     {
+      "name": "sonner",
+      "type": "registry:ui",
+      "title": "Toaster",
+      "description": "Toast notifications on sonner, following the page theme without a theme library.",
+      "dependencies": ["lucide-react", "sonner"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/sonner.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "spinner",
       "type": "registry:ui",
       "title": "Spinner",
@@ -327,20 +453,6 @@
       "files": [
         {
           "path": "registry/ui/spinner.tsx",
-          "type": "registry:ui"
-        }
-      ]
-    },
-    {
-      "name": "sonner",
-      "type": "registry:ui",
-      "title": "Toaster",
-      "description": "Toast notifications on sonner, following the next-themes theme.",
-      "dependencies": ["lucide-react", "next-themes", "sonner"],
-      "registryDependencies": ["@abnormal/utils"],
-      "files": [
-        {
-          "path": "registry/ui/sonner.tsx",
           "type": "registry:ui"
         }
       ]
@@ -398,6 +510,48 @@
       "files": [
         {
           "path": "registry/ui/textarea.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "theme-picker",
+      "type": "registry:ui",
+      "title": "Theme Picker",
+      "description": "The system, light and dark menu behind a header button, holding no state: the page passes the saved preference and writes back the choice.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/dropdown-menu", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/theme-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "toggle",
+      "type": "registry:ui",
+      "title": "Toggle",
+      "description": "A button that stays pressed, taking the soft highlight of a selection while on.",
+      "dependencies": ["class-variance-authority", "radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/toggle.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "toggle-group",
+      "type": "registry:ui",
+      "title": "Toggle Group",
+      "description": "Toggles joined into one segmented control, one pressed at a time or several.",
+      "dependencies": ["class-variance-authority", "radix-ui"],
+      "registryDependencies": ["@abnormal/toggle", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/toggle-group.tsx",
           "type": "registry:ui"
         }
       ]

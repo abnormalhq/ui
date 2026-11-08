@@ -26,8 +26,11 @@ function SheetContent({
   closeLabel,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
-  /** Attached to the right by default (details); `left` is used as the navigation drawer on narrow screens (WebMail's folder column). */
-  side?: "left" | "right";
+  /**
+   * Attached to the right by default (details); `left` is the navigation drawer on narrow screens (WebMail's folder
+   * column); `bottom` is a drawer rising from the bottom edge, for actions and short forms on phones.
+   */
+  side?: "left" | "right" | "bottom";
   /** Accessible name of the close button, which always shows; pass the translated word. There is no default, so no English name ships by accident. */
   closeLabel: string;
 }) {
@@ -36,11 +39,15 @@ function SheetContent({
       <SheetPrimitive.Overlay className="fixed inset-0 z-50 bg-black/30 data-open:animate-fade-in data-closed:animate-fade-out dark:bg-black/60" />
       <SheetPrimitive.Content
         data-slot="sheet-content"
+        data-side={side}
         className={cn(
-          "fixed inset-y-0 z-50 flex w-full max-w-[480px] flex-col bg-popover text-popover-foreground shadow-popover outline-none",
-          side === "right"
-            ? "right-0 border-l border-border data-open:animate-slide-in-right data-closed:animate-slide-out-right"
-            : "left-0 border-r border-border data-open:animate-slide-in-left data-closed:animate-slide-out-left",
+          "fixed z-50 flex flex-col bg-popover text-popover-foreground shadow-popover outline-none",
+          side === "right" &&
+            "inset-y-0 right-0 w-full max-w-[480px] border-l border-border data-open:animate-slide-in-right data-closed:animate-slide-out-right",
+          side === "left" &&
+            "inset-y-0 left-0 w-full max-w-[480px] border-r border-border data-open:animate-slide-in-left data-closed:animate-slide-out-left",
+          side === "bottom" &&
+            "inset-x-0 bottom-0 max-h-[85dvh] rounded-t-dialog border-t border-border pb-[env(safe-area-inset-bottom)] data-open:animate-slide-in-bottom data-closed:animate-slide-out-bottom",
           className,
         )}
         // By default the first button gets focus (usually "Copy" in details), and that focus ring looks jarring when opening by clicking a row; focus the panel itself instead, and Tab then moves into the buttons.

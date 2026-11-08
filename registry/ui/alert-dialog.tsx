@@ -91,15 +91,17 @@ function AlertDialogDescription({
   );
 }
 
+/** The confirm button. `loading` shows the work it started, for a dialog that closes only when that work is done. */
 function AlertDialogAction({
   className,
   variant = "default",
   size = "default",
+  loading,
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Action> &
-  Pick<React.ComponentProps<typeof Button>, "variant" | "size">) {
+  Pick<React.ComponentProps<typeof Button>, "variant" | "size" | "loading">) {
   return (
-    <Button variant={variant} size={size} asChild>
+    <Button variant={variant} size={size} loading={loading} asChild>
       <AlertDialogPrimitive.Action data-slot="alert-dialog-action" className={cn(className)} {...props} />
     </Button>
   );

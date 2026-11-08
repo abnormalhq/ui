@@ -48,6 +48,24 @@ test("a named Switch renders the input a form submits while it is on", () => {
   }
 });
 
+test("a loading Button is disabled, busy and led by a spinner, with asChild too", () => {
+  const html = renderToStaticMarkup(<Button loading>Saving</Button>);
+  assert.match(
+    html,
+    /^<button[^>]*aria-busy="true"[^>]*disabled=""[^>]*><span[^>]*data-slot="spinner"[^>]*><\/span>Saving<\/button>$/,
+  );
+  const link = renderToStaticMarkup(
+    <Button asChild loading>
+      <a href="/next">Continue</a>
+    </Button>,
+  );
+  assert.match(
+    link,
+    /^<a href="\/next"[^>]*aria-busy="true"[^>]*><span[^>]*data-slot="spinner"[^>]*><\/span>Continue<\/a>$/,
+  );
+  assert.doesNotMatch(renderToStaticMarkup(<Button>Save</Button>), /data-slot="spinner"|aria-busy="true"/);
+});
+
 test("the row action class reaches markup rendered on the server", () => {
   const html = renderToStaticMarkup(<Button className={rowActionClassName}>More</Button>);
   assert.match(html, /group-hover\/row:opacity-100/);

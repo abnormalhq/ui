@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { rowClickHandler } from "@/components/ui/table-row";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { CopyButton } from "@/site/components/copy-button";
+import { CopyButton } from "@/components/ui/copy-button";
 
 const mounted: { unmount: () => Promise<void> }[] = [];
 const mount = async (ui: React.ReactNode) => {
@@ -257,13 +257,15 @@ test("Dialog and Sheet name their close buttons with the label they are given", 
   assert.ok(button("Close details"));
 });
 
-test("the site's copy button reports a failed copy instead of throwing", async () => {
+const copy = (text: string) => <CopyButton text={text} label="Copy" copiedLabel="Copied" failedLabel="Copy failed" />;
+
+test("the copy button reports a failed copy instead of throwing", async () => {
   const clipboard = (value: unknown) => Object.defineProperty(navigator, "clipboard", { configurable: true, value });
   const status = () => document.querySelector('[role="status"]')?.textContent;
 
   const writeText = mock.fn(async () => {});
   clipboard({ writeText });
-  await mount(<CopyButton code="pnpm dlx shadcn@latest add @abnormal/button" />);
+  await mount(copy("pnpm dlx shadcn@latest add @abnormal/button"));
   await click(button("Copy"));
   assert.deepEqual(writeText.mock.calls[0]?.arguments, ["pnpm dlx shadcn@latest add @abnormal/button"]);
   assert.equal(status(), "Copied");
@@ -271,7 +273,7 @@ test("the site's copy button reports a failed copy instead of throwing", async (
 
   for (const unavailable of [{ writeText: async () => Promise.reject(new Error("Denied")) }, undefined]) {
     clipboard(unavailable);
-    await mount(<CopyButton code="x" />);
+    await mount(copy("x"));
     await click(button("Copy"));
     assert.equal(status(), "Copy failed");
     // The outcome is announced once, by the status message; the focused button keeps its name.
@@ -281,11 +283,11 @@ test("the site's copy button reports a failed copy instead of throwing", async (
   }
 });
 
-test("the site's copy button does nothing when a copy settles after it has gone", async () => {
+test("the copy button does nothing when a copy settles after it has gone", async () => {
   let settle = () => {};
   const writeText = () => new Promise<void>((resolve) => (settle = resolve));
   Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
-  await mount(<CopyButton code="x" />);
+  await mount(copy("x"));
   await click(button("Copy"));
   await mounted.pop()!.unmount();
 
