@@ -3,7 +3,10 @@ import { click, render } from "./support/render.tsx";
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
 import { act, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/components/ui/dialog";
+import { LinkRow } from "@/components/ui/link-row";
+import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
@@ -29,6 +32,75 @@ const button = (name: string) => {
   assert.ok(match, `a button named ${name}`);
   return match;
 };
+
+test("a loading Button stops activation, as a link too, and lets it through again when done", async () => {
+  const onClick = mock.fn();
+  const { container, rerender } = await mount(
+    <Button asChild loading>
+      <a href="#next" onClick={onClick}>
+        Continue
+      </a>
+    </Button>,
+  );
+  const link = container.querySelector("a")!;
+  assert.equal(link.getAttribute("aria-disabled"), "true");
+  const blocked = new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 });
+  await act(async () => void link.dispatchEvent(blocked));
+  assert.equal(onClick.mock.callCount(), 0);
+  assert.equal(blocked.defaultPrevented, true);
+
+  await rerender(
+    <Button asChild>
+      <a href="#next" onClick={onClick}>
+        Continue
+      </a>
+    </Button>,
+  );
+  await click(container.querySelector("a")!);
+  assert.equal(onClick.mock.callCount(), 1);
+});
+
+test("a Progress bar scales to its max, and sweeps without a value", async () => {
+  const { container, rerender } = await mount(<Progress value={50} max={200} aria-label="Import" />);
+  const bar = () => container.querySelector<HTMLElement>('[data-slot="progress-indicator"]')!;
+  assert.equal(bar().style.transform, "translateX(-75%)");
+  assert.equal(container.querySelector('[role="progressbar"]')?.getAttribute("aria-valuemax"), "200");
+  await rerender(<Progress aria-label="Import" />);
+  assert.match(bar().className, /animate-progress-sweep/);
+});
+
+test("a LinkRow runs the row's own onClick first and stays put when it prevents the default", async () => {
+  const navigate = mock.fn();
+  const clicks: boolean[] = [];
+  await mount(
+    <Table>
+      <TableBody>
+        <LinkRow href="/one" navigate={navigate}>
+          <TableCell>one</TableCell>
+        </LinkRow>
+        <LinkRow
+          href="/two"
+          navigate={navigate}
+          onClick={(event) => {
+            clicks.push(true);
+            event.preventDefault();
+          }}
+        >
+          <TableCell>two</TableCell>
+        </LinkRow>
+      </TableBody>
+    </Table>,
+  );
+  const cell = (text: string) => [...document.querySelectorAll("td")].find((td) => td.textContent === text)!;
+  await click(cell("one"));
+  assert.deepEqual(
+    navigate.mock.calls.map(({ arguments: args }) => args),
+    [["/one"]],
+  );
+  await click(cell("two"));
+  assert.deepEqual(clicks, [true]);
+  assert.equal(navigate.mock.callCount(), 1);
+});
 
 test("a Tooltip works without a TooltipProvider, and inside one", async () => {
   await mount(

@@ -64,6 +64,7 @@ test("a loading Button is disabled, busy and led by a spinner, with asChild too"
     link,
     /^<a href="\/next"[^>]*aria-busy="true"[^>]*><span[^>]*data-slot="spinner"[^>]*><\/span>Continue<\/a>$/,
   );
+  assert.match(link, /aria-disabled="true"/);
   assert.doesNotMatch(renderToStaticMarkup(<Button>Save</Button>), /data-slot="spinner"|aria-busy="true"/);
 });
 
