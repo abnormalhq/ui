@@ -117,7 +117,7 @@ Projects keep their own copy of each item, so a deploy changes nothing until a p
 
 ### Workers Builds settings
 
-Connect `abnormalhq/ui` to the `abnormal-ui` Worker, with `main` as the production branch, `/` as the root directory and builds for other branches turned off:
+Connect `abnormalhq/ui` to the `abnormalhq-ui` Worker, with `main` as the production branch, `/` as the root directory and builds for other branches turned off:
 
 - Build command: `pnpm install --frozen-lockfile && pnpm cf:build`
 - Deploy command: `pnpm cf:deploy`

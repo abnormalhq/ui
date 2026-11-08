@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "abnormal-ui",
+  "name": "abnormalhq-ui",
   "compatibility_date": "2026-09-01",
   // Everything is a static asset. The Worker only picks a file for the pages, and renders nothing.
   "main": "src/worker.ts",
