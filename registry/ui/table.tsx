@@ -131,8 +131,9 @@ function TableHead({ className, pinned = false, ...props }: React.ComponentProps
       className={cn(
         "px-4 text-left align-middle whitespace-nowrap text-muted-foreground [&:has([role=checkbox])]:pr-0",
         // The plain header sticks to the top of the table container (when the container has no height limit it does not scroll, so it is effectively not sticky); it needs its own background to cover the rows scrolled past.
+        // Each sticky cell is its own stacking layer, so the next cell's background covers a focus outline that spills past this cell's edge (the select-all checkbox column has no right padding): the cell holding keyboard focus is raised above its siblings (to the pinned column's level, which comes later and so still stays on top).
         plain
-          ? "sticky top-0 z-[2] h-8 bg-background text-xs font-normal in-data-scrolled:shadow-[inset_0_-1px_0_var(--border)]"
+          ? "sticky top-0 z-[2] h-8 bg-background text-xs font-normal in-data-scrolled:shadow-[inset_0_-1px_0_var(--border)] has-[:focus-visible]:z-[3]"
           : "h-9 text-sm font-medium",
         pinned &&
           (plain
