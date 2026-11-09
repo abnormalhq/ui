@@ -16,9 +16,14 @@ updates:
     commit-message:
       prefix: chore
       include: scope
-    # minor / patch are combined into one PR; majors are still raised individually, to review breaking changes one by one.
+    # minor / patch updates are grouped by dependency type: one PR for production dependencies and one for development dependencies.
+    # Majors still get their own PR, so breaking changes can be reviewed one by one.
     groups:
-      npm-minor-patch:
+      npm-production:
+        dependency-type: production
+        update-types: [minor, patch]
+      npm-development:
+        dependency-type: development
         update-types: [minor, patch]
     ignore:
       # typescript-eslint does not support TS 7 yet, so typescript stays on 6.x (it is the @typescript/typescript6 alias in package.json).
