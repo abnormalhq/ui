@@ -39,7 +39,18 @@ const shadows = [
   ["shadow-panel", "Panels: none, layering comes from borders."],
   ["shadow-popover", "Floating surfaces."],
 ] as const;
-const sizes = ["text-xs", "text-sm", "text-base", "text-md", "text-lg", "text-xl", "text-2xl", "text-3xl", "text-4xl"];
+const sizes = [
+  "text-2xs",
+  "text-xs",
+  "text-sm",
+  "text-base",
+  "text-md",
+  "text-lg",
+  "text-xl",
+  "text-2xl",
+  "text-3xl",
+  "text-4xl",
+];
 const animations = [
   "arrive",
   "leave",

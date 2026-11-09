@@ -10,6 +10,11 @@ export default function InputDemo() {
       </div>
       <Input aria-label="Invalid" aria-invalid defaultValue="not an address" />
       <Input aria-label="Disabled" disabled defaultValue="Disabled" />
+      <div className="flex items-center gap-2">
+        <Input size="sm" aria-label="Small" placeholder="sm, 28px" />
+        <Input aria-label="Default" placeholder="default, 32px" />
+        <Input size="lg" aria-label="Large" placeholder="lg, 40px" />
+      </div>
     </div>
   );
 }
