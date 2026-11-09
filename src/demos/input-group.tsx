@@ -34,6 +34,14 @@ export default function InputGroupDemo() {
           {copied ? "Copied" : "Copy"}
         </InputGroupButton>
       </InputGroup>
+      <InputGroup size="sm">
+        <InputGroupInput aria-label="Address, small" placeholder="name" className="pl-2 text-sm" />
+        <InputGroupButton>Copy</InputGroupButton>
+      </InputGroup>
+      <InputGroup size="lg">
+        <InputGroupInput aria-label="Address, large" placeholder="name" />
+        <InputGroupSuffix>@example.com</InputGroupSuffix>
+      </InputGroup>
       <InputGroup>
         <InputGroupInput aria-label="Disabled" disabled defaultValue="Disabled" />
         <InputGroupButton disabled>Copy</InputGroupButton>

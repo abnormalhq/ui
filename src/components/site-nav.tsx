@@ -45,7 +45,7 @@ export function SiteNav({ groups, onNavigate }: { groups: NavGroup[]; onNavigate
   return (
     <nav aria-label="Components" className="grid gap-6">
       <div className="grid gap-2">
-        <InputGroup className="min-h-7">
+        <InputGroup size="sm">
           <SearchIcon aria-hidden="true" className="ml-2.5 size-3.5 shrink-0 text-muted-foreground" />
           <InputGroupInput
             type="search"
@@ -54,7 +54,7 @@ export function SiteNav({ groups, onNavigate }: { groups: NavGroup[]; onNavigate
             placeholder="Search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            className="py-1 pl-2 text-sm"
+            className="pl-2 text-sm"
           />
         </InputGroup>
         {words.length > 0 && (
