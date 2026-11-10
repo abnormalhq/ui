@@ -22,14 +22,11 @@
 /*
  * dark: follows the same rule as the tokens below: data-theme="dark", or the system preference while no script has
  * written data-theme="light". Without the second half a dark system with JS off would get dark tokens but light dark:
- * utilities, such as a yellow band under light text. The ink shell (.ink) carries the dark tokens in both themes, so
- * dark: applies inside it as well.
+ * utilities, such as a yellow band under light text. The ink shell (.ink) is not part of it: dark: asks about the
+ * page's theme (which icon the theme button shows, the ring around a floating dock), and that does not change in the shell.
  */
 @custom-variant dark {
   &:where([data-theme="dark"], [data-theme="dark"] *) {
-    @slot;
-  }
-  &:where(.ink, .ink *) {
     @slot;
   }
   @media (prefers-color-scheme: dark) {
@@ -203,6 +200,7 @@
  * stronger than the dark theme's, because here it sits on the darkest surface there is.
  * The shadcn names are mapped again because a custom property that refers to another is resolved where it is declared
  * (:root), not where it is used. Paper inside the shell is a sibling of the .ink element, never a descendant of it.
+ * popover-shadow keeps the page's value: a shadow falls on what is behind the element, and that is the page.
  */
 .ink {
   --bg: var(--ink);
@@ -224,7 +222,6 @@
   --destructive: #ff8a96;
   --popover-bg: #1c1c19;
   --focus: #6f6f66;
-  --popover-shadow: 0 0 0 1px #f0f0ea08, 0 16px 48px #00000080;
   --card: var(--bg);
   --sidebar: var(--bg);
   --sidebar-foreground: var(--text);

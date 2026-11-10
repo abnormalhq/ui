@@ -27,7 +27,7 @@ pnpm dlx shadcn@latest add @abnormal/theme
 
 The theme is written on `<html data-theme="light|dark">`, and follows the system preference until a script has written it. The `dark:` variant follows the same rule as the tokens, so a page with JavaScript off still gets matching `dark:` utilities on a dark system.
 
-The ink shell: a product's navigation column, or the frame around its content, can be the brand ink in both themes, with the content a sheet of paper set into it. Put `ink` on that element and everything inside takes the dark values whatever the page's theme (`dark:` utilities included); `bg-ink` is the color of the frame itself. Paper inside the shell is a sibling of the `ink` element, not a descendant of it.
+The ink shell: a product's navigation column, or the frame around its content, can be the brand ink in both themes, with the content a sheet of paper set into it. Put `ink` on that element and everything inside takes the dark values whatever the page's theme; `dark:` utilities still follow the page, not the shell. `bg-ink` is the color of the frame itself. Paper inside the shell is a sibling of the `ink` element, not a descendant of it.
 
 Fonts: projects on `next/font` set `--font-inter`, `--font-bricolage` and `--font-jetbrains-mono`, and the theme picks them up. Other projects install `@abnormal/fonts`, import `abnormal-fonts.css` after the theme, and copy the woff2 files from `https://ui.abnormalhq.com/fonts/` into `public/fonts/`: a registry item can only carry text.
 
