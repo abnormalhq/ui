@@ -17,17 +17,27 @@ export const groups = [
       "switch",
       "toggle",
       "toggle-group",
+      "slider",
+      "input-otp",
+      "combobox",
+      "command",
+      "calendar",
+      "date-picker",
       "label",
     ],
   },
   {
     title: "Display",
     items: [
+      "accordion",
       "alert",
+      "avatar",
       "badge",
       "card",
+      "collapsible",
       "disclosure",
       "progress",
+      "scroll-area",
       "separator",
       "skeleton",
       "spinner",
@@ -35,6 +45,7 @@ export const groups = [
       "table",
     ],
   },
+  { title: "Navigation", items: ["tabs", "breadcrumb", "pagination", "stepper"] },
   {
     title: "Overlays",
     items: [
@@ -52,5 +63,5 @@ export const groups = [
     ],
   },
   { title: "Patterns", items: ["copy-button", "link-row", "theme-picker"] },
-  { title: "Marketing", items: ["container", "section-heading", "text-link", "icon-tile", "prose"] },
+  { title: "Marketing", items: ["container", "section-heading", "text-link", "icon-tile", "prose", "pricing-card"] },
 ];

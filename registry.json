@@ -70,6 +70,20 @@
       ]
     },
     {
+      "name": "accordion",
+      "type": "registry:ui",
+      "title": "Accordion",
+      "description": "Sections that open in place as a group, one or several at a time, with arrow keys between the headers.",
+      "dependencies": ["lucide-react", "radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/accordion.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "alert",
       "type": "registry:ui",
       "title": "Alert",
@@ -98,6 +112,19 @@
       ]
     },
     {
+      "name": "avatar",
+      "type": "registry:ui",
+      "title": "Avatar",
+      "description": "A person or workspace as a picture, with initials until it loads or when it cannot.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/avatar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",
@@ -112,6 +139,20 @@
       ]
     },
     {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "title": "Breadcrumb",
+      "description": "The trail of links from the top of a site to the current page.",
+      "dependencies": ["lucide-react", "radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/breadcrumb.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
@@ -121,6 +162,24 @@
       "files": [
         {
           "path": "registry/ui/button.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "calendar",
+      "type": "registry:ui",
+      "title": "Calendar",
+      "description": "A month grid for choosing a day, with full keyboard navigation and the caller's locale.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/calendar.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/calendar-date.ts",
           "type": "registry:ui"
         }
       ]
@@ -149,6 +208,48 @@
       "files": [
         {
           "path": "registry/ui/checkbox.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "title": "Collapsible",
+      "description": "A region shown and hidden by any button, with state the page can control.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/collapsible.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "combobox",
+      "type": "registry:ui",
+      "title": "Combobox",
+      "description": "A select with a search field, for lists too long to scan.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/command", "@abnormal/popover", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/combobox.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "command",
+      "type": "registry:ui",
+      "title": "Command",
+      "description": "A search field over a keyboard-driven list of options, for command palettes and searchable lists.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/command.tsx",
           "type": "registry:ui"
         }
       ]
@@ -190,6 +291,20 @@
       "files": [
         {
           "path": "registry/ui/copy-button.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:ui",
+      "title": "Date Picker",
+      "description": "A date field: a button that opens a Calendar in a popover.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/calendar", "@abnormal/popover", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/date-picker.tsx",
           "type": "registry:ui"
         }
       ]
@@ -308,6 +423,19 @@
       ]
     },
     {
+      "name": "input-otp",
+      "type": "registry:ui",
+      "title": "Input OTP",
+      "description": "A one-time code field drawn as boxes: one real input that takes a paste and the code from a message.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/input-otp.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "label",
       "type": "registry:ui",
       "title": "Label",
@@ -343,6 +471,20 @@
       "files": [
         {
           "path": "registry/ui/native-select.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "pagination",
+      "type": "registry:ui",
+      "title": "Pagination",
+      "description": "Page links under a list or table, with the current page marked.",
+      "dependencies": ["lucide-react", "radix-ui"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/pagination.tsx",
           "type": "registry:ui"
         }
       ]
@@ -385,6 +527,20 @@
       "files": [
         {
           "path": "registry/ui/radio-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "title": "Scroll Area",
+      "description": "A scrolling box with thin bars of its own, reachable from the keyboard.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/scroll-area.tsx",
           "type": "registry:ui"
         }
       ]
@@ -444,6 +600,20 @@
       ]
     },
     {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider",
+      "description": "A value or a range picked along a track.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/slider.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "sonner",
       "type": "registry:ui",
       "title": "Toaster",
@@ -485,6 +655,20 @@
       ]
     },
     {
+      "name": "stepper",
+      "type": "registry:ui",
+      "title": "Stepper",
+      "description": "Progress through a fixed sequence of steps, such as checkout or onboarding.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/stepper.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "switch",
       "type": "registry:ui",
       "title": "Switch",
@@ -510,6 +694,20 @@
         },
         {
           "path": "registry/ui/table-row.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "Views of one subject that swap in place, with the current tab marked in the signal color.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/tabs.tsx",
           "type": "registry:ui"
         }
       ]
@@ -607,6 +805,20 @@
       "files": [
         {
           "path": "registry/marketing/icon-tile.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "pricing-card",
+      "type": "registry:ui",
+      "title": "Pricing Card",
+      "description": "One plan on a pricing page: name, price, period, features and a call to action, with a featured state.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/badge", "@abnormal/card", "@abnormal/marker", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/marketing/pricing-card.tsx",
           "type": "registry:ui"
         }
       ]
