@@ -25,6 +25,7 @@ export const groups = [
     items: [
       "accordion",
       "alert",
+      "avatar",
       "badge",
       "card",
       "collapsible",
@@ -38,7 +39,7 @@ export const groups = [
       "table",
     ],
   },
-  { title: "Navigation", items: ["tabs"] },
+  { title: "Navigation", items: ["tabs", "breadcrumb", "pagination", "stepper"] },
   {
     title: "Overlays",
     items: [
