@@ -389,6 +389,37 @@ test("a utility on the ink shell's own element overrides its fill and text color
   assert.match(base, /\.ink \{[^}]*background-color: var\(--bg\);[^}]*color: var\(--text\);/);
 });
 
+test("the selectors the list, code and page components lean on compile to what they mean", async () => {
+  const compiler = await compile(`${theme}\n@tailwind utilities;`, {
+    base: process.cwd(),
+    loadStylesheet: async () => ({ path: "", base: "", content: "" }),
+  });
+  const css = compiler.build([
+    "not-has-[[role=option]]:hidden",
+    "data-current:bg-highlight-muted",
+    "group-has-[[aria-invalid=true]]/otp:border-destructive",
+    "animate-expand",
+    "animate-collapse",
+  ]);
+  // Command hides a listbox, and a group, that holds no option.
+  assert.match(read("registry/ui/command.tsx"), /not-has-\[\[role=option\]\]:hidden/);
+  assert.match(css, /:not\(:has\(:is\(\[role=option\]\)\)\) \{\s*display: none;/);
+  // The current page of a Pagination, by the presence of the attribute.
+  assert.match(css, /\[data-current\] \{\s*background-color: var\(--highlight-muted\);/);
+  // An invalid InputOTP reddens its boxes, which are siblings of the field, through the group.
+  assert.match(
+    css,
+    /:where\(\.group\\\/otp\):has\(:is\(\[aria-invalid=true\]\)\) [^{]+\{\s*border-color: var\(--destructive\);/,
+  );
+  // A panel opens to the height Radix measured; an accordion's panel carries the same variable.
+  for (const name of ["expand", "collapse"]) {
+    assert.match(css, new RegExp(`\\.animate-${name} \\{\\s*animation: ${name} `));
+    const frames = theme.slice(theme.indexOf(`@keyframes ${name} {`)).split("@keyframes")[1]!;
+    assert.match(frames, /height: var\(--radix-collapsible-content-height\)/);
+    assert.match(frames, /height: 0/);
+  }
+});
+
 test("reduced motion keeps an indeterminate progress bar alive, without a sweep", () => {
   const start = theme.indexOf("@media (prefers-reduced-motion: reduce)");
   const reduced = theme.slice(start, theme.indexOf("\n  }\n", start));
