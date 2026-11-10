@@ -12,6 +12,7 @@ import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { Pagination, PaginationEllipsis } from "@/components/ui/pagination";
 import { SheetContent } from "@/components/ui/sheet";
+import { Slider } from "@/components/ui/slider";
 import { StepperItem } from "@/components/ui/stepper";
 
 declare const maybe: boolean;
@@ -119,4 +120,24 @@ export const ranges = [
     nextLabel="Next"
     onValueChange={({ from, to }) => void [from.length, to.length]}
   />,
+];
+
+declare const held: number[];
+declare const pair: [number, number];
+
+/** A range slider names each thumb wherever the types can count them; one thumb, or a plain number[], is as before. */
+export const sliders = [
+  <Slider key="single" defaultValue={[20]} aria-label="Quota" />,
+  <Slider key="bare" aria-label="Quota" />,
+  <Slider key="held" value={held} onValueChange={(next: number[]) => void next} />,
+  <Slider key="held-named" value={held} thumbLabels={["From", "To"]} />,
+  // @ts-expect-error Two thumbs need two names.
+  <Slider key="range" defaultValue={[10, 40]} />,
+  // @ts-expect-error One name is not enough for two thumbs.
+  <Slider key="range-short" defaultValue={[10, 40]} thumbLabels={["From"]} />,
+  <Slider key="range-named" defaultValue={[10, 40]} thumbLabels={["From", "To"]} />,
+  // @ts-expect-error A controlled pair needs its names as well.
+  <Slider key="pair" value={pair} />,
+  <Slider key="pair-named" value={pair} thumbLabels={["From", "To"]} />,
+  <Slider key="three" defaultValue={[10, 20, 30]} thumbLabels={["Low", "Middle", "High"]} />,
 ];

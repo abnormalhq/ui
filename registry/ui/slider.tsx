@@ -5,17 +5,27 @@ import { cn } from "@/lib/utils";
 import { Slider as SliderPrimitive } from "radix-ui";
 
 /**
+ * The names of the thumbs, in order. A slider whose `value` or `defaultValue` is known to hold two numbers or more (a
+ * literal such as `[10, 40]`, or a tuple type) must name each thumb; with one number, or with a plain `number[]` whose
+ * length the types cannot see, the names stay optional.
+ */
+type ThumbLabels<Values extends number[]> = Values extends [number, number, ...number[]]
+  ? { thumbLabels: { [Index in keyof Values]: string } }
+  : { thumbLabels?: string[] };
+
+/**
  * A value picked along a track: a quota, a volume, a price limit. The filled part is the signal color (ink in light,
  * yellow in dark), the thumb a paper disc with an ink edge, with a 24px touch area around its 16px.
  * `value` and `defaultValue` are arrays, one number per thumb: one for a single value, two for a range.
  * Arrow keys move a thumb by `step`, Page Up and Page Down by ten steps, Home and End to the ends.
  * Each thumb is the slider to a screen reader, so the name goes there: aria-label or aria-labelledby on a single
  * slider is passed to its thumb, and a range takes `thumbLabels`, one per thumb ("From", "To"). Give a range its
- * labels: without them the primitive falls back to English names of its own. `getValueText` turns a number into
- * what should be read, such as "20 GB".
+ * labels: without them the primitive falls back to English names of its own. The types ask for them wherever they
+ * can count the thumbs, which is for a literal `value` or `defaultValue` and not for a `number[]` held in state.
+ * `getValueText` turns a number into what should be read, such as "20 GB".
  * With a name it submits with a form, one field per thumb.
  */
-function Slider({
+function Slider<const Values extends number[] = number[]>({
   className,
   defaultValue,
   value,
@@ -27,16 +37,16 @@ function Slider({
   "aria-labelledby": ariaLabelledby,
   "aria-describedby": ariaDescribedby,
   ...props
-}: React.ComponentProps<typeof SliderPrimitive.Root> & {
-  /** The accessible name of each thumb, in order. */
-  thumbLabels?: string[];
+}: Omit<React.ComponentProps<typeof SliderPrimitive.Root>, "value" | "defaultValue"> & {
+  value?: Values;
+  defaultValue?: Values;
   /** What a screen reader says for a value, instead of the bare number. */
   getValueText?: (value: number) => string;
-}) {
-  const values = value ?? defaultValue ?? [min];
+} & ThumbLabels<Values>) {
+  const values: number[] = value ?? defaultValue ?? [min];
   // Uncontrolled, the thumbs still need their current values for aria-valuetext.
   const [current, setCurrent] = React.useState(values);
-  const shown = value ?? current;
+  const shown: number[] = value ?? current;
   const { onValueChange } = props;
 
   return (
