@@ -42,12 +42,14 @@ pnpm dlx shadcn@latest add @abnormal/button @abnormal/dialog
 | Group      | Items                                                                                                                                                            |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Foundation | `theme`, `fonts`, `utils`                                                                                                                                        |
-| Brand      | `brand-mark`                                                                                                                                                     |
+| Brand      | `brand-mark`, `marker`                                                                                                                                           |
 | Controls   | `button`, `input`, `input-group`, `field-message`, `textarea`, `select`, `native-select`, `checkbox`, `radio-group`, `switch`, `toggle`, `toggle-group`, `label` |
 | Display    | `alert`, `badge`, `card`, `disclosure`, `progress`, `separator`, `skeleton`, `spinner`, `status-label`, `table`                                                  |
 | Overlays   | `alert-dialog`, `confirm-dialog`, `context-menu`, `dialog`, `guarded-dialog`, `dropdown-menu`, `info-hint`, `popover`, `sheet`, `sonner`, `tooltip`              |
 | Patterns   | `copy-button`, `link-row`, `theme-picker`                                                                                                                        |
 | Marketing  | `container`, `section-heading`, `text-link`, `icon-tile`, `prose`                                                                                                |
+
+The brand speaks through three marks, and each has its place. `Marker` is a highlighter stroke under a number or a single word, never a sentence, once on a screen. `HeadingMark` (in `section-heading`) is the signal-colored full stop that ends a page title or the title of an empty state, not a panel, dialog or error title. `BrandArrow` (in `brand-mark`) ends a link that leaves for another product or another site; everything else keeps the interface icons. The offset shadow behind the "a" belongs to the mark alone.
 
 Patterns are the pieces the projects kept rewriting: they hold no product state (`ThemePicker` takes the saved preference and hands back the choice; `LinkRow` takes the router's `navigate`), and every word they show comes in as a prop.
 

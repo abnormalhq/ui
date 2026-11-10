@@ -47,11 +47,24 @@
       "name": "brand-mark",
       "type": "registry:ui",
       "title": "Brand Mark",
-      "description": "The abnormal tile and wordmark.",
+      "description": "The abnormal tile, the wordmark and the mark's arrow.",
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
           "path": "registry/brand/brand-mark.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "marker",
+      "type": "registry:ui",
+      "title": "Marker",
+      "description": "A highlighter stroke under a number or a single word.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/brand/marker.tsx",
           "type": "registry:ui"
         }
       ]
@@ -258,7 +271,7 @@
       "name": "info-hint",
       "type": "registry:ui",
       "title": "Info Hint",
-      "description": "The small ⓘ next to a title: a note that opens on hover and focus, and toggles on a tap.",
+      "description": "The small \u24d8 next to a title: a note that opens on hover and focus, and toggles on a tap.",
       "dependencies": ["lucide-react"],
       "registryDependencies": ["@abnormal/tooltip", "@abnormal/utils"],
       "files": [
