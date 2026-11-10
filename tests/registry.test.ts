@@ -357,6 +357,19 @@ test("the ink shell carries the dark values and maps every semantic name again",
   for (const name of ["--card", "--sidebar-foreground", "--sidebar-border"]) assert.ok(ink.has(name), name);
 });
 
+test("a utility on the ink shell's own element overrides its fill and text color", async () => {
+  const compiler = await compile(`${theme}\n@tailwind utilities;`, {
+    base: process.cwd(),
+    loadStylesheet: async () => ({ path: "", base: "", content: "" }),
+  });
+  const css = compiler.build(["text-muted-foreground"]);
+  // Unlayered declarations beat every layer, so the shell's defaults have to sit in the base layer, below utilities.
+  const unlayered = theme.match(/\n\.ink \{([\s\S]*?)\n\}/)![1]!;
+  assert.doesNotMatch(unlayered, /^\s*(color|background-color|color-scheme):/m);
+  const base = css.slice(css.indexOf("@layer base"), css.indexOf("@layer utilities"));
+  assert.match(base, /\.ink \{[^}]*background-color: var\(--bg\);[^}]*color: var\(--text\);/);
+});
+
 test("phone inputs stay at 16px outside any layer", () => {
   const rule = theme.lastIndexOf('[data-slot="native-select"]');
   assert.ok(rule > theme.lastIndexOf("@layer base"));

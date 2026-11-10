@@ -240,9 +240,14 @@
   --accent: var(--hover);
   --accent-foreground: var(--text);
   --ring: var(--focus);
-  color-scheme: dark;
-  background-color: var(--bg);
-  color: var(--text);
+}
+/* The shell's own fill and text color are defaults, in the base layer, so a utility on the same element (bg-*, text-*) still wins. */
+@layer base {
+  .ink {
+    color-scheme: dark;
+    background-color: var(--bg);
+    color: var(--text);
+  }
 }
 
 @theme inline {
