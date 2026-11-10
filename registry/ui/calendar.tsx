@@ -117,7 +117,9 @@ function Calendar({
 
   const format = React.useMemo(() => {
     const options = (extra: Intl.DateTimeFormatOptions) =>
-      new Intl.DateTimeFormat(locale, { timeZone: "UTC", ...extra });
+      // The grid is Gregorian, so the words are too: a locale whose own calendar differs (fa-IR, th-TH) would otherwise
+      // caption and announce another date than the day number in the cell.
+      new Intl.DateTimeFormat(locale, { timeZone: "UTC", ...extra, calendar: "gregory" });
     return {
       caption: options({ month: "long", year: "numeric" }),
       weekdayShort: options({ weekday: "short" }),

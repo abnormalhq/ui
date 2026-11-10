@@ -111,7 +111,7 @@ function InputOTP({
         onChange={(event) => change(clean(event.target.value))}
         onPaste={(event) => {
           onPaste?.(event);
-          if (event.defaultPrevented) return;
+          if (event.defaultPrevented || event.currentTarget.readOnly) return;
           // A pasted code is the whole code: it replaces what is there instead of being appended to a full field.
           const pasted = clean(event.clipboardData.getData("text"));
           event.preventDefault();

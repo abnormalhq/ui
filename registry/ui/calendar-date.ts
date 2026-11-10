@@ -39,9 +39,12 @@ export function addDays(date: string, days: number): string {
 export function addMonths(date: string, months: number): string {
   const parsed = parseISODate(date);
   if (!parsed) return date;
-  const first = new Date(Date.UTC(parsed.getUTCFullYear(), parsed.getUTCMonth() + months, 1));
-  const lastDay = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 0)).getUTCDate();
-  first.setUTCDate(Math.min(parsed.getUTCDate(), lastDay));
+  // setUTCFullYear, not Date.UTC: Date.UTC reads a year below 100 as 19xx.
+  const first = new Date(0);
+  first.setUTCFullYear(parsed.getUTCFullYear(), parsed.getUTCMonth() + months, 1);
+  const end = new Date(0);
+  end.setUTCFullYear(first.getUTCFullYear(), first.getUTCMonth() + 1, 0);
+  first.setUTCDate(Math.min(parsed.getUTCDate(), end.getUTCDate()));
   return formatISODate(first);
 }
 

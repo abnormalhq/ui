@@ -70,6 +70,17 @@ function DatePicker({
     onOpenChange?: (open: boolean) => void;
   }) {
   const [innerValue, setInnerValue] = React.useState(defaultValue ?? null);
+  // A form reset (a reset button, form.reset(), or the reset React runs after a form action) puts an uncontrolled
+  // field back on its default, as it does a native one. A controlled field follows its value prop.
+  const fieldRef = React.useRef<HTMLInputElement>(null);
+  const submits = name !== undefined && !disabled;
+  React.useEffect(() => {
+    const owner = fieldRef.current?.form;
+    if (!owner) return;
+    const reset = () => setInnerValue(defaultValue ?? null);
+    owner.addEventListener("reset", reset);
+    return () => owner.removeEventListener("reset", reset);
+  }, [form, submits, defaultValue]);
   const value = valueProp === undefined ? innerValue : valueProp;
   const [innerOpen, setInnerOpen] = React.useState(false);
   const open = openProp ?? innerOpen;
@@ -110,7 +121,7 @@ function DatePicker({
           <span data-slot="date-picker-value" className="min-w-0 flex-1 truncate">
             {text ?? placeholder}
           </span>
-          {name !== undefined && !disabled && <input type="hidden" name={name} value={value ?? ""} form={form} />}
+          {submits && <input ref={fieldRef} type="hidden" name={name} value={value ?? ""} form={form} />}
         </button>
       </PopoverTrigger>
       <PopoverContent

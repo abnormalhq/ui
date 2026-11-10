@@ -658,3 +658,65 @@ test("the calendar dates are plain text and never drift across a time zone or a 
   assert.deepEqual([grid[0], grid[6], grid[41]], ["2026-10-26", "2026-11-01", "2026-12-06"]);
   assert.equal(monthGrid("2026-11", 0)[0], "2026-11-01");
 });
+
+test("month arithmetic keeps a year below 100 instead of moving it to the 1900s", () => {
+  assert.equal(addMonths("0099-05-10", 1), "0099-06-10");
+  assert.equal(addMonths("0099-12-31", 2), "0100-02-28");
+  assert.equal(addMonths("0001-03-31", -1), "0001-02-28");
+});
+
+test("a read-only InputOTP ignores a paste, as it ignores typing", async () => {
+  const onValueChange = mock.fn();
+  const onComplete = mock.fn();
+  const { container } = await mount(
+    <InputOTP defaultValue="111111" readOnly aria-label="Code" onValueChange={onValueChange} onComplete={onComplete} />,
+  );
+  const input = one<HTMLInputElement>("input", container);
+  const event = new Event("paste", { bubbles: true, cancelable: true });
+  Object.defineProperty(event, "clipboardData", { value: { getData: () => "987654" } });
+  await act(async () => void input.dispatchEvent(event));
+  assert.equal(input.value, "111111");
+  assert.equal(onValueChange.mock.callCount(), 0);
+  assert.equal(onComplete.mock.callCount(), 0);
+});
+
+test("a Calendar names its Gregorian grid in Gregorian words, whatever calendar the locale prefers", async () => {
+  await mount(<Calendar {...calendarProps} locale="fa-IR" month="2026-11" today="2026-11-10" />);
+  const gregorian = (options: Intl.DateTimeFormatOptions) =>
+    new Intl.DateTimeFormat("fa-IR", { timeZone: "UTC", calendar: "gregory", ...options }).format(
+      new Date("2026-11-01T00:00:00Z"),
+    );
+  const persian = new Intl.DateTimeFormat("fa-IR", { timeZone: "UTC", month: "long", year: "numeric" }).format(
+    new Date("2026-11-01T00:00:00Z"),
+  );
+  assert.equal(caption(), gregorian({ month: "long", year: "numeric" }));
+  assert.notEqual(caption(), persian);
+  assert.equal(day("2026-11-01").getAttribute("aria-label"), gregorian({ dateStyle: "full" }));
+});
+
+test("a form reset puts an uncontrolled Combobox and DatePicker back on their defaults", async () => {
+  const { container } = await mount(
+    <form>
+      <Combobox {...comboboxProps} name="region" defaultValue="us-west" />
+      <DatePicker {...datePickerProps} name="renewal" defaultValue="2026-11-18" />
+    </form>,
+  );
+  const form = one<HTMLFormElement>("form", container);
+  await click(trigger());
+  const input = one<HTMLInputElement>('[role="dialog"] input[role="combobox"]');
+  await type(input, "america");
+  await press(input, "ArrowDown");
+  await press(input, "Enter");
+  assert.equal(new FormData(form).get("region"), "us-east");
+
+  await click(dateTrigger());
+  await press(document.activeElement!, "ArrowRight");
+  await click(document.activeElement!);
+  assert.equal(new FormData(form).get("renewal"), "2026-11-19");
+
+  await act(async () => form.reset());
+  assert.equal(new FormData(form).get("region"), "us-west");
+  assert.equal(trigger().textContent, "Oregon");
+  assert.equal(new FormData(form).get("renewal"), "2026-11-18");
+  assert.equal(dateTrigger().textContent, "18 Nov 2026");
+});

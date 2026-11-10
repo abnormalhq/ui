@@ -320,3 +320,17 @@ test("a ScrollArea's viewport is a tab stop only while it scrolls, and a region 
   assert.equal(viewport.getAttribute("aria-label"), "Folders");
   assert.equal(container.querySelector('[data-slot="scroll-area"]')!.getAttribute("aria-label"), null);
 });
+
+test("an Avatar given only a srcSet shows that picture", async () => {
+  mock.getter(HTMLImageElement.prototype, "complete", () => false);
+  const { container } = await mount(
+    <Avatar>
+      <AvatarImage srcSet="/ada.png 1x, /ada@2x.png 2x" alt="Ada King" />
+      <AvatarFallback>AK</AvatarFallback>
+    </Avatar>,
+  );
+  const image = container.querySelector("img");
+  assert.equal(image?.getAttribute("srcset"), "/ada.png 1x, /ada@2x.png 2x");
+  await act(async () => void image!.dispatchEvent(new Event("load")));
+  assert.equal(container.querySelector('[data-slot="avatar-fallback"]'), null);
+});

@@ -58,6 +58,7 @@ function Avatar({
 function AvatarImage({
   className,
   src,
+  srcSet,
   alt,
   onLoad,
   onError,
@@ -65,22 +66,24 @@ function AvatarImage({
 }: Omit<React.ComponentProps<"img">, "alt"> & { alt: string }) {
   const { status, setStatus } = React.useContext(AvatarContext);
   const ref = React.useRef<HTMLImageElement>(null);
-  const [failedSrc, setFailedSrc] = React.useState<typeof src>(undefined);
+  // What the picture is loaded from: either prop alone is a picture, as on a native <img>.
+  const source = src || srcSet;
+  const [failedSrc, setFailedSrc] = React.useState<typeof source>(undefined);
 
   React.useLayoutEffect(() => {
     // The picture may have loaded or failed before React attached its handlers, as it does on a server-rendered page.
     const image = ref.current;
-    if (!src || !image) setStatus("none");
+    if (!source || !image) setStatus("none");
     else if (!image.complete) setStatus("loading");
     else if (image.naturalWidth > 0) setStatus("loaded");
     else {
-      setFailedSrc(src);
+      setFailedSrc(source);
       setStatus("error");
     }
     return () => setStatus("none");
-  }, [src, setStatus]);
+  }, [source, setStatus]);
 
-  if (!src || (status === "error" && failedSrc === src)) return null;
+  if (!source || (status === "error" && failedSrc === source)) return null;
   return (
     // A registry item cannot depend on a framework's image component; the page passes a URL it has already sized.
     // eslint-disable-next-line @next/next/no-img-element
@@ -88,6 +91,7 @@ function AvatarImage({
       ref={ref}
       data-slot="avatar-image"
       src={src}
+      srcSet={srcSet}
       alt={alt}
       className={cn("absolute inset-0 size-full object-cover", className)}
       onLoad={(event) => {
@@ -96,7 +100,7 @@ function AvatarImage({
       }}
       onError={(event) => {
         onError?.(event);
-        setFailedSrc(src);
+        setFailedSrc(source);
         setStatus("error");
       }}
       {...props}
