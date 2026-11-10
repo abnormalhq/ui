@@ -331,11 +331,31 @@ test("dark: utilities follow the same rule as the dark tokens", async () => {
   const rules = [...css.matchAll(/\.dark\\:bg-background([^{]*)\{/g)].map(([, selector]) => selector!.trim());
   assert.deepEqual(rules, [
     ':where([data-theme="dark"], [data-theme="dark"] *)',
+    // The ink shell carries the dark tokens in both themes.
+    ":where(.ink, .ink *)",
     ':where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *)',
   ]);
-  // The second one only applies on a dark system, exactly like the token fallback.
-  const media = css.slice(0, css.indexOf(rules[1]!));
+  // The last one only applies on a dark system, exactly like the token fallback.
+  const media = css.slice(0, css.indexOf(rules[2]!));
   assert.ok(media.lastIndexOf("@media (prefers-color-scheme: dark)") > media.lastIndexOf("}"), css);
+});
+
+test("the ink shell carries the dark values and maps every semantic name again", () => {
+  const declarations = (block: string) =>
+    new Map([...block.matchAll(/(--[a-z0-9-]+): ([^;]+);/g)].map(([, name, value]) => [name!, value!]));
+  const dark = declarations(theme.match(/:root\[data-theme="dark"\] \{([\s\S]*?)\n\}/)![1]!);
+  const ink = declarations(theme.match(/\n\.ink \{([\s\S]*?)\n\}/)![1]!);
+  // Its own surface is --ink, so bg and sidebar point there; control is a step stronger on purpose; charts are not for a shell.
+  const own = new Set(["--bg", "--sidebar", "--control", "--ink"]);
+  for (const [name, value] of dark) {
+    if (own.has(name) || name.startsWith("--chart-")) continue;
+    assert.equal(ink.get(name), value, name);
+  }
+  assert.equal(ink.get("--bg"), "var(--ink)");
+  // A semantic name left out would keep the page's value: light text colors on the ink in a light page.
+  const semantic = declarations(theme.match(/mapped onto the tokens above\. \*\/\n:root \{([\s\S]*?)\n\}/)![1]!);
+  for (const [name, value] of semantic) assert.equal(ink.get(name), value, name);
+  for (const name of ["--card", "--sidebar-foreground", "--sidebar-border"]) assert.ok(ink.has(name), name);
 });
 
 test("phone inputs stay at 16px outside any layer", () => {
