@@ -12,16 +12,24 @@ const TableVariantContext = React.createContext<TableVariant>("default");
  * An easy-to-scan data table, keeping horizontal scrolling and clear row-selection feedback.
  * When there is content to the right of the container not yet revealed it carries `data-overflow="end"`, from which `pinned` columns draw a shadow separator on their left.
  * When the container has a limited height (ListSection on list pages) it is also the vertical scroll container: the plain header sticks to the top, and after scrolling down it carries `data-scrolled`, drawing a thin line under the header.
+ * While the container scrolls either way it takes keyboard focus, so the arrow keys can scroll it in browsers that
+ * do not focus a scroller by themselves (Safari); a table that fits adds no tab stop. A focusable region needs a
+ * name, and the words are the page's: name the table with `aria-label` or `aria-labelledby` and the container
+ * becomes a region with the same name.
  * The row helpers (`rowActionClassName`, `rowClickHandler`) are in table-row.ts: this module is "use client", so it exports components only.
  */
 function Table({
   className,
   variant = "default",
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledby,
   ...props
 }: React.ComponentProps<"table"> & { variant?: TableVariant }) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [overflowing, setOverflowing] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+  const [scrollable, setScrollable] = React.useState(false);
+  const named = ariaLabel !== undefined || ariaLabelledby !== undefined;
 
   React.useEffect(() => {
     const container = containerRef.current;
@@ -29,6 +37,9 @@ function Table({
     const update = () => {
       setOverflowing(container.scrollLeft + container.clientWidth < container.scrollWidth - 1);
       setScrolled(container.scrollTop > 0);
+      setScrollable(
+        container.scrollWidth > container.clientWidth + 1 || container.scrollHeight > container.clientHeight + 1,
+      );
     };
     update();
     const observer = new ResizeObserver(update);
@@ -48,9 +59,16 @@ function Table({
         data-slot="table-container"
         data-overflow={overflowing ? "end" : undefined}
         data-scrolled={scrolled || undefined}
-        className="relative min-h-0 w-full overflow-x-auto"
+        tabIndex={scrollable ? 0 : undefined}
+        role={scrollable && named ? "region" : undefined}
+        aria-label={scrollable ? ariaLabel : undefined}
+        aria-labelledby={scrollable ? ariaLabelledby : undefined}
+        // The focus ring is drawn inside the edge: outside it, a panel that clips its content would cut it off.
+        className="relative min-h-0 w-full overflow-x-auto focus-visible:-outline-offset-2"
       >
         <table
+          aria-label={ariaLabel}
+          aria-labelledby={ariaLabelledby}
           data-slot="table"
           data-variant={variant}
           className={cn(

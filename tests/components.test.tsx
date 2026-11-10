@@ -4,7 +4,10 @@ import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
 import { act, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ConfirmButton, ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/components/ui/dialog";
+import { GuardedDialog } from "@/components/ui/guarded-dialog";
+import { InfoHint } from "@/components/ui/info-hint";
 import { LinkRow } from "@/components/ui/link-row";
 import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
@@ -12,6 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { rowClickHandler } from "@/components/ui/table-row";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useOpenCount } from "@/components/ui/use-open-count";
 import { CopyButton } from "@/components/ui/copy-button";
 
 const mounted: { unmount: () => Promise<void> }[] = [];
@@ -58,6 +62,64 @@ test("a loading Button stops activation, as a link too, and lets it through agai
   );
   await click(container.querySelector("a")!);
   assert.equal(onClick.mock.callCount(), 1);
+});
+
+test("a disabled asChild Button is aria-disabled and stops activation, like a loading one", async () => {
+  const onClick = mock.fn();
+  const link = (disabled: boolean) => (
+    <Button asChild disabled={disabled}>
+      <a href="#next" onClick={onClick}>
+        Continue
+      </a>
+    </Button>
+  );
+  const { container, rerender } = await mount(link(true));
+  const anchor = container.querySelector("a")!;
+  assert.equal(anchor.getAttribute("aria-disabled"), "true");
+  // Not busy: nothing is in progress, so no spinner either.
+  assert.equal(anchor.getAttribute("aria-busy"), null);
+  assert.equal(anchor.querySelector('[data-slot="spinner"]'), null);
+  const blocked = new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 });
+  await act(async () => void anchor.dispatchEvent(blocked));
+  assert.equal(onClick.mock.callCount(), 0);
+  assert.equal(blocked.defaultPrevented, true);
+
+  await rerender(link(false));
+  assert.equal(container.querySelector("a")!.getAttribute("aria-disabled"), null);
+  await click(container.querySelector("a")!);
+  assert.equal(onClick.mock.callCount(), 1);
+
+  // A native button is disabled by the attribute alone.
+  await rerender(<Button disabled>Save</Button>);
+  assert.equal(button("Save").disabled, true);
+  assert.equal(button("Save").getAttribute("aria-disabled"), null);
+});
+
+test("an InfoHint toggles on every tap or click, and on Enter", async () => {
+  await mount(<InfoHint label="About quotas">Resets on the 1st</InfoHint>);
+  const hint = button("About quotas");
+  const shown = () => (document.body.textContent ?? "").includes("Resets on the 1st");
+  // A press the way a browser sends it: pointerdown, focus, pointerup, then a click that counts one press.
+  const tap = async () => {
+    await act(async () => {
+      hint.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true, pointerType: "touch" }));
+      hint.focus();
+      hint.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, cancelable: true, pointerType: "touch" }));
+    });
+    await click(hint, { detail: 1 });
+  };
+
+  assert.equal(shown(), false);
+  for (const expected of [true, false, true, false]) {
+    await tap();
+    assert.equal(shown(), expected);
+  }
+
+  // Enter and Space arrive as a click with no press behind it.
+  for (const expected of [true, false, true]) {
+    await click(hint);
+    assert.equal(shown(), expected);
+  }
 });
 
 test("a Progress bar scales to its max, and sweeps without a value", async () => {
@@ -293,6 +355,47 @@ test("a Table marks hidden content to the right and a scrolled header", async ()
   assert.equal(scroller.dataset.scrolled, "true");
 });
 
+test("a Table's container takes keyboard focus only while it scrolls, and is a region when the table is named", async () => {
+  const table = (label?: string) => (
+    <Table aria-label={label}>
+      <TableBody>
+        <TableRow>
+          <TableCell>wide</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  );
+  const { container, rerender } = await mount(table());
+  const scroller = container.querySelector<HTMLElement>('[data-slot="table-container"]')!;
+  const layout = { clientWidth: 300, scrollWidth: 300, clientHeight: 200, scrollHeight: 200 };
+  for (const key of Object.keys(layout) as (keyof typeof layout)[]) {
+    Object.defineProperty(scroller, key, { configurable: true, get: () => layout[key] });
+  }
+  const scroll = () => act(async () => void scroller.dispatchEvent(new Event("scroll")));
+
+  // A table that fits adds no tab stop.
+  await scroll();
+  assert.equal(scroller.getAttribute("tabindex"), null);
+  assert.equal(scroller.getAttribute("role"), null);
+
+  layout.scrollWidth = 800;
+  await scroll();
+  assert.equal(scroller.getAttribute("tabindex"), "0");
+  // No name was given, and the component has no words of its own to make one from.
+  assert.equal(scroller.getAttribute("role"), null);
+  assert.equal(scroller.getAttribute("aria-label"), null);
+
+  await rerender(table("Mailboxes"));
+  assert.equal(scroller.getAttribute("role"), "region");
+  assert.equal(scroller.getAttribute("aria-label"), "Mailboxes");
+  assert.equal(container.querySelector("table")!.getAttribute("aria-label"), "Mailboxes");
+
+  // A height-limited container scrolls down instead.
+  Object.assign(layout, { scrollWidth: 300, scrollHeight: 900 });
+  await scroll();
+  assert.equal(scroller.getAttribute("tabindex"), "0");
+});
+
 test("Dialog and Sheet name their close buttons with the label they are given", async () => {
   await mount(
     <Dialog open>
@@ -366,4 +469,146 @@ test("the copy button does nothing when a copy settles after it has gone", async
   const setTimeout = mock.method(globalThis, "setTimeout");
   await act(async () => settle());
   assert.equal(setTimeout.mock.calls.filter(({ arguments: [, delay] }) => delay === 1500).length, 0);
+});
+
+/** Escape, the way a keyboard sends it: Radix listens on the document. */
+const pressEscape = () =>
+  act(async () => {
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+  });
+
+/** A press on the overlay. Radix starts listening for outside presses a tick after the dialog mounts. */
+const pressOutside = async () => {
+  await act(async () => void (await new Promise((resolve) => setTimeout(resolve, 0))));
+  const overlay = document.querySelector('[data-slot="dialog-overlay"], [data-slot="alert-dialog-overlay"]');
+  assert.ok(overlay, "an overlay");
+  await act(async () => {
+    overlay.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true, button: 0 }));
+  });
+};
+
+test("a GuardedDialog closes by Escape, an outside press and its close button, but not while pending", async () => {
+  const onOpenChange = mock.fn();
+  const dialog = (pending: boolean) => (
+    <GuardedDialog open onOpenChange={onOpenChange} pending={pending} closeLabel="Close">
+      <DialogTitle>Rename mailbox</DialogTitle>
+      <DialogDescription>The old name bounces.</DialogDescription>
+    </GuardedDialog>
+  );
+  const asked = () => onOpenChange.mock.calls.map(({ arguments: args }) => args[0]);
+  const { rerender } = await mount(dialog(false));
+
+  // Each way out works while idle, so the silence below is the guard's doing.
+  await pressEscape();
+  await pressOutside();
+  await click(button("Close"));
+  assert.deepEqual(asked(), [false, false, false]);
+
+  await rerender(dialog(true));
+  await pressEscape();
+  await pressOutside();
+  assert.equal(
+    [...document.querySelectorAll("button")].some((element) => element.getAttribute("aria-label") === "Close"),
+    false,
+  );
+  assert.equal(asked().length, 3);
+  assert.match(document.body.textContent ?? "", /Rename mailbox/);
+});
+
+const confirmProps = {
+  title: "Delete mailbox?",
+  description: "Its mail goes with it.",
+  confirmLabel: "Delete",
+  cancelLabel: "Keep",
+};
+
+test("a ConfirmDialog without pending closes itself on confirm and on cancel", async () => {
+  const onOpenChange = mock.fn();
+  const onConfirm = mock.fn();
+  await mount(<ConfirmDialog open onOpenChange={onOpenChange} onConfirm={onConfirm} {...confirmProps} />);
+  const asked = () => onOpenChange.mock.calls.map(({ arguments: args }) => args[0]);
+
+  await click(button("Delete"));
+  assert.equal(onConfirm.mock.callCount(), 1);
+  assert.deepEqual(asked(), [false]);
+  await click(button("Keep"));
+  assert.equal(onConfirm.mock.callCount(), 1);
+  assert.deepEqual(asked(), [false, false]);
+});
+
+test("a ConfirmDialog given pending leaves closing to its caller, and cannot be closed while pending", async () => {
+  const onOpenChange = mock.fn();
+  const onConfirm = mock.fn();
+  const dialog = (pending: boolean) => (
+    <ConfirmDialog open onOpenChange={onOpenChange} onConfirm={onConfirm} pending={pending} {...confirmProps} />
+  );
+  const { rerender } = await mount(dialog(false));
+
+  // Confirming starts the work and the dialog stays for it.
+  await click(button("Delete"));
+  assert.equal(onConfirm.mock.callCount(), 1);
+  assert.equal(onOpenChange.mock.callCount(), 0);
+
+  await rerender(dialog(true));
+  assert.equal(button("Delete").disabled, true);
+  assert.equal(button("Delete").getAttribute("aria-busy"), "true");
+  assert.equal(button("Keep").disabled, true);
+  await click(button("Delete"));
+  await click(button("Keep"));
+  await pressEscape();
+  assert.equal(onConfirm.mock.callCount(), 1);
+  assert.equal(onOpenChange.mock.callCount(), 0);
+
+  // Done: the caller may close it, and so may the user.
+  await rerender(dialog(false));
+  await click(button("Keep"));
+  assert.deepEqual(
+    onOpenChange.mock.calls.map(({ arguments: args }) => args[0]),
+    [false],
+  );
+});
+
+test("a ConfirmButton asks first, and runs the action only on confirm", async () => {
+  const onConfirm = mock.fn();
+  await mount(
+    <ConfirmButton onConfirm={onConfirm} buttonLabel="Delete mailbox" {...confirmProps}>
+      ×
+    </ConfirmButton>,
+  );
+  const asking = () => (document.body.textContent ?? "").includes("Delete mailbox?");
+  assert.equal(asking(), false);
+
+  await click(button("Delete mailbox"));
+  assert.equal(asking(), true);
+  await click(button("Keep"));
+  assert.equal(asking(), false);
+  assert.equal(onConfirm.mock.callCount(), 0);
+
+  await click(button("Delete mailbox"));
+  await click(button("Delete"));
+  assert.equal(onConfirm.mock.callCount(), 1);
+  assert.equal(asking(), false);
+});
+
+test("useOpenCount counts opens, not closes or re-renders", async () => {
+  const counts: number[] = [];
+  function Probe({ open }: { open: boolean }) {
+    counts.push(useOpenCount(open));
+    return null;
+  }
+  const { rerender } = await mount(<Probe open={false} />);
+  const last = () => counts.at(-1);
+  assert.equal(last(), 0);
+  await rerender(<Probe open />);
+  assert.equal(last(), 1);
+  await rerender(<Probe open />);
+  assert.equal(last(), 1);
+  await rerender(<Probe open={false} />);
+  assert.equal(last(), 1);
+  await rerender(<Probe open />);
+  assert.equal(last(), 2);
+
+  // A dialog that mounts open has not been opened again: its form is already fresh.
+  await mount(<Probe open />);
+  assert.equal(last(), 0);
 });
