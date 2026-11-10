@@ -80,6 +80,19 @@ for (const [accept, served] of [
   [browser, "/"],
   ["*/*", "/"],
   ["text/markdown;q=0.5, text/html", "/"],
+  // A wildcard speaks for HTML when nothing names it.
+  ["text/markdown;q=0.1, */*", "/"],
+  ["text/markdown;q=0.5, text/*", "/"],
+  ["text/markdown;q=0.5, */*;q=0.5", "/md/index.md"],
+  ["text/markdown, */*;q=0.1", "/md/index.md"],
+  // The most specific range wins: text/html over text/*, and text/* over */*.
+  ["text/markdown;q=0.5, text/html;q=0.1, */*", "/md/index.md"],
+  ["text/markdown;q=0.5, text/*;q=0.1, */*", "/md/index.md"],
+  // Parameters: ours is charset=utf-8, a q after other parameters still counts, and the rest is accept-ext.
+  ["text/markdown;charset=utf-8;q=0.1, */*", "/"],
+  ["text/markdown;charset=utf-8, text/markdown;q=0", "/md/index.md"],
+  ["text/markdown;charset=iso-8859-1", "/"],
+  ["text/markdown;, text/html;q=0.9", "/md/index.md"],
   ["text/markdown;q=0", "/"],
   [undefined, "/"],
 ] as const) {
@@ -113,4 +126,18 @@ test("the overview's Link header points at the registry, its Markdown and every 
   assert.ok(link.includes(`</r/registry.json>; rel="describedby"; type="application/json"`));
   assert.ok(link.includes(`</md/index.md>; rel="alternate"; type="text/markdown"`));
   for (const name of names) assert.ok(link.includes(`</components/${name}>; rel="item"`), name);
+});
+
+test("every path is served with nosniff, and the registry keeps its CORS and cache rules", () => {
+  const rules = new Map(
+    readFileSync("out/_headers", "utf8")
+      .split(/\n(?=\S)/)
+      .map((block) => {
+        const [path = "", ...headers] = block.split("\n").map((line) => line.trim());
+        return [path, headers.filter(Boolean)] as const;
+      }),
+  );
+  assert.deepEqual(rules.get("/*"), ["X-Content-Type-Options: nosniff"]);
+  assert.deepEqual(rules.get("/r/*"), ["Access-Control-Allow-Origin: *", "Cache-Control: public, max-age=300"]);
+  assert.deepEqual(rules.get("/fonts/*"), ["Cache-Control: public, max-age=31536000, immutable"]);
 });

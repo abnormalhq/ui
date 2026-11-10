@@ -389,6 +389,21 @@ test("a utility on the ink shell's own element overrides its fill and text color
   assert.match(base, /\.ink \{[^}]*background-color: var\(--bg\);[^}]*color: var\(--text\);/);
 });
 
+test("reduced motion keeps an indeterminate progress bar alive, without a sweep", () => {
+  const start = theme.indexOf("@media (prefers-reduced-motion: reduce)");
+  const reduced = theme.slice(start, theme.indexOf("\n  }\n", start));
+  // Left out of the rule that stops every animation, or the bar freezes as a third-width one that reads as 33%.
+  assert.match(reduced, /\*:not\([^)]*\.animate-progress-sweep[^)]*\)/);
+  const rule = reduced.match(/\n\s*\.animate-progress-sweep \{([^}]+)\}/)?.[1] ?? "";
+  assert.match(rule, /width: 100% !important;/);
+  const animation = rule.match(/animation: (\S+) [^;]*infinite[^;]* !important;/)?.[1];
+  assert.ok(animation && animation !== "progress-sweep", "an animation of its own");
+  // That animation moves nothing: opacity only.
+  const frames = reduced.slice(reduced.indexOf(`@keyframes ${animation}`));
+  assert.match(frames, /opacity/);
+  assert.doesNotMatch(frames, /transform|translate/);
+});
+
 test("phone inputs stay at 16px outside any layer", () => {
   const rule = theme.lastIndexOf('[data-slot="native-select"]');
   assert.ok(rule > theme.lastIndexOf("@layer base"));

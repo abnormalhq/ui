@@ -5,6 +5,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { renderToStaticMarkup } from "react-dom/server";
+import { Alert } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
@@ -78,6 +79,22 @@ test("a loading AlertDialogAction is disabled even though the child sets disable
   );
   assert.match(html, /<button[^>]*disabled=""[^>]*>/);
   assert.match(html, /<button[^>]*aria-busy="true"[^>]*>/);
+});
+
+test("only a destructive Alert interrupts; the others are a status, and a given role wins", () => {
+  const role = (ui: React.ReactElement) => renderToStaticMarkup(ui).match(/role="([^"]+)"/)?.[1];
+  assert.equal(role(<Alert>Maintenance on Sunday</Alert>), "status");
+  assert.equal(role(<Alert variant="success">Domain verified</Alert>), "status");
+  assert.equal(role(<Alert variant="destructive">Payment failed</Alert>), "alert");
+  assert.equal(role(<Alert role="alert">Sending is paused</Alert>), "alert");
+  assert.equal(
+    role(
+      <Alert variant="destructive" role="status">
+        Card declined
+      </Alert>,
+    ),
+    "status",
+  );
 });
 
 test("the row action class reaches markup rendered on the server", () => {

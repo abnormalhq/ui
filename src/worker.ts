@@ -26,18 +26,45 @@ pages.set("/", {
   ].join(", "),
 });
 
-/** The weight the Accept header gives a media type, or 0 when it isn't named. */
-function weight(accept: string, type: string) {
-  const range = accept.split(",").find((part) => part.split(";")[0]!.trim().toLowerCase() === type);
-  if (!range) return 0;
-  const q = range.match(/;\s*q=([\d.]+)/i)?.[1];
-  return q === undefined ? 1 : Number(q);
+type MediaRange = { type: string; params: string[]; q: number };
+
+function parseAccept(accept: string | null): MediaRange[] {
+  return (accept ?? "")
+    .toLowerCase()
+    .split(",")
+    .map((part) => {
+      const [type = "", ...rest] = part.split(";").map((value) => value.trim());
+      const qIndex = rest.findIndex((param) => param.startsWith("q="));
+      // Everything after q is accept-ext, not media type parameters.
+      const params = qIndex < 0 ? rest : rest.slice(0, qIndex);
+      return {
+        type,
+        // RFC 9110 allows empty parameters, such as a stray trailing semicolon in text/markdown;.
+        params: params.filter(Boolean).map((param) => param.replaceAll('"', "")),
+        q: qIndex < 0 ? 1 : Number(rest[qIndex]!.slice(2)),
+      };
+    });
 }
 
+/**
+ * The weight a range gives our response. Both responses are charset=utf-8, so ranges with other parameters do not
+ * match; a range with parameters is more specific than one without (RFC 9110) and wins.
+ */
+function weightOf(ranges: MediaRange[], type: string): number | undefined {
+  const matching = ranges.filter((range) => range.type === type && range.params.every((p) => p === "charset=utf-8"));
+  return (matching.find((range) => range.params.length > 0) ?? matching[0])?.q;
+}
+
+/**
+ * The same rules as the website's negotiation. Markdown is only considered when text/markdown is spelled out, so
+ * requests with only wildcards still get HTML. HTML takes the weight of the most specific matching range, a
+ * wildcard when nothing names it; on a tie Markdown wins, since browsers never send text/markdown.
+ */
 function wantsMarkdown(request: Request) {
-  const accept = request.headers.get("Accept") ?? "";
-  const markdown = weight(accept, "text/markdown");
-  return markdown > 0 && markdown >= weight(accept, "text/html");
+  const ranges = parseAccept(request.headers.get("Accept"));
+  const markdown = weightOf(ranges, "text/markdown") ?? 0;
+  const html = weightOf(ranges, "text/html") ?? weightOf(ranges, "text/*") ?? weightOf(ranges, "*/*") ?? 0;
+  return markdown > 0 && markdown >= html;
 }
 
 const worker = {
