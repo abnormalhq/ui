@@ -20,8 +20,9 @@ const DATE_RANGE_PICKER_SIZES = {
  * one end, the second closes the range, the popover and the choice: the field changes, and onValueChange is called,
  * only with both ends. Escape, or a click outside, closes it and keeps the range it had.
  * The value is { from, to } with both days as text ("2026-11-10"), as for Calendar. With `fromName` and `toName` it
- * submits with a form as two fields in that form, both empty while no range is chosen, and a form reset puts an
- * uncontrolled field back on its default, unless the page cancels the reset.
+ * submits with a form as two fields in that form, both empty while no range is chosen. With or without the names, a
+ * reset of the form the button belongs to puts an uncontrolled field back on its default, unless the page cancels the
+ * reset. A range left half chosen is dropped when the popover closes, whoever closes it, and when the form resets.
  * The button is a combobox to assistive technology, one whose popup is a dialog, as DatePicker's is: its value is
  * the chosen range. The words are the page's: `placeholder`, `calendarLabel` to name the popover, the two month
  * button names and, for the lists that jump to a month and a year, `monthLabel` and `yearLabel`. Give the button a
@@ -53,6 +54,7 @@ function DateRangePicker({
   disabled,
   open: openProp,
   onOpenChange,
+  ref,
   ...props
 }: Omit<React.ComponentProps<"button">, "value" | "defaultValue" | "onChange" | "children" | "type" | "name"> &
   Pick<
@@ -82,11 +84,18 @@ function DateRangePicker({
   const value = valueProp === undefined ? innerValue : valueProp;
   // The range being chosen in the open popover: one end, until the second makes it the value.
   const [draft, setDraft] = React.useState<DateRange | null>(null);
-  const fieldRef = React.useRef<HTMLInputElement>(null);
+  // The button finds the form, not the hidden inputs: a field without names, or a disabled one, has none to ask.
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+  React.useImperativeHandle(ref, () => buttonRef.current as HTMLButtonElement, []);
   const submits = !disabled;
-  useFormReset(fieldRef, () => setInnerValue(defaultValue ?? null));
+  useFormReset(buttonRef, () => {
+    setDraft(null);
+    setInnerValue(defaultValue ?? null);
+  });
   const [innerOpen, setInnerOpen] = React.useState(false);
   const open = openProp ?? innerOpen;
+  // A page that holds `open` closes the popover without a word to setOpen: the draft goes with any close.
+  if (!open && draft !== null) setDraft(null);
   const setOpen = (next: boolean) => {
     setDraft(null);
     if (openProp === undefined) setInnerOpen(next);
@@ -121,6 +130,8 @@ function DateRangePicker({
           data-size={size}
           data-placeholder={text ? undefined : ""}
           disabled={disabled}
+          form={form}
+          ref={buttonRef}
           className={cn(
             "flex w-64 min-w-0 items-center gap-2 rounded-control border border-input bg-control text-left text-foreground transition-[border-color,background-color] duration-150 select-none hover:bg-accent focus-visible:-outline-offset-1 disabled:cursor-not-allowed disabled:opacity-50 aria-expanded:bg-accent aria-invalid:border-destructive data-placeholder:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
             DATE_RANGE_PICKER_SIZES[size],
@@ -135,17 +146,9 @@ function DateRangePicker({
             {text ?? placeholder}
           </span>
           {submits && fromName !== undefined && (
-            <input ref={fieldRef} type="hidden" name={fromName} value={value?.from ?? ""} form={form} />
+            <input type="hidden" name={fromName} value={value?.from ?? ""} form={form} />
           )}
-          {submits && toName !== undefined && (
-            <input
-              ref={fromName === undefined ? fieldRef : undefined}
-              type="hidden"
-              name={toName}
-              value={value?.to ?? ""}
-              form={form}
-            />
-          )}
+          {submits && toName !== undefined && <input type="hidden" name={toName} value={value?.to ?? ""} form={form} />}
         </button>
       </PopoverTrigger>
       <PopoverContent

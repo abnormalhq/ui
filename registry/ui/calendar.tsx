@@ -168,7 +168,10 @@ function Calendar({
 
   const choose = (date: string) => {
     setPreview(null);
-    const next = mode !== "range" ? date : pending ? orderRange(picked.from, date) : { from: date, to: null };
+    // The first end is checked again: a limit that moved since it was chosen (fresh availability, a new `max`) may
+    // have ruled it out, and the choice then starts a new range instead of closing one on a day that cannot be an end.
+    const closes = pending && !disabledDay(picked.from);
+    const next = mode !== "range" ? date : closes ? orderRange(picked.from, date) : { from: date, to: null };
     if (valueProp === undefined) setInnerValue(next);
     // The two modes' callbacks differ only in what they are handed, and `mode` says which this one is.
     (onValueChange as ((value: string | DateRange) => void) | undefined)?.(next);
@@ -216,13 +219,14 @@ function Calendar({
   const nextMonth = monthOf(addMonths(`${month}-01`, 1));
 
   // The two lists of the caption. A month outside min and max is listed but cannot be chosen, and a year that would
-  // land outside them stops at the nearest month inside.
+  // land outside them stops at the nearest month inside. The years stay within 1 to 9999, the four digits a month is
+  // written with.
   const jump = monthLabel !== undefined && yearLabel !== undefined;
   const year = first.getUTCFullYear();
   const firstMonth = min === undefined ? undefined : monthOf(min);
   const lastMonth = max === undefined ? undefined : monthOf(max);
-  const firstYear = Math.min(year, firstMonth === undefined ? year - 10 : Number(firstMonth.slice(0, 4)));
-  const lastYear = Math.max(year, lastMonth === undefined ? year + 10 : Number(lastMonth.slice(0, 4)));
+  const firstYear = Math.min(year, firstMonth === undefined ? Math.max(year - 10, 1) : Number(firstMonth.slice(0, 4)));
+  const lastYear = Math.max(year, lastMonth === undefined ? Math.min(year + 10, 9999) : Number(lastMonth.slice(0, 4)));
   const outside = (candidate: string) =>
     (firstMonth !== undefined && candidate < firstMonth) || (lastMonth !== undefined && candidate > lastMonth);
 
