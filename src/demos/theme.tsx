@@ -164,7 +164,10 @@ export default function ThemeDemo() {
         <p className="font-mono text-sm">JetBrains Mono for code and addresses</p>
         <div className="grid gap-1 pt-2">
           {sizes.map((size) => (
-            <p key={size} className={`${size} flex items-baseline gap-3`}>
+            <p
+              key={size}
+              className={`${size} flex items-baseline gap-3 ${size.startsWith("text-display") ? "font-heading font-semibold" : ""}`}
+            >
               <code className="w-16 shrink-0 font-mono text-xs text-muted-foreground">{size}</code>
               The quick brown fox
             </p>
