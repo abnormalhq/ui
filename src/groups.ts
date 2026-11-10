@@ -24,6 +24,7 @@ export const groups = [
       "calendar",
       "date-picker",
       "label",
+      "form-reset",
     ],
   },
   {

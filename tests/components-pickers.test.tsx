@@ -45,6 +45,9 @@ const type = async (input: HTMLInputElement, value: string) => {
   });
 };
 
+/** Lets the timers of a closed popover run: Radix hands the focus back to the trigger in one, after the close. */
+const settle = () => act(async () => void (await new Promise((resolve) => setTimeout(resolve))));
+
 const one = <T extends Element = HTMLElement>(selector: string, root: ParentNode = document) => {
   const element = root.querySelector<T>(selector);
   assert.ok(element, selector);
@@ -708,6 +711,8 @@ test("a form reset puts an uncontrolled Combobox and DatePicker back on their de
   await press(input, "ArrowDown");
   await press(input, "Enter");
   assert.equal(new FormData(form).get("region"), "us-east");
+  // Or the focus the closed combobox hands back lands after the calendar has taken it.
+  await settle();
 
   await click(dateTrigger());
   await press(document.activeElement!, "ArrowRight");
@@ -718,5 +723,53 @@ test("a form reset puts an uncontrolled Combobox and DatePicker back on their de
   assert.equal(new FormData(form).get("region"), "us-west");
   assert.equal(trigger().textContent, "Oregon");
   assert.equal(new FormData(form).get("renewal"), "2026-11-18");
+  assert.equal(dateTrigger().textContent, "18 Nov 2026");
+});
+
+test("a cancelled form reset leaves a Combobox and a DatePicker alone, as a browser leaves a native field", async () => {
+  const fields = (cancel: boolean) => (
+    <form
+      onReset={(event) => {
+        if (cancel) event.preventDefault();
+      }}
+    >
+      <Combobox {...comboboxProps} name="region" defaultValue="us-west" />
+      <DatePicker {...datePickerProps} name="renewal" defaultValue="2026-11-18" />
+      <button type="reset">Reset</button>
+    </form>
+  );
+  const { container, rerender } = await mount(fields(true));
+  const form = one<HTMLFormElement>("form", container);
+  // Only the registry's fields: happy-dom resets native ones before it dispatches the event, cancelled or not.
+  const submitted = () => ["region", "renewal"].map((name) => new FormData(form).get(name));
+
+  await click(trigger());
+  const input = one<HTMLInputElement>('[role="dialog"] input[role="combobox"]');
+  await type(input, "america");
+  await press(input, "ArrowDown");
+  await press(input, "Enter");
+  await settle();
+  await click(dateTrigger());
+  await press(document.activeElement!, "ArrowRight");
+  await click(document.activeElement!);
+  await settle();
+  assert.deepEqual(submitted(), ["us-east", "2026-11-19"]);
+
+  // The page says no in React's onReset, which runs after the form's own listeners: nothing may have moved by then.
+  await act(async () => form.reset());
+  await settle();
+  assert.deepEqual(submitted(), ["us-east", "2026-11-19"]);
+  assert.equal(trigger().textContent, "Virginia");
+  assert.equal(dateTrigger().textContent, "19 Nov 2026");
+  // The same from a reset button.
+  await click(one('button[type="reset"]', container));
+  await settle();
+  assert.deepEqual(submitted(), ["us-east", "2026-11-19"]);
+
+  // A reset that goes through takes both back.
+  await rerender(fields(false));
+  await click(one('button[type="reset"]', container));
+  assert.deepEqual(submitted(), ["us-west", "2026-11-18"]);
+  assert.equal(trigger().textContent, "Oregon");
   assert.equal(dateTrigger().textContent, "18 Nov 2026");
 });

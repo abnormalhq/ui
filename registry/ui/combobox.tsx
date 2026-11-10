@@ -5,6 +5,7 @@ import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useFormReset } from "@/components/ui/use-form-reset";
 
 type ComboboxOption = {
   /** What is stored and submitted. */
@@ -81,16 +82,11 @@ function Combobox({
 }) {
   const [innerValue, setInnerValue] = React.useState<string | null>(defaultValue ?? null);
   // A form reset (a reset button, form.reset(), or the reset React runs after a form action) puts an uncontrolled
-  // field back on its default, as it does a native one. A controlled field follows its value prop.
+  // field back on its default, as it does a native one, unless the page cancels the reset. A controlled field follows
+  // its value prop.
   const fieldRef = React.useRef<HTMLInputElement>(null);
   const submits = name !== undefined && !disabled;
-  React.useEffect(() => {
-    const owner = fieldRef.current?.form;
-    if (!owner) return;
-    const reset = () => setInnerValue(defaultValue ?? null);
-    owner.addEventListener("reset", reset);
-    return () => owner.removeEventListener("reset", reset);
-  }, [form, submits, defaultValue]);
+  useFormReset(fieldRef, () => setInnerValue(defaultValue ?? null));
   const value = valueProp === undefined ? innerValue : valueProp;
   const [innerOpen, setInnerOpen] = React.useState(false);
   const open = openProp ?? innerOpen;

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { useFormReset } from "@/components/ui/use-form-reset";
 
 /**
  * A native button with explicit switch semantics, for keyboard operation, such as a notification channel.
@@ -16,6 +17,7 @@ import { cn } from "@/lib/utils";
  * an uncontrolled switch goes back to defaultChecked without calling onCheckedChange, and until it is toggled it
  * follows defaultChecked, so the reset lands on the default the page renders now, such as the value an action saved.
  * A controlled switch keeps showing and submitting its checked prop; handle the form's onReset to reset it too.
+ * A reset the page cancels (preventDefault in the form's onReset) leaves it alone, as it leaves a checkbox.
  */
 function Switch({
   ref,
@@ -43,14 +45,8 @@ function Switch({
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   React.useImperativeHandle(ref, () => buttonRef.current as HTMLButtonElement, []);
 
-  React.useEffect(() => {
-    // The form the button belongs to, as an ancestor or through the form attribute.
-    const owner = buttonRef.current?.form;
-    if (!owner) return;
-    const reset = () => setToggled(null);
-    owner.addEventListener("reset", reset);
-    return () => owner.removeEventListener("reset", reset);
-  }, [form]);
+  // The form the button belongs to, as an ancestor or through the form attribute.
+  useFormReset(buttonRef, () => setToggled(null));
 
   return (
     <button

@@ -266,6 +266,53 @@ test("a form reset puts an uncontrolled Switch back to its default, and its form
   assert.deepEqual(submitted(), ["digest", "notify"]);
 });
 
+test("a cancelled form reset leaves a Switch alone, as a browser leaves a checkbox", async () => {
+  const settings = (cancel: boolean) => (
+    <form
+      onReset={(event) => {
+        if (cancel) event.preventDefault();
+      }}
+    >
+      <Switch name="digest" aria-label="Weekly digest" />
+      <Switch name="sms" defaultChecked aria-label="Text messages" />
+      <button type="reset">Reset</button>
+    </form>
+  );
+  const { container, rerender } = await mount(settings(true));
+  const form = container.querySelector("form")!;
+  const submitted = () => [...new FormData(form).keys()];
+  // A task later: the switch must not move once the event is over either.
+  const later = () => act(async () => void (await new Promise((resolve) => setTimeout(resolve))));
+
+  // Only switches here: happy-dom resets native fields before it dispatches the event, cancelled or not.
+  await click(button("Weekly digest"));
+  await click(button("Text messages"));
+  assert.deepEqual(submitted(), ["digest"]);
+
+  // The page says no in React's onReset, which runs at the root, after the listeners on the form itself.
+  await act(async () => form.reset());
+  await later();
+  assert.equal(button("Weekly digest").getAttribute("aria-checked"), "true");
+  assert.deepEqual(submitted(), ["digest"]);
+  await click(button("Reset"));
+  await later();
+  assert.equal(button("Weekly digest").getAttribute("aria-checked"), "true");
+  assert.deepEqual(submitted(), ["digest"]);
+  // A listener outside React that cancels it counts the same.
+  const refuse = (event: Event) => event.preventDefault();
+  await rerender(settings(false));
+  document.addEventListener("reset", refuse);
+  await click(button("Reset"));
+  await later();
+  document.removeEventListener("reset", refuse);
+  assert.deepEqual(submitted(), ["digest"]);
+
+  // A reset that goes through takes both back to their defaults.
+  await click(button("Reset"));
+  assert.equal(button("Weekly digest").getAttribute("aria-checked"), "false");
+  assert.deepEqual(submitted(), ["sms"]);
+});
+
 test("a Switch still submits what it shows after React resets the form of a finished action", async () => {
   const submitted: (string | null)[] = [];
   function Settings() {
