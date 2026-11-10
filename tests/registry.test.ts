@@ -3,6 +3,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { basename, extname, join } from "node:path";
 import { test } from "node:test";
 import { compile } from "tailwindcss";
+import { cn } from "../registry/lib/utils.ts";
 import ts from "typescript";
 import { satisfies } from "./support/semver.ts";
 
@@ -312,6 +313,11 @@ test("cn knows every custom token in the theme", () => {
   assert.deepEqual(listed("radius").toSorted(), tokens("radius").toSorted());
   assert.deepEqual(listed("shadow").toSorted(), tokens("shadow").toSorted());
   assert.deepEqual(listed("animate").toSorted(), tokens("animate").toSorted());
+  // The built-in size names (xs to 4xl, and the theme's 2xs and md) are sizes to cn already; the display names are not.
+  const display = tokens("text").filter((name) => name.startsWith("display") && !name.endsWith("-line-height"));
+  assert.deepEqual(listed("text").toSorted(), display.toSorted());
+  assert.equal(cn("text-display", "text-foreground"), "text-display text-foreground");
+  assert.equal(cn("text-3xl", "text-display-lg"), "text-display-lg");
 });
 
 test("the dark values match between the data-theme rule and the system preference fallback", () => {

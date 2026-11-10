@@ -50,6 +50,9 @@ const sizes = [
   "text-2xl",
   "text-3xl",
   "text-4xl",
+  "text-display-sm",
+  "text-display",
+  "text-display-lg",
 ];
 const animations = [
   "arrive",
