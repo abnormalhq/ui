@@ -39,25 +39,47 @@ pnpm dlx shadcn@latest add @abnormal/button @abnormal/dialog
 
 ## What's in it
 
-| Group      | Items                                                                                                                                                            |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Foundation | `theme`, `fonts`, `utils`                                                                                                                                        |
-| Brand      | `brand-mark`, `marker`                                                                                                                                           |
-| Controls   | `button`, `input`, `input-group`, `field-message`, `textarea`, `select`, `native-select`, `checkbox`, `radio-group`, `switch`, `toggle`, `toggle-group`, `label` |
-| Display    | `alert`, `badge`, `card`, `disclosure`, `progress`, `separator`, `skeleton`, `spinner`, `status-label`, `table`                                                  |
-| Overlays   | `alert-dialog`, `confirm-dialog`, `context-menu`, `dialog`, `guarded-dialog`, `dropdown-menu`, `info-hint`, `popover`, `sheet`, `sonner`, `tooltip`              |
-| Patterns   | `copy-button`, `link-row`, `theme-picker`                                                                                                                        |
-| Marketing  | `container`, `section-heading`, `text-link`, `icon-tile`, `prose`                                                                                                |
+| Group      | Items                                                                                                                                                                                                                                     |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Foundation | `theme`, `fonts`, `utils`                                                                                                                                                                                                                 |
+| Brand      | `brand-mark`, `marker`                                                                                                                                                                                                                    |
+| Controls   | `button`, `input`, `input-group`, `field-message`, `textarea`, `select`, `native-select`, `checkbox`, `radio-group`, `switch`, `toggle`, `toggle-group`, `slider`, `input-otp`, `combobox`, `command`, `calendar`, `date-picker`, `label` |
+| Display    | `accordion`, `alert`, `avatar`, `badge`, `card`, `collapsible`, `disclosure`, `progress`, `scroll-area`, `separator`, `skeleton`, `spinner`, `status-label`, `table`                                                                      |
+| Navigation | `tabs`, `breadcrumb`, `pagination`, `stepper`                                                                                                                                                                                             |
+| Overlays   | `alert-dialog`, `confirm-dialog`, `context-menu`, `dialog`, `guarded-dialog`, `dropdown-menu`, `info-hint`, `popover`, `sheet`, `sonner`, `tooltip`                                                                                       |
+| Patterns   | `copy-button`, `link-row`, `theme-picker`                                                                                                                                                                                                 |
+| Marketing  | `container`, `section-heading`, `text-link`, `icon-tile`, `prose`, `pricing-card`                                                                                                                                                         |
 
 Type runs from `text-2xs` (11px) to `text-4xl` (42px) for interfaces, and a display scale on top for marketing pages and the rare large line in a product: `text-display-sm` (34px), `text-display` (40px) and `text-display-lg` (56px), always in the heading face.
 
 The brand speaks through three marks, and each has its place. `Marker` is a highlighter stroke under a number or a single word, never a sentence, once on a screen. `HeadingMark` (in `section-heading`) is the signal-colored full stop that ends a page title or the title of an empty state, not a panel, dialog or error title. `BrandArrow` (in `brand-mark`) ends a link that leaves for another product or another site; everything else keeps the interface icons. The offset shadow behind the "a" belongs to the mark alone.
 
+Three items open and close content, and each has its case. `disclosure` is a native `<details>`: a list of questions on a page, working without JavaScript. `accordion` is a group of sections with one open at a time, arrow keys between the headers and state the page can control. `collapsible` is one region wired to any button and to the page's own state.
+
+Dates are text, not `Date` objects: `calendar` and `date-picker` take and return `"2026-11-10"`, the form `<input type="date">` submits, so a day is the same day on the server and in every time zone. Both take the `locale` from the page and never assume one.
+
 Patterns are the pieces the projects kept rewriting: they hold no product state (`ThemePicker` takes the saved preference and hands back the choice; `LinkRow` takes the router's `navigate`), and every word they show comes in as a prop.
+
+## Versions and updates
+
+The registry has one version, in `package.json`, and [CHANGELOG.md](CHANGELOG.md) lists what each version added, changed or removed, item by item. A new item or a compatible change is a minor version, a fix is a patch, and a change a project has to adapt to (a renamed or newly required prop, a removed item or token) is a major version once the registry reaches 1.0, and a minor version called out under "Changed" or "Removed" until then.
+
+The registry is served at its latest version only: `https://ui.abnormalhq.com/r/{name}.json` is always the newest item, and there are no per-version URLs. A project pins a version by what it has committed, since every item is installed as source into the project's own repository.
+
+To take an update, read the changelog entries since the project last installed, then reinstall the items it names and review the result as any other diff:
+
+```bash
+pnpm dlx shadcn@latest add @abnormal/button @abnormal/dialog --overwrite
+git diff
+```
+
+`--overwrite` replaces the project's copy, local edits included, so the diff is where those are restored. Name every item an entry mentions in the same command, `theme` and `utils` included when it says an item needs a newer one. An item nobody reinstalls keeps working as it was.
 
 ## Rules for items
 
-Items stay generic. A component imports only `@/lib/utils`, `@/components/ui/*` and its declared packages: no product code, no `next/*`, and no built-in copy, so anything a user reads comes in through a prop (`closeLabel` on `Dialog` and `Sheet`, required whenever the close button shows). That rules out a default or fallback for a label prop (`closeLabel = "Close"`, `closeLabel ?? "Close"`), a literal `aria-label` and literal `sr-only` text. `tests/registry.test.ts` enforces this, and checks every file of an item: an item can bring several, and each one's imports, scoped packages and side-effect imports included, must be declared.
+Items stay generic. A component imports only `@/lib/utils`, `@/components/ui/*` and its declared packages: no product code, no `next/*`, and no built-in copy, so anything a user reads comes in through a prop (`closeLabel` on `Dialog` and `Sheet`, required whenever the close button shows). That rules out a default or fallback for a label prop (`closeLabel = "Close"`, `closeLabel ?? "Close"`), a literal `aria-label` and literal `sr-only` text. The same goes for a locale: `calendar` and `date-picker` require one. `tests/registry.test.ts` enforces this, and checks every file of an item: an item can bring several, and each one's imports, scoped packages and side-effect imports included, must be declared.
+
+An item adds a package only when the behavior cannot reasonably be owned here. Each declared package must also be a dependency of this site at the same version floor, so it is installed, built and tested here (`tests/registry.test.ts`), and its Node.js floor counts toward `engines.node` (`tests/toolchain.test.ts`). `command`, `combobox`, `input-otp`, `calendar` and `date-picker` were written without `cmdk`, `input-otp` or `react-day-picker` for that reason: Radix, the popover and `Intl` already cover them, and a package would have brought its own labels or its own locale data.
 
 A file with the `"use client"` directive exports components only: PascalCase functions, or `forwardRef`/`memo` of one, and no constants, `cva()` variants, contexts or re-exports. A Server Component receives every export of such a file as a client reference, so a class string or helper from it silently stops working there; helpers live in a file without the directive, such as `table-row.ts` next to `table.tsx` and `use-open-count.ts` next to `guarded-dialog.tsx`. Another item imports such a file by its module name (`@/components/ui/table-row`) and declares the item that brings it (`@abnormal/table`).
 
@@ -79,7 +101,7 @@ Type checking uses TypeScript 7's `tsc`, like the projects: `@typescript/native`
 
 Development uses the Node.js in `.node-version`. `engines.node` in `package.json` is the lowest release the toolchain supports (22.22.1, which lint-staged needs; `node --test` on `.ts` needs 22.18), and `tests/toolchain.test.ts` fails when a direct dependency starts to need more.
 
-`pnpm test` builds the registry and the site, then runs `node --test` with `tests/support/register.ts`, which resolves the `@/` aliases and compiles `.tsx` the way a project would. Besides the static checks, `tests/server-render.test.tsx` renders items with no DOM, as a Server Component page would, and `tests/components.test.tsx` mounts the stateful ones in happy-dom and clicks them. `tests/types.check.tsx` is only type-checked: it pins props that must stay required, such as `closeLabel`.
+`pnpm test` builds the registry and the site, then runs `node --test` with `tests/support/register.ts`, which resolves the `@/` aliases and compiles `.tsx` the way a project would. Besides the static checks, `tests/server-render.test.tsx` renders items with no DOM, as a Server Component page would, and `tests/components*.test.tsx` mount the stateful ones in happy-dom, click them and press their keys (`components-layout` for tabs, accordions and the like, `components-pickers` for the fields that choose a value). `tests/types.check.tsx` is only type-checked: it pins props that must stay required, such as `closeLabel`, a landmark's `label` and a calendar's `locale`.
 
 The site at `ui.abnormalhq.com` is a Next.js app in `src/`. It renders each item from `registry/` directly, so a change shows up as soon as you save it. Every item needs a demo in `src/demos/<name>.tsx` and a place in `src/groups.ts`; `tests/site.test.ts` enforces both, and each demo's source is also the usage example on its page. The page also reads the item's source: the block comments at the top level become its design notes, and the `variants` of each `cva()` call become its variants table (`src/notes.ts`), so the reasoning in a comment reaches the page and the Markdown without being written twice.
 
