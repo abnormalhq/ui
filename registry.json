@@ -271,7 +271,7 @@
       "name": "info-hint",
       "type": "registry:ui",
       "title": "Info Hint",
-      "description": "The small \u24d8 next to a title: a note that opens on hover and focus, and toggles on a tap.",
+      "description": "The small ⓘ next to a title: a note that opens on hover and focus, and toggles on a tap.",
       "dependencies": ["lucide-react"],
       "registryDependencies": ["@abnormal/tooltip", "@abnormal/utils"],
       "files": [

@@ -357,6 +357,19 @@ test("the ink shell carries the dark values and maps every semantic name again",
   for (const name of ["--card", "--sidebar-foreground", "--sidebar-border"]) assert.ok(ink.has(name), name);
 });
 
+test("a Marker inside the ink shell takes the soft band, as it does in dark mode", async () => {
+  // Text in the shell is light in both themes and dark: does not apply there, so the band has its own rule for it.
+  const source = read("registry/brand/marker.tsx");
+  const classes = source.match(/"(bg-\[linear-gradient[^"]+)"/)![1]!.split(" ");
+  const compiler = await compile(`${theme}\n@tailwind utilities;`, {
+    base: process.cwd(),
+    loadStylesheet: async () => ({ path: "", base: "", content: "" }),
+  });
+  const css = compiler.build(classes);
+  assert.match(css, /\.ink \.\S+ \{\s*--marker-band: var\(--highlight-muted\);/);
+  assert.match(css, /--marker-band: var\(--highlight\);/);
+});
+
 test("a utility on the ink shell's own element overrides its fill and text color", async () => {
   const compiler = await compile(`${theme}\n@tailwind utilities;`, {
     base: process.cwd(),

@@ -12,6 +12,9 @@ export default function MarkerDemo() {
       <p className="text-muted-foreground">
         <Marker className="font-semibold text-foreground">3</Marker> mailboxes left to activate
       </p>
+      <p className="ink rounded-control px-3 py-2">
+        <Marker className="font-semibold">2</Marker> open in the ink shell
+      </p>
     </div>
   );
 }
