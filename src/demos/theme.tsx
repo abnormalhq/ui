@@ -92,6 +92,28 @@ export default function ThemeDemo() {
       <Swatches title="Status" tokens={statuses} />
 
       <div className="grid gap-3">
+        <h3 className="text-sm font-medium">Ink shell</h3>
+        <p className="text-xs text-muted-foreground">
+          A navigation column or the frame around the content, in the brand ink in both themes: put <code>ink</code> on
+          it and everything inside takes the dark values. The content is a sheet of paper beside it, never inside it.
+        </p>
+        <div className="flex h-44 gap-2 rounded-panel bg-ink p-2 pl-0">
+          <div className="ink flex w-40 shrink-0 flex-col gap-0.5 px-2 text-sm">
+            <span className="rounded-control bg-highlight px-3 py-1.5 font-semibold text-highlight-foreground">
+              Current
+            </span>
+            <span className="rounded-control px-3 py-1.5 text-muted-foreground">Another page</span>
+            <span className="mt-auto rounded-control bg-primary px-3 py-1.5 text-center font-semibold text-primary-foreground">
+              Primary
+            </span>
+          </div>
+          <div className="grid flex-1 place-content-center rounded-panel bg-background text-sm text-muted-foreground">
+            The page, on paper
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-3">
         <h3 className="text-sm font-medium">Charts</h3>
         <p className="text-xs text-muted-foreground">
           A fixed order; the last two sit below 3:1, so a chart always carries a legend.
