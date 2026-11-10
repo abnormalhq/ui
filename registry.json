@@ -810,6 +810,20 @@
       ]
     },
     {
+      "name": "pricing-card",
+      "type": "registry:ui",
+      "title": "Pricing Card",
+      "description": "One plan on a pricing page: name, price, period, features and a call to action, with a featured state.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/badge", "@abnormal/card", "@abnormal/marker", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/marketing/pricing-card.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "prose",
       "type": "registry:ui",
       "title": "Prose",

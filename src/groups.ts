@@ -63,5 +63,5 @@ export const groups = [
     ],
   },
   { title: "Patterns", items: ["copy-button", "link-row", "theme-picker"] },
-  { title: "Marketing", items: ["container", "section-heading", "text-link", "icon-tile", "prose"] },
+  { title: "Marketing", items: ["container", "section-heading", "text-link", "icon-tile", "prose", "pricing-card"] },
 ];
