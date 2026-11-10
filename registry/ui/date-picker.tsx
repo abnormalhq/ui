@@ -3,7 +3,7 @@
 import * as React from "react";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar, type CalendarJumpProps } from "@/components/ui/calendar";
 import { parseISODate } from "@/components/ui/calendar-date";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useFormReset } from "@/components/ui/use-form-reset";
@@ -23,7 +23,8 @@ const DATE_PICKER_SIZES = {
  * Authoring Practices: its value is the chosen day, so a screen reader reads the field's name and then the date.
  * The words are the page's: `placeholder` while no day is chosen, `calendarLabel` to name the popover ("Choose a
  * date"), and the two month button names. A combobox takes no name from its content, so give the button one: a
- * Label (`id` and htmlFor), aria-label or aria-labelledby.
+ * Label (`id` and htmlFor), aria-label or aria-labelledby. `monthLabel` and `yearLabel` turn the calendar's caption
+ * into two lists that jump to a month and a year.
  * On phones, or for a date typed far more often than picked (a date of birth), the browser's own
  * <input type="date"> in an Input is the better control.
  */
@@ -36,6 +37,8 @@ function DatePicker({
   calendarLabel,
   previousLabel,
   nextLabel,
+  monthLabel,
+  yearLabel,
   dateFormat,
   today,
   min,
@@ -55,7 +58,8 @@ function DatePicker({
   Pick<
     React.ComponentProps<typeof Calendar>,
     "locale" | "today" | "min" | "max" | "isDateDisabled" | "weekStartsOn" | "previousLabel" | "nextLabel"
-  > & {
+  > &
+  CalendarJumpProps & {
     value?: string | null;
     defaultValue?: string;
     onValueChange?: (value: string) => void;
@@ -84,6 +88,8 @@ function DatePicker({
     if (openProp === undefined) setInnerOpen(next);
     onOpenChange?.(next);
   };
+  // Both names or neither, as Calendar takes them.
+  const jump: CalendarJumpProps = monthLabel !== undefined && yearLabel !== undefined ? { monthLabel, yearLabel } : {};
   const chosen = parseISODate(value);
   const text = React.useMemo(
     () =>
@@ -145,6 +151,7 @@ function DatePicker({
           weekStartsOn={weekStartsOn}
           previousLabel={previousLabel}
           nextLabel={nextLabel}
+          {...jump}
           onValueChange={(next) => {
             if (valueProp === undefined) setInnerValue(next);
             if (next !== value) onValueChange?.(next);

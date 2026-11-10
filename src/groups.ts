@@ -23,6 +23,7 @@ export const groups = [
       "command",
       "calendar",
       "date-picker",
+      "date-range-picker",
       "label",
       "form-reset",
     ],

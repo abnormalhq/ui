@@ -6,6 +6,15 @@
  * The arithmetic runs on UTC dates, where every day has 24 hours.
  */
 
+/**
+ * A span of days, both ends included, as Calendar's range mode takes and returns it. `to` is null from the moment the
+ * first day is chosen until the second is; a range of one day has the same day at both ends.
+ */
+export type DateRange = { from: string; to: string | null };
+
+/** A range with both ends chosen, as DateRangePicker takes and returns it. */
+export type ClosedDateRange = { from: string; to: string };
+
 const DAY = 86_400_000;
 
 const pad = (value: number, length = 2) => String(value).padStart(length, "0");
@@ -65,4 +74,9 @@ export function clampDate(date: string, min?: string, max?: string): string {
   if (min && date < min) return min;
   if (max && date > max) return max;
   return date;
+}
+
+/** A range with its ends in order, whichever was chosen first. */
+export function orderRange(a: string, b: string): ClosedDateRange {
+  return a <= b ? { from: a, to: b } : { from: b, to: a };
 }

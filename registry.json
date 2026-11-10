@@ -170,9 +170,9 @@
       "name": "calendar",
       "type": "registry:ui",
       "title": "Calendar",
-      "description": "A month grid for choosing a day, with full keyboard navigation and the caller's locale.",
+      "description": "A month grid for choosing a day or a range of days, with full keyboard navigation, lists that jump to a month and a year, and the caller's locale.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/native-select", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/calendar.tsx",
@@ -305,6 +305,20 @@
       "files": [
         {
           "path": "registry/ui/date-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "date-range-picker",
+      "type": "registry:ui",
+      "title": "Date Range Picker",
+      "description": "A field for a span of days: a button that opens a Calendar in range mode in a popover, and submits the two days as a pair of form fields.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/calendar", "@abnormal/form-reset", "@abnormal/popover", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/date-range-picker.tsx",
           "type": "registry:ui"
         }
       ]
