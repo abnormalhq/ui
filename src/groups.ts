@@ -21,6 +21,8 @@ export const groups = [
       "input-otp",
       "combobox",
       "command",
+      "calendar",
+      "date-picker",
       "label",
     ],
   },

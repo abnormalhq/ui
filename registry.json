@@ -167,6 +167,24 @@
       ]
     },
     {
+      "name": "calendar",
+      "type": "registry:ui",
+      "title": "Calendar",
+      "description": "A month grid for choosing a day, with full keyboard navigation and the caller's locale.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/calendar.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/calendar-date.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "card",
       "type": "registry:ui",
       "title": "Card",
@@ -273,6 +291,20 @@
       "files": [
         {
           "path": "registry/ui/copy-button.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:ui",
+      "title": "Date Picker",
+      "description": "A date field: a button that opens a Calendar in a popover.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/calendar", "@abnormal/popover", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/date-picker.tsx",
           "type": "registry:ui"
         }
       ]
