@@ -23,11 +23,14 @@ export const groups = [
   {
     title: "Display",
     items: [
+      "accordion",
       "alert",
       "badge",
       "card",
+      "collapsible",
       "disclosure",
       "progress",
+      "scroll-area",
       "separator",
       "skeleton",
       "spinner",
@@ -35,6 +38,7 @@ export const groups = [
       "table",
     ],
   },
+  { title: "Navigation", items: ["tabs"] },
   {
     title: "Overlays",
     items: [

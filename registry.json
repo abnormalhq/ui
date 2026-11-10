@@ -70,6 +70,20 @@
       ]
     },
     {
+      "name": "accordion",
+      "type": "registry:ui",
+      "title": "Accordion",
+      "description": "Sections that open in place as a group, one or several at a time, with arrow keys between the headers.",
+      "dependencies": ["lucide-react", "radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/accordion.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "alert",
       "type": "registry:ui",
       "title": "Alert",
@@ -149,6 +163,20 @@
       "files": [
         {
           "path": "registry/ui/checkbox.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "title": "Collapsible",
+      "description": "A region shown and hidden by any button, with state the page can control.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/collapsible.tsx",
           "type": "registry:ui"
         }
       ]
@@ -390,6 +418,20 @@
       ]
     },
     {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "title": "Scroll Area",
+      "description": "A scrolling box with thin bars of its own, reachable from the keyboard.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/scroll-area.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "select",
       "type": "registry:ui",
       "title": "Select",
@@ -510,6 +552,20 @@
         },
         {
           "path": "registry/ui/table-row.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "Views of one subject that swap in place, with the current tab marked in the signal color.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/tabs.tsx",
           "type": "registry:ui"
         }
       ]
