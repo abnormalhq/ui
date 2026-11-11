@@ -1321,3 +1321,109 @@ test("a form reset reaches a DateRangePicker that has no field names, or is disa
   await act(async () => form.reset());
   assert.match(rangeTrigger().textContent!, /^2\s*–\s*10 Nov 2026$/);
 });
+
+test("a form reset reaches a Combobox and a DatePicker that have no name, or are disabled", async () => {
+  const fields = (disabled: boolean) => (
+    <form>
+      <Combobox
+        {...comboboxProps}
+        name={disabled ? "region" : undefined}
+        defaultValue="us-west"
+        disabled={disabled}
+        aria-label="Region"
+      />
+      <DatePicker
+        {...datePickerProps}
+        name={disabled ? "renewal" : undefined}
+        defaultValue="2026-11-18"
+        disabled={disabled}
+        aria-label="Renewal"
+      />
+    </form>
+  );
+  const pick = async () => {
+    await click(trigger());
+    const input = one<HTMLInputElement>('[role="dialog"] input[role="combobox"]');
+    await type(input, "america");
+    await press(input, "ArrowDown");
+    await press(input, "Enter");
+    await settle();
+    await click(dateTrigger());
+    await press(document.activeElement!, "ArrowRight");
+    await click(document.activeElement!);
+    await settle();
+    assert.deepEqual([trigger().textContent, dateTrigger().textContent], ["Virginia", "19 Nov 2026"]);
+  };
+  const { container, rerender } = await mount(fields(false));
+  const form = one<HTMLFormElement>("form", container);
+
+  // Without a name there is no hidden input to find the form through: the button finds it.
+  assert.equal(container.querySelector('input[type="hidden"]'), null);
+  await pick();
+  await act(async () => form.reset());
+  assert.deepEqual([trigger().textContent, dateTrigger().textContent], ["Oregon", "18 Nov 2026"]);
+
+  // A disabled field submits nothing, so it has no hidden input either, and a browser still resets it.
+  await pick();
+  await rerender(fields(true));
+  assert.equal(container.querySelector('input[type="hidden"]'), null);
+  assert.deepEqual([trigger().textContent, dateTrigger().textContent], ["Virginia", "19 Nov 2026"]);
+  await act(async () => form.reset());
+  assert.deepEqual([trigger().textContent, dateTrigger().textContent], ["Oregon", "18 Nov 2026"]);
+});
+
+test("a Combobox and a DatePicker follow the form their form attribute names, and hand their button to a ref", async () => {
+  const comboboxRef = { current: null as HTMLButtonElement | null };
+  const dateRef = { current: null as HTMLButtonElement | null };
+  const { container } = await mount(
+    <>
+      <form id="settings" />
+      <form id="other" />
+      <Combobox {...comboboxProps} ref={comboboxRef} form="settings" defaultValue="us-west" aria-label="Region" />
+      <DatePicker {...datePickerProps} ref={dateRef} form="settings" defaultValue="2026-11-18" aria-label="Renewal" />
+    </>,
+  );
+  assert.equal(comboboxRef.current, trigger());
+  assert.equal(dateRef.current, dateTrigger());
+  await click(trigger());
+  await click(one('[role="option"]:not([aria-selected="true"])'));
+  await settle();
+  await click(dateTrigger());
+  await press(document.activeElement!, "ArrowRight");
+  await click(document.activeElement!);
+  await settle();
+  const shown = () => [trigger().textContent, dateTrigger().textContent];
+  const chosen = shown();
+  assert.notDeepEqual(chosen, ["Oregon", "18 Nov 2026"]);
+
+  await act(async () => one<HTMLFormElement>("#other", container).reset());
+  assert.deepEqual(shown(), chosen, "another form's reset is not theirs");
+  await act(async () => one<HTMLFormElement>("#settings", container).reset());
+  assert.deepEqual(shown(), ["Oregon", "18 Nov 2026"]);
+});
+
+test("a form reset leaves a controlled Combobox and DatePicker to their owner, named or not", async () => {
+  const onRegion = mock.fn();
+  const onDate = mock.fn();
+  const { container } = await mount(
+    <form>
+      <Combobox
+        {...comboboxProps}
+        value="us-east"
+        defaultValue="us-west"
+        onValueChange={onRegion}
+        aria-label="Region"
+      />
+      <DatePicker
+        {...datePickerProps}
+        value="2026-11-19"
+        defaultValue="2026-11-18"
+        onValueChange={onDate}
+        aria-label="Renewal"
+      />
+    </form>,
+  );
+  await act(async () => one<HTMLFormElement>("form", container).reset());
+  assert.deepEqual([trigger().textContent, dateTrigger().textContent], ["Virginia", "19 Nov 2026"]);
+  assert.equal(onRegion.mock.callCount() + onDate.mock.callCount(), 0);
+});
