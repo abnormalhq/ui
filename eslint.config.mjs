@@ -4,7 +4,7 @@ import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
 /*
- * The same rules the projects run on their installed copies (abnormalhq, onboard, mail): react-hooks, jsx-a11y and the
+ * The same rules the projects run on their installed copies (abnormalhq, mail): react-hooks, jsx-a11y and the
  * Next.js and TypeScript rules. Linting the registry here catches a hooks or a11y problem before a project reinstalls it.
  */
 const eslintConfig = defineConfig([

@@ -1,7 +1,7 @@
 const config = {
   extends: ["@commitlint/config-conventional"],
   rules: {
-    // The same types as abnormalhq, onboard and mail (ops for operational changes).
+    // The same types as abnormalhq and mail (ops for operational changes).
     "type-enum": [
       2,
       "always",

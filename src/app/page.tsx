@@ -15,8 +15,8 @@ export default function OverviewPage() {
           </h1>
         </SectionTitle>
         <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-          Design tokens, base components and brand pieces shared by the website, onboard and mail. Each one installs as
-          source into the project.
+          Design tokens, base components and brand pieces shared by the website and mail. Each one installs as source
+          into the project.
         </p>
       </header>
 
