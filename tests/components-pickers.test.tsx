@@ -1427,3 +1427,145 @@ test("a form reset leaves a controlled Combobox and DatePicker to their owner, n
   assert.deepEqual([trigger().textContent, dateTrigger().textContent], ["Virginia", "19 Nov 2026"]);
   assert.equal(onRegion.mock.callCount() + onDate.mock.callCount(), 0);
 });
+
+const previousButton = () => one<HTMLButtonElement>('[data-slot="calendar-previous"]');
+const nextButton = () => one<HTMLButtonElement>('[data-slot="calendar-next"]');
+const tabStops = () =>
+  [...document.querySelectorAll<HTMLElement>('[data-slot="calendar-day"][tabindex="0"]')].map(
+    ({ dataset }) => dataset.date,
+  );
+
+test("the keyboard and the month buttons of a Calendar stop at min and max, on a day that can be chosen", async () => {
+  const onMonthChange = mock.fn();
+  await mount(
+    <Calendar
+      {...calendarProps}
+      today="2026-11-10"
+      defaultMonth="2026-11"
+      min="2026-10-20"
+      max="2026-12-05"
+      onMonthChange={onMonthChange}
+    />,
+  );
+  const go = async (key: string, init?: KeyboardEventInit) => {
+    assert.equal(await press(document.activeElement!, key, init), true, key);
+    return [focusedDay(), caption()];
+  };
+  assert.deepEqual([previousButton().disabled, nextButton().disabled], [false, false]);
+  await act(async () => day("2026-11-10").focus());
+
+  // A month or a year too far stops on the last day, in its month, and the button that would go on is disabled.
+  assert.deepEqual(await go("PageDown"), ["2026-12-05", "December 2026"]);
+  assert.deepEqual(await go("PageDown"), ["2026-12-05", "December 2026"]);
+  assert.deepEqual(await go("PageDown", { shiftKey: true }), ["2026-12-05", "December 2026"]);
+  assert.deepEqual(await go("ArrowRight"), ["2026-12-05", "December 2026"]);
+  assert.deepEqual(await go("ArrowDown"), ["2026-12-05", "December 2026"]);
+  assert.deepEqual(await go("End"), ["2026-12-05", "December 2026"]);
+  assert.deepEqual([previousButton().disabled, nextButton().disabled], [false, true]);
+  assert.equal(nextButton().matches(":disabled"), true);
+  await click(nextButton());
+  assert.equal(caption(), "December 2026");
+
+  assert.deepEqual(await go("PageUp", { shiftKey: true }), ["2026-10-20", "October 2026"]);
+  assert.deepEqual(await go("PageUp"), ["2026-10-20", "October 2026"]);
+  assert.deepEqual(await go("ArrowLeft"), ["2026-10-20", "October 2026"]);
+  assert.deepEqual(await go("ArrowUp"), ["2026-10-20", "October 2026"]);
+  assert.deepEqual(await go("Home"), ["2026-10-20", "October 2026"]);
+  assert.deepEqual([previousButton().disabled, nextButton().disabled], [true, false]);
+  await click(previousButton());
+  assert.equal(caption(), "October 2026");
+  assert.deepEqual(
+    onMonthChange.mock.calls.map(({ arguments: args }) => args[0]),
+    ["2026-12", "2026-10"],
+  );
+
+  // An arrow across the edge of a month goes on while the day it lands on is in reach.
+  await act(async () => day("2026-10-31").focus());
+  assert.deepEqual(await go("ArrowRight"), ["2026-11-01", "November 2026"]);
+  await act(async () => day("2026-11-30").focus());
+  assert.deepEqual(await go("ArrowDown"), ["2026-12-05", "December 2026"]);
+});
+
+test("the tab stop of a Calendar is a day within min and max, whatever today and the value are", async () => {
+  // Today is before the first day: the grid opens on the first day, not on today.
+  await mount(<Calendar {...calendarProps} today="2026-11-10" min="2026-11-15" max="2026-12-05" />);
+  assert.deepEqual(tabStops(), ["2026-11-15"]);
+  // The month buttons bring the first day of the month, or the nearest day that can be chosen.
+  await click(nextButton());
+  assert.deepEqual(tabStops(), ["2026-12-01"]);
+  await mounted.pop()!.unmount();
+
+  // A value past the last day is still shown as chosen, but the keyboard starts within reach.
+  await mount(
+    <Calendar {...calendarProps} today="2026-11-28" defaultValue="2026-11-25" min="2026-11-03" max="2026-11-20" />,
+  );
+  assert.equal(day("2026-11-25").closest("td")!.getAttribute("aria-selected"), "true");
+  assert.deepEqual(tabStops(), ["2026-11-03"]);
+  // A click on a day out of reach chooses nothing and does not move the tab stop there.
+  await click(day("2026-11-26"));
+  assert.deepEqual(tabStops(), ["2026-11-03"]);
+  await click(day("2026-11-12"));
+  assert.deepEqual(tabStops(), ["2026-11-12"]);
+  await mounted.pop()!.unmount();
+
+  // A DatePicker hands its focus to that day when it opens.
+  await mount(<DatePicker {...datePickerProps} min="2026-11-15" aria-label="Renewal" />);
+  await click(dateTrigger());
+  assert.equal(focusedDay(), "2026-11-15");
+  await mounted.pop()!.unmount();
+
+  // A month with no day in reach, which only its owner can show, keeps a tab stop all the same.
+  await mount(<Calendar {...calendarProps} today="2026-11-10" month="2027-03" max="2026-12-05" />);
+  assert.deepEqual(tabStops(), ["2027-03-01"]);
+  assert.deepEqual([previousButton().disabled, nextButton().disabled], [false, true]);
+});
+
+test("a Calendar without min and max stops at the first and last year a day can be written with", async () => {
+  const go = async (key: string, init?: KeyboardEventInit) => {
+    assert.equal(await press(document.activeElement!, key, init), true, key);
+    return [focusedDay(), caption()];
+  };
+  await mount(<Calendar {...calendarProps} today="2026-11-10" defaultMonth="9999-11" />);
+  await click(nextButton());
+  // December 9999 has no days after it: the rows that would hold them stay empty, and the grid keeps its six weeks.
+  assert.equal(caption(), "December 9999");
+  assert.equal(document.querySelectorAll('[role="gridcell"]').length, 42);
+  assert.equal(document.querySelectorAll('[data-slot="calendar-day"]').length, 31);
+  assert.equal(nextButton().disabled, true);
+  await click(nextButton());
+  assert.equal(caption(), "December 9999");
+  await act(async () => day("9999-12-30").focus());
+  assert.deepEqual(await go("ArrowDown"), ["9999-12-31", "December 9999"]);
+  assert.deepEqual(await go("ArrowRight"), ["9999-12-31", "December 9999"]);
+  assert.deepEqual(await go("PageDown"), ["9999-12-31", "December 9999"]);
+  assert.deepEqual(await go("PageDown", { shiftKey: true }), ["9999-12-31", "December 9999"]);
+  assert.deepEqual(await go("PageUp", { shiftKey: true }), ["9998-12-31", "December 9998"]);
+  await mounted.pop()!.unmount();
+
+  await mount(<Calendar {...calendarProps} today="2026-11-10" defaultMonth="0001-02" />);
+  await click(previousButton());
+  assert.equal(caption(), "January 1");
+  assert.equal(previousButton().disabled, true);
+  await click(previousButton());
+  assert.equal(caption(), "January 1");
+  await act(async () => day("0001-01-02").focus());
+  assert.deepEqual(await go("ArrowUp"), ["0001-01-01", "January 1"]);
+  assert.deepEqual(await go("ArrowLeft"), ["0001-01-01", "January 1"]);
+  assert.deepEqual(await go("PageUp"), ["0001-01-01", "January 1"]);
+  assert.deepEqual(await go("PageUp", { shiftKey: true }), ["0001-01-01", "January 1"]);
+  assert.deepEqual(await go("PageDown", { shiftKey: true }), ["0002-01-01", "January 2"]);
+});
+
+test("day and month arithmetic stops at the first and last day of a four-digit year", () => {
+  assert.equal(addDays("9999-12-31", 1), "9999-12-31");
+  assert.equal(addDays("9999-12-25", 7), "9999-12-31");
+  assert.equal(addDays("0001-01-01", -1), "0001-01-01");
+  assert.equal(addMonths("9999-12-15", 1), "9999-12-31");
+  assert.equal(addMonths("9999-06-15", 12), "9999-12-31");
+  assert.equal(addMonths("9998-12-15", 12), "9999-12-15");
+  assert.equal(addMonths("0001-01-15", -1), "0001-01-01");
+  assert.equal(addMonths("0001-06-15", -12), "0001-01-01");
+  const last = monthGrid("9999-12", 1);
+  assert.equal(new Set(last).size, 42);
+  assert.deepEqual(last.map((date) => parseISODate(date) !== undefined).lastIndexOf(true), last.indexOf("9999-12-31"));
+});

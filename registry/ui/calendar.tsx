@@ -9,6 +9,8 @@ import {
   addMonths,
   clampDate,
   type DateRange,
+  FIRST_DATE,
+  LAST_DATE,
   localISODate,
   monthGrid,
   monthOf,
@@ -83,7 +85,8 @@ const BAND = "data-range:bg-highlight-muted data-[range=end]:rounded-e-control d
  * goes into a form as it is (see calendar-date.ts).
  * Keyboard: the grid is one tab stop. Arrow keys move by a day or a week, Home and End go to the ends of the week,
  * Page Up and Page Down change the month and with Shift the year, and Enter or Space chooses. Moving past an edge
- * turns the page. Each day is a button named by its full date; today carries aria-current="date" and the chosen day
+ * turns the page. Nothing steps past `min` and `max`, or past years 1 and 9999 without them: the keyboard stops on
+ * the first or last day, the month button that would leave is disabled, and the grid's tab stop is a day in reach. Each day is a button named by its full date; today carries aria-current="date" and the chosen day
  * aria-selected; the month name is a live region, so changing month with the buttons is announced.
  * The chosen day is the highlighter, today is bold with a dot under it. Every month shows six weeks, so the height
  * never changes from one month to the next.
@@ -141,6 +144,10 @@ function Calendar({
   const days = monthGrid(month, weekStartsOn);
   const disabledDay = (date: string) =>
     (min !== undefined && date < min) || (max !== undefined && date > max) || isDateDisabled?.(date) === true;
+  // Where the month buttons and the keyboard stop: at min and max, and at the first and last day four digits can
+  // write where one of them is missing or lies beyond.
+  const firstDay = min !== undefined && min > FIRST_DATE ? min : FIRST_DATE;
+  const lastDay = max !== undefined && max < LAST_DATE ? max : LAST_DATE;
 
   // A range with one end chosen: the day under the pointer or the focus is where it would end.
   const pending = mode === "range" && picked !== null && picked.to === null;
@@ -180,8 +187,12 @@ function Calendar({
   // The grid's one tab stop: where the keyboard last was, else the chosen day, else today, else the 1st.
   const [focusDay, setFocusDay] = React.useState<string>();
   const inMonth = (date: string | null | undefined): date is string => !!date && monthOf(date) === month;
-  const tabStop =
-    [focusDay, picked?.from, picked?.to, today, clampDate(`${month}-01`, min, max)].find(inMonth) ?? `${month}-01`;
+  // A day outside min and max is passed over, so the focus a popover or the Tab key hands the grid lands on a day the
+  // keyboard could have reached; only a month with no such day keeps one of them.
+  const stops = [focusDay, picked?.from, picked?.to, today, clampDate(`${month}-01`, firstDay, lastDay)].filter(
+    inMonth,
+  );
+  const tabStop = stops.find((date) => date >= firstDay && date <= lastDay) ?? stops[0] ?? `${month}-01`;
   const grid = React.useRef<HTMLTableElement>(null);
   const moveFocus = React.useRef(false);
   React.useEffect(() => {
@@ -191,7 +202,7 @@ function Calendar({
   });
 
   const focusOn = (date: string) => {
-    const next = clampDate(date, min, max);
+    const next = clampDate(date, firstDay, lastDay);
     moveFocus.current = true;
     setFocusDay(next);
     showMonth(monthOf(next));
@@ -225,6 +236,9 @@ function Calendar({
   const year = first.getUTCFullYear();
   const firstMonth = min === undefined ? undefined : monthOf(min);
   const lastMonth = max === undefined ? undefined : monthOf(max);
+  // The month buttons stop at the months of the first and last day, where a further step has nowhere to go.
+  const atFirstMonth = previousMonth === month || previousMonth < monthOf(firstDay);
+  const atLastMonth = nextMonth === month || nextMonth > monthOf(lastDay);
   const firstYear = Math.min(year, firstMonth === undefined ? Math.max(year - 10, 1) : Number(firstMonth.slice(0, 4)));
   const lastYear = Math.max(year, lastMonth === undefined ? Math.min(year + 10, 9999) : Number(lastMonth.slice(0, 4)));
   const outside = (candidate: string) =>
@@ -239,7 +253,7 @@ function Calendar({
           type="button"
           data-slot="calendar-previous"
           aria-label={previousLabel}
-          disabled={min !== undefined && previousMonth < monthOf(min)}
+          disabled={atFirstMonth}
           onClick={() => showMonth(previousMonth)}
         >
           <ChevronLeftIcon className="rtl:rotate-180" />
@@ -300,7 +314,7 @@ function Calendar({
           type="button"
           data-slot="calendar-next"
           aria-label={nextLabel}
-          disabled={max !== undefined && nextMonth > monthOf(max)}
+          disabled={atLastMonth}
           onClick={() => showMonth(nextMonth)}
         >
           <ChevronRightIcon className="rtl:rotate-180" />
@@ -363,7 +377,9 @@ function Calendar({
           {Array.from({ length: 6 }, (_, week) => (
             <tr key={week}>
               {days.slice(week * 7, week * 7 + 7).map((date) => {
-                const day = parseISODate(date)!;
+                const day = parseISODate(date);
+                // Past the last day a year of four digits can write there is no day to show: the cell stays empty.
+                if (!day) return <td key={date} role="gridcell" className="size-9 p-0" />;
                 const number = format.day.format(day.getUTCDate());
                 const place = position(date);
                 // A day of the month before or after fills the row, but belongs to that month's page.
