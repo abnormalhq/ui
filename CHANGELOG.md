@@ -6,6 +6,31 @@ Each entry names the items it touches, because a project installs items one by o
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-10
+
+Date ranges for the admin console's filters, a caption that jumps to a month and a year, and form resets that respect a cancelled reset. Two new items bring the registry to 64. No package was added: the range, the lists and the hook build on `Intl`, the browser's own `<select>` (through `native-select`) and React.
+
+### Added
+
+- `calendar`: `mode="range"` chooses a span of days as `{ from, to }`, both days as text. The first choice is one end, the days up to the pointer or the keyboard focus preview the range, and the second choice closes it, in order whichever end came first. The grid is `aria-multiselectable` and every day of the range is `aria-selected`; `min`, `max` and `isDateDisabled` apply to both ends. `calendar-date.ts` brings the `DateRange` and `ClosedDateRange` types and `orderRange`.
+- `calendar`, `date-picker`: `monthLabel` and `yearLabel`, given together, turn the caption into two lists that jump to any month and year. The names are the caller's, the month names and digits the locale's, and the grid keeps its six weeks.
+- `date-range-picker`: a field for a span of days, built from `popover` and `calendar`. It changes only once both ends are chosen, writes the range the way the locale does, and with `fromName` and `toName` submits the two days as a pair of hidden form fields.
+- `form-reset`: `useFormReset`, the hook `switch`, `combobox`, `date-picker` and `date-range-picker` share to follow a form reset. A project's own field can use it.
+
+### Changed
+
+- `slider`: `thumbLabels` is required by the types when `value` or `defaultValue` is known to hold two numbers or more (a literal such as `defaultValue={[10, 40]}`, or a tuple type), with one name per thumb. A single thumb, and a `number[]` held in state, whose length the types cannot see, are as before. A range written as a literal without `thumbLabels` now fails the type check: give it its names.
+- `calendar`: now needs `native-select`, for the two lists. The single-day props and markup are unchanged.
+- `switch`, `combobox`, `date-picker`: now need `form-reset`.
+
+### Fixed
+
+- `switch`, `combobox`, `date-picker`: a form reset the page cancels (`<form onReset={(event) => event.preventDefault()}>`) no longer puts the field back on its default while the native fields beside it keep their values. The field now waits until the reset event has finished and acts only if nobody cancelled it.
+
+### Upgrading from 0.2.0
+
+Reinstalling `switch`, `combobox`, `date-picker` or `calendar` brings their new items with them (`form-reset`, `native-select`); name those in the same command when reinstalling with `--overwrite`. Nothing else has to change, unless a range `Slider` was written with a literal value and no `thumbLabels`, which the type check now reports.
+
 ## [0.2.0] - 2026-11-10
 
 Fifteen items for the admin console, the webmail and the storefront, which brings the registry to 62. No package was added: every new item builds on `radix-ui`, `lucide-react` and `class-variance-authority`, which the registry already used, or on nothing.

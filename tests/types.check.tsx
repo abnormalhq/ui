@@ -8,9 +8,11 @@ import { Calendar } from "@/components/ui/calendar";
 import { Combobox } from "@/components/ui/combobox";
 import { CommandInput } from "@/components/ui/command";
 import { DatePicker } from "@/components/ui/date-picker";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { Pagination, PaginationEllipsis } from "@/components/ui/pagination";
 import { SheetContent } from "@/components/ui/sheet";
+import { Slider } from "@/components/ui/slider";
 import { StepperItem } from "@/components/ui/stepper";
 
 declare const maybe: boolean;
@@ -73,4 +75,69 @@ export const names = [
   // @ts-expect-error A step has a status.
   <StepperItem key="step" />,
   <StepperItem key="step-current" status="current" />,
+];
+
+/** A range is { from, to }, the two lists of the caption are named together, and a range field needs what a date field does. */
+export const ranges = [
+  <Calendar
+    key="range"
+    mode="range"
+    locale="en-GB"
+    previousLabel="Previous"
+    nextLabel="Next"
+    value={{ from: "2026-11-10", to: null }}
+    onValueChange={({ from, to }) => void [from, to]}
+  />,
+  // @ts-expect-error A range is not a day.
+  <Calendar key="range-day" mode="range" locale="en-GB" previousLabel="Previous" nextLabel="Next" value="2026-11-10" />,
+  // @ts-expect-error And a day is not a range.
+  <Calendar
+    key="day-range"
+    locale="en-GB"
+    previousLabel="Previous"
+    nextLabel="Next"
+    value={{ from: "2026-11-10", to: null }}
+  />,
+  // @ts-expect-error The month list and the year list are named together.
+  <Calendar key="jump-half" locale="en-GB" previousLabel="Previous" nextLabel="Next" monthLabel="Month" />,
+  <Calendar key="jump" locale="en-GB" previousLabel="Previous" nextLabel="Next" monthLabel="Month" yearLabel="Year" />,
+  // @ts-expect-error The popover needs a name.
+  <DateRangePicker key="period" locale="en-GB" placeholder="Choose" previousLabel="Previous" nextLabel="Next" />,
+  // @ts-expect-error The locale is the page's, never a default.
+  <DateRangePicker
+    key="period-locale"
+    placeholder="Choose"
+    calendarLabel="Period"
+    previousLabel="Previous"
+    nextLabel="Next"
+  />,
+  <DateRangePicker
+    key="period-named"
+    locale="en-GB"
+    placeholder="Choose"
+    calendarLabel="Choose a period"
+    previousLabel="Previous"
+    nextLabel="Next"
+    onValueChange={({ from, to }) => void [from.length, to.length]}
+  />,
+];
+
+declare const held: number[];
+declare const pair: [number, number];
+
+/** A range slider names each thumb wherever the types can count them; one thumb, or a plain number[], is as before. */
+export const sliders = [
+  <Slider key="single" defaultValue={[20]} aria-label="Quota" />,
+  <Slider key="bare" aria-label="Quota" />,
+  <Slider key="held" value={held} onValueChange={(next: number[]) => void next} />,
+  <Slider key="held-named" value={held} thumbLabels={["From", "To"]} />,
+  // @ts-expect-error Two thumbs need two names.
+  <Slider key="range" defaultValue={[10, 40]} />,
+  // @ts-expect-error One name is not enough for two thumbs.
+  <Slider key="range-short" defaultValue={[10, 40]} thumbLabels={["From"]} />,
+  <Slider key="range-named" defaultValue={[10, 40]} thumbLabels={["From", "To"]} />,
+  // @ts-expect-error A controlled pair needs its names as well.
+  <Slider key="pair" value={pair} />,
+  <Slider key="pair-named" value={pair} thumbLabels={["From", "To"]} />,
+  <Slider key="three" defaultValue={[10, 20, 30]} thumbLabels={["Low", "Middle", "High"]} />,
 ];

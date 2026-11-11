@@ -24,6 +24,7 @@ import { CardTitle } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { DatePicker } from "@/components/ui/date-picker";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { InputOTP } from "@/components/ui/input-otp";
 import {
   Pagination,
@@ -320,6 +321,48 @@ test("a Calendar given today renders the same month on the server as in the brow
     <Calendar locale="en-GB" defaultMonth="2026-11" previousLabel="Previous" nextLabel="Next" />,
   );
   assert.doesNotMatch(unknown, /aria-current/);
+});
+
+test("a range Calendar and its month and year lists render on the server", () => {
+  const html = renderToStaticMarkup(
+    <Calendar
+      mode="range"
+      locale="en-GB"
+      today="2026-11-10"
+      defaultValue={{ from: "2026-11-12", to: "2026-11-14" }}
+      previousLabel="Previous"
+      nextLabel="Next"
+      monthLabel="Month"
+      yearLabel="Year"
+    />,
+  );
+  assert.match(html, /<table role="grid"[^>]*aria-multiselectable="true"/);
+  assert.equal((html.match(/<td role="gridcell" aria-selected="true"/g) ?? []).length, 3);
+  assert.match(html, /data-date="2026-11-12"[^>]*data-selected="true"[^>]*data-range="start"/);
+  assert.match(html, /data-date="2026-11-13"[^>]*data-range="middle"/);
+  assert.equal((html.match(/tabindex="0"/g) ?? []).length, 1);
+  // The lists are the browser's own, so they work before any script runs; the month's name stays for the grid.
+  assert.match(html, /<select[^>]*aria-label="Month"[^>]*>.*<option value="11" selected="">November<\/option>/);
+  assert.match(html, /<select[^>]*aria-label="Year"[^>]*>.*<option value="2026" selected="">2026<\/option>/);
+  assert.match(html, /class="sr-only"[^>]*>November 2026</);
+
+  const picker = renderToStaticMarkup(
+    <DateRangePicker
+      fromName="from"
+      toName="to"
+      locale="en-GB"
+      defaultValue={{ from: "2026-11-02", to: "2026-11-10" }}
+      placeholder="Choose a period"
+      calendarLabel="Choose a period"
+      previousLabel="Previous"
+      nextLabel="Next"
+    />,
+  );
+  assert.match(picker, /^<button type="button" role="combobox"[^>]*aria-haspopup="dialog"[^>]*aria-expanded="false"/);
+  assert.match(
+    picker,
+    />2\s*–\s*10 Nov 2026<\/span><input type="hidden" name="from" value="2026-11-02"\/><input type="hidden" name="to" value="2026-11-10"\/><\/button>$/,
+  );
 });
 
 test("the fields render their value, and the input a form submits, before any script runs", () => {

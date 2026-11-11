@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
 import { act } from "react";
 import { Calendar } from "@/components/ui/calendar";
-import { addDays, addMonths, clampDate, monthGrid, parseISODate } from "@/components/ui/calendar-date";
+import { addDays, addMonths, clampDate, monthGrid, orderRange, parseISODate } from "@/components/ui/calendar-date";
 import { Combobox } from "@/components/ui/combobox";
 import {
   Command,
@@ -16,6 +16,7 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { DatePicker } from "@/components/ui/date-picker";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { InputOTP } from "@/components/ui/input-otp";
 import { Slider } from "@/components/ui/slider";
 
@@ -44,6 +45,25 @@ const type = async (input: HTMLInputElement, value: string) => {
     input.dispatchEvent(new Event("input", { bubbles: true }));
   });
 };
+
+/** Choosing in a list, the way React hears it: the value set, then a change event. */
+const choose = async (select: HTMLSelectElement, value: string) => {
+  await act(async () => {
+    select.value = value;
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+};
+
+/** The pointer arriving on an element, and leaving it for somewhere outside the calendar. */
+const hover = (element: Element) =>
+  act(async () => void element.dispatchEvent(new MouseEvent("mouseover", { bubbles: true })));
+const leave = (element: Element) =>
+  act(
+    async () => void element.dispatchEvent(new MouseEvent("mouseout", { bubbles: true, relatedTarget: document.body })),
+  );
+
+/** Lets the timers of a closed popover run: Radix hands the focus back to the trigger in one, after the close. */
+const settle = () => act(async () => void (await new Promise((resolve) => setTimeout(resolve))));
 
 const one = <T extends Element = HTMLElement>(selector: string, root: ParentNode = document) => {
   const element = root.querySelector<T>(selector);
@@ -653,6 +673,8 @@ test("the calendar dates are plain text and never drift across a time zone or a 
   assert.equal(clampDate("2026-11-01", "2026-11-03", "2026-11-20"), "2026-11-03");
   assert.equal(clampDate("2026-11-30", "2026-11-03", "2026-11-20"), "2026-11-20");
   assert.equal(clampDate("2026-11-10"), "2026-11-10");
+  assert.deepEqual(orderRange("2026-11-18", "2026-11-12"), { from: "2026-11-12", to: "2026-11-18" });
+  assert.deepEqual(orderRange("2026-11-12", "2026-11-12"), { from: "2026-11-12", to: "2026-11-12" });
   const grid = monthGrid("2026-11", 1);
   assert.equal(grid.length, 42);
   assert.deepEqual([grid[0], grid[6], grid[41]], ["2026-10-26", "2026-11-01", "2026-12-06"]);
@@ -708,6 +730,8 @@ test("a form reset puts an uncontrolled Combobox and DatePicker back on their de
   await press(input, "ArrowDown");
   await press(input, "Enter");
   assert.equal(new FormData(form).get("region"), "us-east");
+  // Or the focus the closed combobox hands back lands after the calendar has taken it.
+  await settle();
 
   await click(dateTrigger());
   await press(document.activeElement!, "ArrowRight");
@@ -719,4 +743,581 @@ test("a form reset puts an uncontrolled Combobox and DatePicker back on their de
   assert.equal(trigger().textContent, "Oregon");
   assert.equal(new FormData(form).get("renewal"), "2026-11-18");
   assert.equal(dateTrigger().textContent, "18 Nov 2026");
+});
+
+test("a cancelled form reset leaves a Combobox and a DatePicker alone, as a browser leaves a native field", async () => {
+  const fields = (cancel: boolean) => (
+    <form
+      onReset={(event) => {
+        if (cancel) event.preventDefault();
+      }}
+    >
+      <Combobox {...comboboxProps} name="region" defaultValue="us-west" />
+      <DatePicker {...datePickerProps} name="renewal" defaultValue="2026-11-18" />
+      <button type="reset">Reset</button>
+    </form>
+  );
+  const { container, rerender } = await mount(fields(true));
+  const form = one<HTMLFormElement>("form", container);
+  // Only the registry's fields: happy-dom resets native ones before it dispatches the event, cancelled or not.
+  const submitted = () => ["region", "renewal"].map((name) => new FormData(form).get(name));
+
+  await click(trigger());
+  const input = one<HTMLInputElement>('[role="dialog"] input[role="combobox"]');
+  await type(input, "america");
+  await press(input, "ArrowDown");
+  await press(input, "Enter");
+  await settle();
+  await click(dateTrigger());
+  await press(document.activeElement!, "ArrowRight");
+  await click(document.activeElement!);
+  await settle();
+  assert.deepEqual(submitted(), ["us-east", "2026-11-19"]);
+
+  // The page says no in React's onReset, which runs after the form's own listeners: nothing may have moved by then.
+  await act(async () => form.reset());
+  await settle();
+  assert.deepEqual(submitted(), ["us-east", "2026-11-19"]);
+  assert.equal(trigger().textContent, "Virginia");
+  assert.equal(dateTrigger().textContent, "19 Nov 2026");
+  // The same from a reset button.
+  await click(one('button[type="reset"]', container));
+  await settle();
+  assert.deepEqual(submitted(), ["us-east", "2026-11-19"]);
+
+  // A reset that goes through takes both back.
+  await rerender(fields(false));
+  await click(one('button[type="reset"]', container));
+  assert.deepEqual(submitted(), ["us-west", "2026-11-18"]);
+  assert.equal(trigger().textContent, "Oregon");
+  assert.equal(dateTrigger().textContent, "18 Nov 2026");
+});
+
+const selectedDays = () =>
+  [...document.querySelectorAll('td[aria-selected="true"] [data-date]')].map(
+    (node) => (node as HTMLElement).dataset.date,
+  );
+const previewDays = () =>
+  [...document.querySelectorAll<HTMLElement>("[data-preview]")].map(({ dataset }) => dataset.date);
+const lastRange = (spy: { mock: { calls: { arguments: unknown[] }[] } }) => spy.mock.calls.at(-1)?.arguments[0];
+
+test("a range Calendar takes its two ends in either order, and marks every day between them selected", async () => {
+  const onValueChange = mock.fn();
+  await mount(<Calendar {...calendarProps} mode="range" today="2026-11-10" onValueChange={onValueChange} />);
+  const grid = one('[role="grid"]');
+  assert.equal(grid.getAttribute("aria-multiselectable"), "true");
+  assert.deepEqual(selectedDays(), []);
+
+  await click(day("2026-11-18"));
+  assert.deepEqual(lastRange(onValueChange), { from: "2026-11-18", to: null });
+  assert.deepEqual(selectedDays(), ["2026-11-18"]);
+  // The second end may come before the first: the range is handed back in order.
+  await click(day("2026-11-16"));
+  assert.deepEqual(lastRange(onValueChange), { from: "2026-11-16", to: "2026-11-18" });
+  assert.deepEqual(selectedDays(), ["2026-11-16", "2026-11-17", "2026-11-18"]);
+  // The ends are the highlighter, the day between them the band.
+  assert.deepEqual(
+    ["2026-11-16", "2026-11-17", "2026-11-18"].map((date) => [
+      day(date).hasAttribute("data-selected"),
+      day(date).dataset.range,
+    ]),
+    [
+      [true, "start"],
+      [false, "middle"],
+      [true, "end"],
+    ],
+  );
+  assert.equal(day("2026-11-17").closest("td")!.dataset.range, "middle");
+  assert.equal(day("2026-11-15").dataset.range, undefined);
+
+  // A third choice starts over, and the same day twice is a range of one day.
+  await click(day("2026-11-24"));
+  assert.deepEqual(lastRange(onValueChange), { from: "2026-11-24", to: null });
+  assert.deepEqual(selectedDays(), ["2026-11-24"]);
+  await click(day("2026-11-24"));
+  assert.deepEqual(lastRange(onValueChange), { from: "2026-11-24", to: "2026-11-24" });
+  assert.deepEqual(selectedDays(), ["2026-11-24"]);
+  assert.equal(day("2026-11-24").dataset.range, undefined);
+  assert.equal(onValueChange.mock.callCount(), 4);
+});
+
+test("a range Calendar previews the range under the pointer and under the keyboard focus", async () => {
+  const onValueChange = mock.fn();
+  await mount(
+    <Calendar
+      {...calendarProps}
+      mode="range"
+      today="2026-11-10"
+      isDateDisabled={(date) => date === "2026-11-21"}
+      onValueChange={onValueChange}
+    />,
+  );
+  // Nothing to preview before the first end is chosen.
+  await hover(day("2026-11-12"));
+  assert.deepEqual(previewDays(), []);
+
+  await click(day("2026-11-18"));
+  await hover(day("2026-11-20"));
+  assert.deepEqual(previewDays(), ["2026-11-19", "2026-11-20"]);
+  assert.deepEqual(
+    ["2026-11-18", "2026-11-19", "2026-11-20"].map((date) => day(date).dataset.range),
+    ["start", "middle", "end"],
+  );
+  // A preview is not a selection: only the chosen end is selected, and nothing was reported.
+  assert.deepEqual(selectedDays(), ["2026-11-18"]);
+  assert.equal(onValueChange.mock.callCount(), 1);
+  // Backwards too, and a day that cannot be chosen previews nothing.
+  await hover(day("2026-11-16"));
+  assert.deepEqual(previewDays(), ["2026-11-16", "2026-11-17"]);
+  assert.equal(day("2026-11-18").dataset.range, "end");
+  await hover(day("2026-11-21"));
+  assert.deepEqual(previewDays(), []);
+  await hover(day("2026-11-20"));
+  await leave(one('[role="grid"]'));
+  assert.deepEqual(previewDays(), []);
+
+  // From the keyboard the preview follows the focus, across the turn of a page, and the choice closes the range.
+  await act(async () => day("2026-11-18").focus());
+  await press(document.activeElement!, "ArrowRight");
+  assert.deepEqual(previewDays(), ["2026-11-19"]);
+  await press(document.activeElement!, "ArrowDown");
+  assert.equal(focusedDay(), "2026-11-26");
+  assert.equal(previewDays().length, 8);
+  await press(document.activeElement!, "PageDown");
+  assert.equal(focusedDay(), "2026-12-26");
+  assert.equal(caption(), "December 2026");
+  assert.deepEqual([previewDays()[0], previewDays().at(-1)], ["2026-12-01", "2026-12-26"]);
+  await click(document.activeElement!);
+  assert.deepEqual(lastRange(onValueChange), { from: "2026-11-18", to: "2026-12-26" });
+  assert.deepEqual(previewDays(), []);
+  assert.equal(selectedDays().length, 26, "the days of the range in December");
+  // The band runs on through the days of the neighbouring months that fill the first and last rows.
+  const fillers = () =>
+    [...document.querySelectorAll<HTMLElement>("td[data-range]")].filter((cell) => !cell.querySelector("button"));
+  assert.equal(fillers().length, 1, "November 30 in December's first row");
+  await click(one('button[aria-label="Previous month"]'));
+  assert.equal(fillers().length, 6, "December 1 to 6 in November's last row");
+});
+
+test("a range Calendar keeps to min, max and the days that cannot be chosen, for both ends", async () => {
+  const onValueChange = mock.fn();
+  await mount(
+    <Calendar
+      {...calendarProps}
+      mode="range"
+      today="2026-11-10"
+      min="2026-11-03"
+      max="2026-11-27"
+      isDateDisabled={(date) => date === "2026-11-12"}
+      onValueChange={onValueChange}
+    />,
+  );
+  for (const date of ["2026-11-02", "2026-11-12", "2026-11-28"]) await click(day(date));
+  assert.equal(onValueChange.mock.callCount(), 0);
+  await click(day("2026-11-10"));
+  for (const date of ["2026-11-12", "2026-11-28"]) await click(day(date));
+  assert.deepEqual(lastRange(onValueChange), { from: "2026-11-10", to: null });
+  // The keyboard stops at the last day, and a range may run across a day that cannot be an end.
+  await act(async () => day("2026-11-24").focus());
+  await press(document.activeElement!, "ArrowDown");
+  assert.equal(focusedDay(), "2026-11-27");
+  await click(document.activeElement!);
+  assert.deepEqual(lastRange(onValueChange), { from: "2026-11-10", to: "2026-11-27" });
+  assert.equal(day("2026-11-12").getAttribute("aria-disabled"), "true");
+  assert.equal(day("2026-11-12").closest("td")!.getAttribute("aria-selected"), "true");
+});
+
+test("a range Calendar starts over when its first end can no longer be chosen", async () => {
+  const onValueChange = mock.fn();
+  const range = (max?: string, booked?: string) => (
+    <Calendar
+      {...calendarProps}
+      mode="range"
+      today="2026-11-10"
+      max={max}
+      isDateDisabled={(date) => date === booked}
+      onValueChange={onValueChange}
+    />
+  );
+  const { rerender } = await mount(range());
+  await click(day("2026-11-20"));
+  // Fresh limits arrive between the two choices, and rule the first day out.
+  await rerender(range("2026-11-15"));
+  await click(day("2026-11-12"));
+  assert.deepEqual(lastRange(onValueChange), { from: "2026-11-12", to: null });
+  assert.deepEqual(selectedDays(), ["2026-11-12"]);
+  await rerender(range("2026-11-15", "2026-11-12"));
+  await click(day("2026-11-14"));
+  assert.deepEqual(lastRange(onValueChange), { from: "2026-11-14", to: null });
+  // A first day that is still allowed closes the range as before.
+  await click(day("2026-11-09"));
+  assert.deepEqual(lastRange(onValueChange), { from: "2026-11-09", to: "2026-11-14" });
+});
+
+test("a controlled range Calendar shows what its owner holds, and opens on the month of its start", async () => {
+  const onValueChange = mock.fn();
+  const { rerender } = await mount(
+    <Calendar
+      {...calendarProps}
+      mode="range"
+      value={{ from: "2026-03-30", to: "2026-04-02" }}
+      onValueChange={onValueChange}
+    />,
+  );
+  assert.equal(caption(), "March 2026");
+  assert.deepEqual(selectedDays(), ["2026-03-30", "2026-03-31"]);
+  assert.equal(day("2026-03-30").tabIndex, 0);
+  await click(day("2026-03-10"));
+  assert.deepEqual(lastRange(onValueChange), { from: "2026-03-10", to: null });
+  assert.deepEqual(selectedDays(), ["2026-03-30", "2026-03-31"]);
+  await rerender(<Calendar {...calendarProps} mode="range" value={null} month="2026-03" />);
+  assert.deepEqual(selectedDays(), []);
+});
+
+const jumpProps = { ...calendarProps, monthLabel: "Month", yearLabel: "Year" };
+const monthList = () => one<HTMLSelectElement>('select[aria-label="Month"]');
+const yearList = () => one<HTMLSelectElement>('select[aria-label="Year"]');
+
+test("a Calendar with month and year names jumps to any month from two lists, at the same height", async () => {
+  const onMonthChange = mock.fn();
+  const { container, rerender } = await mount(
+    <Calendar {...jumpProps} today="2026-11-10" defaultValue="2026-11-18" onMonthChange={onMonthChange} />,
+  );
+  assert.deepEqual(
+    [...monthList().options].map(({ textContent }) => textContent),
+    "January February March April May June July August September October November December".split(" "),
+  );
+  assert.equal(monthList().value, "11");
+  assert.equal(yearList().value, "2026");
+  // Ten years either side of the one on show while nothing bounds them.
+  assert.deepEqual(
+    [yearList().options[0]!.textContent, yearList().options.length, yearList().options[20]!.textContent],
+    ["2016", 21, "2036"],
+  );
+  // The month's name is still there for the grid and for the announcement, out of sight.
+  const name = one('[data-slot="calendar-caption"]', container);
+  assert.equal(name.textContent, "November 2026");
+  assert.equal(name.getAttribute("aria-live"), "polite");
+  assert.match(name.className, /\bsr-only\b/);
+  assert.equal(one('[role="grid"]').getAttribute("aria-labelledby"), name.id);
+
+  await choose(monthList(), "02");
+  assert.equal(caption(), "February 2026");
+  assert.deepEqual(onMonthChange.mock.calls.at(-1)?.arguments, ["2026-02"]);
+  await choose(yearList(), "2031");
+  assert.equal(caption(), "February 2031");
+  assert.equal(yearList().options[0]!.textContent, "2021", "the list moves with the year on show");
+  // February 2031 fits four weeks exactly, and still takes six rows.
+  assert.equal(day("2031-02-01").closest("tr")!.querySelector("td")!.textContent, "27");
+  assert.equal(document.querySelectorAll("tbody tr").length, 6);
+  assert.equal(document.querySelectorAll('[role="gridcell"]').length, 42);
+  // The month buttons keep the lists in step.
+  await click(one('button[aria-label="Next month"]'));
+  assert.equal(monthList().value, "03");
+
+  // Without the names the caption is the month's name, and there are no lists.
+  await rerender(<Calendar key="plain" {...calendarProps} defaultMonth="2026-11" />);
+  assert.equal(container.querySelector("select"), null);
+  assert.doesNotMatch(one('[data-slot="calendar-caption"]', container).className, /sr-only/);
+});
+
+test("the lists of a Calendar keep to min and max, and speak the locale", async () => {
+  const { rerender } = await mount(
+    <Calendar {...jumpProps} today="2026-11-10" defaultMonth="2026-11" min="2025-03-15" max="2027-02-10" />,
+  );
+  assert.deepEqual(
+    [...yearList().options].map(({ value }) => value),
+    ["2025", "2026", "2027"],
+  );
+  assert.equal([...monthList().options].filter(({ disabled }) => disabled).length, 0);
+  // A year whose same month is out of reach stops at the nearest month inside.
+  await choose(yearList(), "2027");
+  assert.equal(caption(), "February 2027");
+  assert.deepEqual(
+    [...monthList().options].filter(({ disabled }) => !disabled).map(({ value }) => value),
+    ["01", "02"],
+  );
+  await choose(yearList(), "2025");
+  assert.equal(caption(), "March 2025");
+  assert.deepEqual(
+    [...monthList().options].filter(({ disabled }) => disabled).map(({ value }) => value),
+    ["01", "02"],
+  );
+
+  await rerender(
+    <Calendar
+      key="de"
+      locale="de-DE"
+      previousLabel="Vorheriger Monat"
+      nextLabel="Nächster Monat"
+      monthLabel="Monat"
+      yearLabel="Jahr"
+      mode="range"
+      month="2026-03"
+    />,
+  );
+  assert.equal(one<HTMLSelectElement>('select[aria-label="Monat"]').selectedOptions[0]!.textContent, "März");
+  assert.ok(one('select[aria-label="Jahr"]'));
+});
+
+test("the year list of a Calendar stays within the years a month can be written with", async () => {
+  const years = () => [...yearList().options].map(({ value }) => value);
+  const { rerender } = await mount(<Calendar {...jumpProps} today="2026-11-10" defaultMonth="0003-06" />);
+  assert.deepEqual([years()[0], years().length, years().at(-1)], ["0001", 13, "0013"]);
+  await choose(yearList(), "0001");
+  assert.equal(caption(), "June 1");
+  assert.deepEqual([years()[0], years().at(-1)], ["0001", "0011"]);
+  await rerender(<Calendar key="late" {...jumpProps} today="2026-11-10" defaultMonth="9995-06" />);
+  assert.deepEqual([years()[0], years().length, years().at(-1)], ["9985", 15, "9999"]);
+  await choose(yearList(), "9999");
+  assert.equal(caption(), "June 9999");
+});
+
+const rangePickerProps = {
+  ...calendarProps,
+  placeholder: "Choose a period",
+  calendarLabel: "Choose a period",
+  today: "2026-11-10",
+};
+const rangeTrigger = () => one<HTMLButtonElement>('[data-slot="date-range-picker-trigger"]');
+const period = (form: HTMLFormElement) => [new FormData(form).get("from"), new FormData(form).get("to")];
+
+test("a DateRangePicker opens a range calendar, and changes only once both ends are chosen", async () => {
+  const onValueChange = mock.fn();
+  const { container } = await mount(
+    <form>
+      <DateRangePicker
+        {...rangePickerProps}
+        fromName="from"
+        toName="to"
+        defaultValue={{ from: "2026-11-02", to: "2026-11-10" }}
+        onValueChange={onValueChange}
+        id="period"
+      />
+    </form>,
+  );
+  const form = one<HTMLFormElement>("form", container);
+  assert.equal(rangeTrigger().id, "period");
+  assert.equal(rangeTrigger().getAttribute("role"), "combobox");
+  assert.equal(rangeTrigger().getAttribute("aria-haspopup"), "dialog");
+  assert.equal(rangeTrigger().getAttribute("aria-expanded"), "false");
+  // The range as the locale writes one (the spaces around the dash depend on the ICU release).
+  assert.match(rangeTrigger().textContent!, /^2\s*–\s*10 Nov 2026$/);
+  assert.deepEqual(period(form), ["2026-11-02", "2026-11-10"]);
+  assert.equal(container.querySelectorAll('input[type="hidden"]').length, 2);
+
+  await click(rangeTrigger());
+  assert.equal(one('[role="dialog"]').getAttribute("aria-label"), "Choose a period");
+  assert.equal(one('[role="grid"]').getAttribute("aria-multiselectable"), "true");
+  assert.equal(focusedDay(), "2026-11-02", "focus lands on the start of the range");
+  assert.equal(selectedDays().length, 9);
+
+  // One end is only a draft: the popover stays, and the field and the form keep the range they had.
+  await press(document.activeElement!, "ArrowDown");
+  await click(document.activeElement!);
+  assert.ok(document.querySelector('[role="dialog"]'));
+  assert.deepEqual(selectedDays(), ["2026-11-09"]);
+  assert.match(rangeTrigger().textContent!, /^2\s*–\s*10 Nov 2026$/);
+  assert.deepEqual(period(form), ["2026-11-02", "2026-11-10"]);
+  assert.equal(onValueChange.mock.callCount(), 0);
+
+  await press(document.activeElement!, "ArrowLeft");
+  await press(document.activeElement!, "ArrowLeft");
+  assert.deepEqual(previewDays(), ["2026-11-07", "2026-11-08"]);
+  await click(document.activeElement!);
+  assert.deepEqual(
+    onValueChange.mock.calls.map(({ arguments: args }) => args),
+    [[{ from: "2026-11-07", to: "2026-11-09" }]],
+  );
+  assert.equal(document.querySelector('[role="dialog"]'), null, "the second end closes the popover");
+  assert.match(rangeTrigger().textContent!, /^7\s*–\s*9 Nov 2026$/);
+  assert.deepEqual(period(form), ["2026-11-07", "2026-11-09"]);
+});
+
+test("a DateRangePicker closed halfway keeps its range, and shows its placeholder without one", async () => {
+  const onValueChange = mock.fn();
+  const { container } = await mount(
+    <form>
+      <DateRangePicker
+        {...rangePickerProps}
+        {...{ monthLabel: "Month", yearLabel: "Year" }}
+        fromName="from"
+        toName="to"
+        max="2026-11-10"
+        onValueChange={onValueChange}
+        aria-label="Period"
+      />
+    </form>,
+  );
+  const form = one<HTMLFormElement>("form", container);
+  assert.equal(rangeTrigger().textContent, "Choose a period");
+  assert.ok(rangeTrigger().hasAttribute("data-placeholder"));
+  // Both fields are there and empty, as an empty date input would be.
+  assert.deepEqual(period(form), ["", ""]);
+
+  await click(rangeTrigger());
+  assert.equal(focusedDay(), "2026-11-10", "today, while nothing is chosen");
+  assert.ok(one('select[aria-label="Month"]'));
+  assert.equal(day("2026-11-11").getAttribute("aria-disabled"), "true");
+  await click(day("2026-11-03"));
+  assert.deepEqual(selectedDays(), ["2026-11-03"]);
+  await press(document.activeElement!, "Escape");
+  await settle();
+  assert.equal(document.querySelector('[role="dialog"]'), null);
+  assert.equal(rangeTrigger().textContent, "Choose a period");
+  assert.equal(onValueChange.mock.callCount(), 0);
+  // The half-chosen range is gone when it opens again.
+  await click(rangeTrigger());
+  assert.deepEqual(selectedDays(), []);
+  await click(day("2026-11-05"));
+  await click(day("2026-11-05"));
+  assert.equal(rangeTrigger().textContent, "5 Nov 2026");
+  assert.deepEqual(period(form), ["2026-11-05", "2026-11-05"]);
+  await settle();
+  await mounted.pop()!.unmount();
+
+  await mount(
+    <DateRangePicker
+      {...rangePickerProps}
+      locale="en-US"
+      value={{ from: "2026-12-28", to: "2027-01-03" }}
+      fromName="from"
+      toName="to"
+      disabled
+      aria-label="Period"
+    />,
+  );
+  assert.match(rangeTrigger().textContent!, /^Dec 28, 2026\s*–\s*Jan 3, 2027$/);
+  // A disabled field is left out of the form.
+  assert.equal(document.querySelector('input[type="hidden"]'), null);
+});
+
+test("a form reset puts an uncontrolled DateRangePicker back on its default, unless the page cancels it", async () => {
+  const fields = (cancel: boolean) => (
+    <>
+      <form
+        id="report"
+        onReset={(event) => {
+          if (cancel) event.preventDefault();
+        }}
+      >
+        <DateRangePicker
+          {...rangePickerProps}
+          fromName="from"
+          toName="to"
+          defaultValue={{ from: "2026-11-02", to: "2026-11-10" }}
+          aria-label="Period"
+        />
+        <button type="reset">Reset</button>
+      </form>
+      {/* Outside the form, joined to it by the form attribute, with one field only and no default. */}
+      <DateRangePicker {...rangePickerProps} form="report" toName="until" aria-label="Until" />
+    </>
+  );
+  const { container, rerender } = await mount(fields(true));
+  const form = one<HTMLFormElement>("form", container);
+  const submitted = () => [...period(form), new FormData(form).get("until")];
+  const [inside, outside] = [
+    ...container.querySelectorAll<HTMLButtonElement>('[data-slot="date-range-picker-trigger"]'),
+  ];
+
+  await click(inside!);
+  await click(day("2026-11-16"));
+  await click(day("2026-11-20"));
+  await settle();
+  await click(outside!);
+  await click(day("2026-11-24"));
+  await click(day("2026-11-25"));
+  await settle();
+  assert.deepEqual(submitted(), ["2026-11-16", "2026-11-20", "2026-11-25"]);
+
+  await click(one('button[type="reset"]', container));
+  await settle();
+  assert.deepEqual(submitted(), ["2026-11-16", "2026-11-20", "2026-11-25"]);
+  assert.match(inside!.textContent!, /^16\s*–\s*20 Nov 2026$/);
+
+  await rerender(fields(false));
+  await act(async () => form.reset());
+  assert.deepEqual(submitted(), ["2026-11-02", "2026-11-10", ""]);
+  assert.match(inside!.textContent!, /^2\s*–\s*10 Nov 2026$/);
+  assert.equal(outside!.textContent, "Choose a period");
+});
+
+test("a DateRangePicker drops a half-chosen range when its owner closes it, and when its form resets", async () => {
+  const onValueChange = mock.fn();
+  const held = (open: boolean) => (
+    <DateRangePicker {...rangePickerProps} open={open} onValueChange={onValueChange} aria-label="Period" />
+  );
+  const { rerender } = await mount(held(true));
+  await click(day("2026-11-03"));
+  assert.deepEqual(selectedDays(), ["2026-11-03"]);
+  // The page closes the popover itself, without a click the picker could hear.
+  await rerender(held(false));
+  await settle();
+  await rerender(held(true));
+  assert.deepEqual(selectedDays(), []);
+  await click(day("2026-11-12"));
+  assert.deepEqual(selectedDays(), ["2026-11-12"], "a first day again, not the end of the abandoned range");
+  assert.equal(onValueChange.mock.callCount(), 0);
+  await rerender(held(false));
+  await settle();
+  await mounted.pop()!.unmount();
+
+  const { container } = await mount(
+    <form>
+      <DateRangePicker
+        {...rangePickerProps}
+        defaultValue={{ from: "2026-11-02", to: "2026-11-10" }}
+        aria-label="Period"
+      />
+    </form>,
+  );
+  await click(rangeTrigger());
+  await click(day("2026-11-20"));
+  assert.deepEqual(selectedDays(), ["2026-11-20"]);
+  await act(async () => one<HTMLFormElement>("form", container).reset());
+  assert.equal(selectedDays().length, 9, "the default range, with no first day left over");
+  await click(day("2026-11-24"));
+  assert.deepEqual(selectedDays(), ["2026-11-24"]);
+});
+
+test("a form reset reaches a DateRangePicker that has no field names, or is disabled", async () => {
+  const { container, rerender } = await mount(
+    <form>
+      <DateRangePicker
+        {...rangePickerProps}
+        defaultValue={{ from: "2026-11-02", to: "2026-11-10" }}
+        aria-label="Period"
+      />
+    </form>,
+  );
+  const form = one<HTMLFormElement>("form", container);
+  assert.equal(container.querySelector('input[type="hidden"]'), null);
+  await click(rangeTrigger());
+  await click(day("2026-11-16"));
+  await click(day("2026-11-20"));
+  await settle();
+  assert.match(rangeTrigger().textContent!, /^16\s*–\s*20 Nov 2026$/);
+  await act(async () => form.reset());
+  assert.match(rangeTrigger().textContent!, /^2\s*–\s*10 Nov 2026$/);
+
+  await click(rangeTrigger());
+  await click(day("2026-11-16"));
+  await click(day("2026-11-20"));
+  await settle();
+  await rerender(
+    <form>
+      <DateRangePicker
+        {...rangePickerProps}
+        fromName="from"
+        toName="to"
+        defaultValue={{ from: "2026-11-02", to: "2026-11-10" }}
+        disabled
+        aria-label="Period"
+      />
+    </form>,
+  );
+  assert.match(rangeTrigger().textContent!, /^16\s*–\s*20 Nov 2026$/);
+  await act(async () => form.reset());
+  assert.match(rangeTrigger().textContent!, /^2\s*–\s*10 Nov 2026$/);
 });
