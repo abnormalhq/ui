@@ -6,6 +6,10 @@ Each entry names the items it touches, because a project installs items one by o
 
 ## [Unreleased]
 
+### Fixed
+
+- `calendar`: a key that moves nowhere, such as Home on the first day of the week or an arrow past `min` or `max`, no longer leaves the grid waiting to move the focus. The next render of the calendar, whatever caused it, used to pull the focus back into the grid from the field the person had moved on to.
+
 ## [0.4.0] - 2026-11-11
 
 A search box, so a project no longer shows the clear button each browser draws inside `type="search"`. One new item brings the registry to 65. No package was added.

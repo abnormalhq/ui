@@ -529,6 +529,27 @@ test("a Calendar moves by day, week, month and year from the keyboard, turning t
   assert.equal(await press(document.activeElement!, "a"), false);
 });
 
+test("a Calendar leaves the focus alone after a key that moved nowhere", async () => {
+  const calendar = () => (
+    <>
+      <Calendar {...calendarProps} today="2026-11-10" defaultValue="2026-11-18" min="2026-11-16" />
+      <input aria-label="Elsewhere" />
+    </>
+  );
+  const { rerender } = await mount(calendar());
+  await act(async () => day("2026-11-16").focus());
+  // Home on the first day of the week, twice: the second changes nothing, and so does a step back past `min`.
+  await press(document.activeElement!, "Home");
+  await press(document.activeElement!, "Home");
+  await press(document.activeElement!, "ArrowLeft");
+  assert.equal(focusedDay(), "2026-11-16");
+
+  const elsewhere = one<HTMLInputElement>('input[aria-label="Elsewhere"]');
+  await act(async () => elsewhere.focus());
+  await rerender(calendar());
+  assert.equal(document.activeElement, elsewhere, "a later render does not pull the focus back into the grid");
+});
+
 test("a Calendar chooses on click, and keeps days outside its range unavailable but reachable", async () => {
   const onValueChange = mock.fn();
   await mount(

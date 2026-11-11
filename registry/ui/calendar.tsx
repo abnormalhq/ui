@@ -203,6 +203,12 @@ function Calendar({
 
   const focusOn = (date: string) => {
     const next = clampDate(date, firstDay, lastDay);
+    // A key that moves nowhere (Home on the week's first day, a step past min or max) changes no state, so no render
+    // follows to do the moving: the flag would wait for a later one and take the focus back from wherever it had gone.
+    if (next === focusDay && monthOf(next) === month) {
+      grid.current?.querySelector<HTMLElement>(`[data-date="${next}"]`)?.focus();
+      return;
+    }
     moveFocus.current = true;
     setFocusDay(next);
     showMonth(monthOf(next));
