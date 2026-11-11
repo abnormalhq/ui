@@ -6,6 +6,26 @@ Each entry names the items it touches, because a project installs items one by o
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-11-11
+
+Fixes to the form reset and to the calendar's edges that 0.3.0 left open. No item and no package was added.
+
+### Fixed
+
+- `combobox`, `date-picker`: a form reset now reaches a field that has no `name`, or is `disabled`. The field found its form through the hidden input it submits with, which such a field does not render; the button finds it now, as in `date-range-picker`, so the button also takes the `form` attribute. A controlled field still follows its `value` prop, and a cancelled reset still leaves the field alone.
+- `input-otp`: a form reset puts an uncontrolled field back on its `defaultValue`, without calling `onValueChange`, unless the page cancels the reset. React keeps the input's value attribute on the typed code, so the browser's own reset changed nothing.
+- `calendar`: the grid's tab stop, which is where a `date-picker` or `date-range-picker` puts the focus when it opens, is now a day within `min` and `max`. Today, or a chosen day, outside them used to take it.
+- `calendar`: without `min` or `max`, the month buttons and the keyboard stop at January of year 1 and December 9999, the limits of the year list. The previous button went on into year 0, and December 9999, or a step past it from the keyboard, made the calendar throw. The cells after 31 December 9999 are empty.
+- `calendar`: `addDays` and `addMonths` in `calendar-date.ts` stop at `0001-01-01` and `9999-12-31` (exported as `FIRST_DATE` and `LAST_DATE`) instead of returning text that is not a day.
+
+### Changed
+
+- `input-otp`: now needs `form-reset`.
+
+### Upgrading from 0.3.0
+
+Reinstalling `input-otp` brings `form-reset` with it; name it in the same command when reinstalling with `--overwrite`. Reinstall `calendar` to fix `date-picker` and `date-range-picker` too: the grid is its file. Nothing else has to change.
+
 ## [0.3.0] - 2026-11-10
 
 Date ranges for the admin console's filters, a caption that jumps to a month and a year, and form resets that respect a cancelled reset. Two new items bring the registry to 64. No package was added: the range, the lists and the hook build on `Intl`, the browser's own `<select>` (through `native-select`) and React.

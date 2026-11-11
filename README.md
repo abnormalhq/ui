@@ -58,7 +58,7 @@ Three items open and close content, and each has its case. `disclosure` is a nat
 
 Dates are text, not `Date` objects: `calendar` and `date-picker` take and return `"2026-11-10"`, the form `<input type="date">` submits, so a day is the same day on the server and in every time zone. A range is two of them, `{ from, to }`: `calendar` with `mode="range"`, and `date-range-picker`, which submits the pair as two form fields. All three take the `locale` from the page and never assume one.
 
-Fields that hold their value in React state (`switch`, `combobox`, `date-picker`, `date-range-picker`) follow their form like native ones: a reset puts an uncontrolled field back on its default, and a reset the page cancels (`event.preventDefault()` in `onReset`) leaves it alone. They share `useFormReset` from `form-reset`, which a project's own field can call too.
+Fields that hold their value in React state (`switch`, `combobox`, `date-picker`, `date-range-picker`, `input-otp`) follow their form like native ones: a reset puts an uncontrolled field back on its default, with or without a `name` and disabled or not, and a reset the page cancels (`event.preventDefault()` in `onReset`) leaves it alone. They share `useFormReset` from `form-reset`, which a project's own field can call too.
 
 Patterns are the pieces the projects kept rewriting: they hold no product state (`ThemePicker` takes the saved preference and hands back the choice; `LinkRow` takes the router's `navigate`), and every word they show comes in as a prop.
 
