@@ -34,7 +34,9 @@ const COMBOBOX_SIZES = {
  * Every word is the page's: `placeholder` on the button while nothing is chosen, `searchLabel` to name the field and
  * the popover, `searchPlaceholder`, and `emptyMessage` for a search without matches. A combobox takes no name from
  * its content, so give the button one: a Label (`id` and htmlFor), aria-label or aria-labelledby.
- * With a `name` the value submits with a form. Choosing the chosen option again keeps it; pass `clearable` to let
+ * With a `name` the value submits with a form. With or without a name, and disabled or not, a reset of the form the
+ * button belongs to puts an uncontrolled field back on its default, unless the page cancels the reset; a controlled
+ * one follows its value prop. Choosing the chosen option again keeps it; pass `clearable` to let
  * that clear the choice instead.
  */
 function Combobox({
@@ -57,6 +59,7 @@ function Combobox({
   open: openProp,
   onOpenChange,
   renderOption,
+  ref,
   ...props
 }: Omit<React.ComponentProps<"button">, "value" | "defaultValue" | "onChange" | "children" | "type"> & {
   options: ComboboxOption[];
@@ -84,9 +87,11 @@ function Combobox({
   // A form reset (a reset button, form.reset(), or the reset React runs after a form action) puts an uncontrolled
   // field back on its default, as it does a native one, unless the page cancels the reset. A controlled field follows
   // its value prop.
-  const fieldRef = React.useRef<HTMLInputElement>(null);
+  // The button finds the form, not the hidden input: a field without a name, or a disabled one, has none to ask.
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+  React.useImperativeHandle(ref, () => buttonRef.current as HTMLButtonElement, []);
   const submits = name !== undefined && !disabled;
-  useFormReset(fieldRef, () => setInnerValue(defaultValue ?? null));
+  useFormReset(buttonRef, () => setInnerValue(defaultValue ?? null));
   const value = valueProp === undefined ? innerValue : valueProp;
   const [innerOpen, setInnerOpen] = React.useState(false);
   const open = openProp ?? innerOpen;
@@ -108,6 +113,8 @@ function Combobox({
           data-size={size}
           data-placeholder={chosen ? undefined : ""}
           disabled={disabled}
+          form={form}
+          ref={buttonRef}
           className={cn(
             "flex w-56 min-w-0 items-center justify-between gap-1.5 rounded-control border border-input bg-control text-left text-foreground transition-[border-color,background-color] duration-150 select-none hover:bg-accent focus-visible:-outline-offset-1 disabled:cursor-not-allowed disabled:opacity-50 aria-expanded:bg-accent aria-invalid:border-destructive data-placeholder:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
             COMBOBOX_SIZES[size],
@@ -119,7 +126,7 @@ function Combobox({
             {chosen ? (renderOption?.(chosen) ?? chosen.label) : placeholder}
           </span>
           <ChevronsUpDownIcon className="text-muted-foreground" aria-hidden="true" />
-          {submits && <input ref={fieldRef} type="hidden" name={name} value={value ?? ""} form={form} />}
+          {submits && <input type="hidden" name={name} value={value ?? ""} form={form} />}
         </button>
       </PopoverTrigger>
       <PopoverContent

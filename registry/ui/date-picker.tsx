@@ -18,7 +18,8 @@ const DATE_PICKER_SIZES = {
  * A date field: a button showing the chosen day, written the way the `locale` writes dates, that opens a Calendar in
  * a popover. Choosing a day closes it and focus returns to the button; Escape closes it without choosing.
  * The value is text ("2026-11-10"), as for Calendar and for <input type="date">, and with a `name` it submits with a
- * form in that form.
+ * form in that form. With or without a name, and disabled or not, a reset of the form the button belongs to puts an
+ * uncontrolled field back on its default, unless the page cancels the reset; a controlled one follows its value prop.
  * The button is a combobox to assistive technology, one whose popup is a dialog, as in the date picker of the ARIA
  * Authoring Practices: its value is the chosen day, so a screen reader reads the field's name and then the date.
  * The words are the page's: `placeholder` while no day is chosen, `calendarLabel` to name the popover ("Choose a
@@ -53,6 +54,7 @@ function DatePicker({
   disabled,
   open: openProp,
   onOpenChange,
+  ref,
   ...props
 }: Omit<React.ComponentProps<"button">, "value" | "defaultValue" | "onChange" | "children" | "type"> &
   Pick<
@@ -78,9 +80,11 @@ function DatePicker({
   // A form reset (a reset button, form.reset(), or the reset React runs after a form action) puts an uncontrolled
   // field back on its default, as it does a native one, unless the page cancels the reset. A controlled field follows
   // its value prop.
-  const fieldRef = React.useRef<HTMLInputElement>(null);
+  // The button finds the form, not the hidden input: a field without a name, or a disabled one, has none to ask.
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+  React.useImperativeHandle(ref, () => buttonRef.current as HTMLButtonElement, []);
   const submits = name !== undefined && !disabled;
-  useFormReset(fieldRef, () => setInnerValue(defaultValue ?? null));
+  useFormReset(buttonRef, () => setInnerValue(defaultValue ?? null));
   const value = valueProp === undefined ? innerValue : valueProp;
   const [innerOpen, setInnerOpen] = React.useState(false);
   const open = openProp ?? innerOpen;
@@ -112,6 +116,8 @@ function DatePicker({
           data-size={size}
           data-placeholder={chosen ? undefined : ""}
           disabled={disabled}
+          form={form}
+          ref={buttonRef}
           className={cn(
             "flex w-56 min-w-0 items-center gap-2 rounded-control border border-input bg-control text-left text-foreground transition-[border-color,background-color] duration-150 select-none hover:bg-accent focus-visible:-outline-offset-1 disabled:cursor-not-allowed disabled:opacity-50 aria-expanded:bg-accent aria-invalid:border-destructive data-placeholder:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
             DATE_PICKER_SIZES[size],
@@ -123,7 +129,7 @@ function DatePicker({
           <span data-slot="date-picker-value" className="min-w-0 flex-1 truncate">
             {text ?? placeholder}
           </span>
-          {submits && <input ref={fieldRef} type="hidden" name={name} value={value ?? ""} form={form} />}
+          {submits && <input type="hidden" name={name} value={value ?? ""} form={form} />}
         </button>
       </PopoverTrigger>
       <PopoverContent

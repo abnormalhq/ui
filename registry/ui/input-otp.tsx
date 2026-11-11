@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { useFormReset } from "@/components/ui/use-form-reset";
 
 const ACCEPT = {
   numeric: { pattern: "[0-9]*", inputMode: "numeric", reject: /[^0-9]/g },
@@ -19,6 +20,9 @@ const ACCEPT = {
  * end, which is where the lit box shows it.
  * Name it as any input: a Label with htmlFor, aria-label or aria-labelledby. It takes aria-invalid and
  * aria-describedby, submits under its `name`, and `onComplete` fires when the last box is filled.
+ * A form reset treats it as a text field: an uncontrolled one goes back to its defaultValue, without calling
+ * onValueChange, unless the page cancels the reset; a controlled one keeps its value prop. React writes the typed code
+ * into the input's value attribute, which is what a browser resets to, so the field follows the reset itself.
  * No package is behind it: the field is small enough to own, and the alternatives either draw one input per box or
  * speak English labels of their own.
  */
@@ -36,6 +40,7 @@ function InputOTP({
   onBlur,
   onPaste,
   onSelect,
+  ref,
   ...props
 }: Omit<
   React.ComponentProps<"input">,
@@ -57,6 +62,9 @@ function InputOTP({
   const clean = (text: string) => text.replace(reject, "").slice(0, length);
   const [inner, setInner] = React.useState(() => clean(defaultValue));
   const value = valueProp === undefined ? inner : clean(valueProp);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement, []);
+  useFormReset(inputRef, () => setInner(clean(defaultValue)));
   const [focused, setFocused] = React.useState(false);
 
   const change = (next: string) => {
@@ -131,6 +139,7 @@ function InputOTP({
           setFocused(false);
         }}
         {...props}
+        ref={inputRef}
       />
     </div>
   );

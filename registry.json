@@ -454,7 +454,7 @@
       "type": "registry:ui",
       "title": "Input OTP",
       "description": "A one-time code field drawn as boxes: one real input that takes a paste and the code from a message.",
-      "registryDependencies": ["@abnormal/utils"],
+      "registryDependencies": ["@abnormal/form-reset", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/input-otp.tsx",
