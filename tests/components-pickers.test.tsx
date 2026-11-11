@@ -1569,3 +1569,48 @@ test("day and month arithmetic stops at the first and last day of a four-digit y
   assert.equal(new Set(last).size, 42);
   assert.deepEqual(last.map((date) => parseISODate(date) !== undefined).lastIndexOf(true), last.indexOf("9999-12-31"));
 });
+
+test("a form reset puts an uncontrolled InputOTP back on its default, unless the page cancels it", async () => {
+  const onValueChange = mock.fn();
+  const ref = { current: null as HTMLInputElement | null };
+  const fields = (cancel: boolean, disabled = false) => (
+    <form
+      onReset={(event) => {
+        if (cancel) event.preventDefault();
+      }}
+    >
+      <InputOTP ref={ref} defaultValue="12" disabled={disabled} onValueChange={onValueChange} aria-label="Code" />
+      <InputOTP name="held" value="654321" defaultValue="11" aria-label="Held code" />
+      <button type="reset">Reset</button>
+    </form>
+  );
+  const { container, rerender } = await mount(fields(false));
+  const form = one<HTMLFormElement>("form", container);
+  const [input, held] = [...container.querySelectorAll<HTMLInputElement>("input")] as [
+    HTMLInputElement,
+    HTMLInputElement,
+  ];
+  const boxes = () => texts('[data-slot="input-otp"]:first-child [data-slot="input-otp-slot"]').join("");
+  assert.equal(ref.current, input);
+
+  // Without a name, as a code a script reads from the field.
+  await type(input, "123456");
+  assert.deepEqual([input.value, boxes()], ["123456", "123456"]);
+  await click(one('button[type="reset"]', container));
+  assert.deepEqual([input.value, boxes()], ["12", "12"]);
+  // The reset is not a change the person made, and a controlled field stays with its owner.
+  assert.equal(onValueChange.mock.callCount(), 1);
+  assert.equal(held.value, "654321");
+
+  // Disabled, as a browser resets a disabled text field too.
+  await type(input, "777");
+  await rerender(fields(false, true));
+  await act(async () => form.reset());
+  assert.deepEqual([input.value, boxes()], ["12", "12"]);
+
+  await rerender(fields(true));
+  await type(input, "999999");
+  await click(one('button[type="reset"]', container));
+  await settle();
+  assert.deepEqual([input.value, boxes()], ["999999", "999999"]);
+});

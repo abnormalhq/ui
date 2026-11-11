@@ -1,9 +1,10 @@
 import { useEffect, useRef, type RefObject } from "react";
 
 /*
- * The hook behind the form reset of Switch, Combobox, DatePicker and DateRangePicker: fields that keep their value in
- * React state and submit it through a hidden input, which a form reset does not touch. It lives in its own file
- * without "use client", so a project's own field can call it too.
+ * The hook behind the form reset of Switch, Combobox, DatePicker, DateRangePicker and InputOTP: fields that keep
+ * their value in React state and submit it through a hidden input, or through an input React keeps in step with that
+ * state, neither of which a form reset puts back. It lives in its own file without "use client", so a project's own
+ * field can call it too.
  */
 
 /**
