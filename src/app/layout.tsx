@@ -8,7 +8,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://ui.abnormalhq.com"),
   title: { default: "Abnormal UI", template: "%s · Abnormal UI" },
-  description: "The shadcn registry behind the Abnormal website, onboard and mail.",
+  description: "The shadcn registry behind the Abnormal website and mail.",
 };
 
 const groups = catalog.map(({ title, items }) => ({

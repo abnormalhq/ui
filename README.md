@@ -1,6 +1,6 @@
 # Abnormal UI
 
-The [shadcn registry](https://ui.shadcn.com/docs/registry) behind the Abnormal website, onboard and mail: design tokens, base components and brand pieces, installed as source into each project.
+The [shadcn registry](https://ui.shadcn.com/docs/registry) behind the Abnormal website and mail: design tokens, base components and brand pieces, installed as source into each project.
 
 ## Use it
 
@@ -97,7 +97,7 @@ pnpm install
 pnpm check
 ```
 
-`pnpm check` runs ESLint, the type check and the tests. ESLint uses the rules the projects run on their installed copies (`eslint-config-next` core-web-vitals and TypeScript, so react-hooks and jsx-a11y), so a problem in an item fails here before a project reinstalls it. Commits run lint-staged (ESLint and Prettier on the staged files) and commitlint, as in the website, onboard and mail, and Dependabot proposes dependency updates weekly.
+`pnpm check` runs ESLint, the type check and the tests. ESLint uses the rules the projects run on their installed copies (`eslint-config-next` core-web-vitals and TypeScript, so react-hooks and jsx-a11y), so a problem in an item fails here before a project reinstalls it. Commits run lint-staged (ESLint and Prettier on the staged files) and commitlint, as in the website and mail, and Dependabot proposes dependency updates weekly.
 
 Type checking uses TypeScript 7's `tsc`, like the projects: `@typescript/native` points at TypeScript 7, and `typescript` at the `@typescript/typescript6` compatibility package that Next.js and typescript-eslint load ([the dual-package setup Microsoft recommends](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6-0)). Keep both aliases when upgrading, so items are checked by the same compiler here and in every project. `tsconfig.json` sets `useDefineForClassFields` to `true` explicitly, as the projects do: tsc and the tests already give class fields define semantics for ES2022, but Next.js's SWC reads only an explicit value and compiles them as assignments otherwise.
 
