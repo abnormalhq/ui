@@ -1,10 +1,9 @@
 "use client";
 
-import { SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useId, useState } from "react";
-import { InputGroup, InputGroupInput } from "@/components/ui/input-group";
+import { SearchInput } from "@/components/ui/search-input";
 import { cn } from "@/lib/utils";
 
 export type NavGroup = { title: string; items: { name: string; title: string }[] };
@@ -45,18 +44,16 @@ export function SiteNav({ groups, onNavigate }: { groups: NavGroup[]; onNavigate
   return (
     <nav aria-label="Components" className="grid gap-6">
       <div className="grid gap-2">
-        <InputGroup size="sm">
-          <SearchIcon aria-hidden="true" className="ml-2.5 size-3.5 shrink-0 text-muted-foreground" />
-          <InputGroupInput
-            type="search"
-            aria-label="Search components"
-            aria-controls={resultsId}
-            placeholder="Search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            className="pl-2 text-sm"
-          />
-        </InputGroup>
+        <SearchInput
+          size="sm"
+          aria-label="Search components"
+          aria-controls={resultsId}
+          placeholder="Search"
+          clearLabel="Clear"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          inputClassName="text-sm"
+        />
         {words.length > 0 && (
           <p role="status" className="px-2 text-xs text-muted-foreground">
             {count === 0 ? "No matches" : `${count} ${count === 1 ? "match" : "matches"}`}

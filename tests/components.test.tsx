@@ -10,6 +10,7 @@ import { GuardedDialog } from "@/components/ui/guarded-dialog";
 import { InfoHint } from "@/components/ui/info-hint";
 import { LinkRow } from "@/components/ui/link-row";
 import { Progress } from "@/components/ui/progress";
+import { SearchInput } from "@/components/ui/search-input";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
@@ -658,4 +659,102 @@ test("useOpenCount counts opens, not closes or re-renders", async () => {
   // A dialog that mounts open has not been opened again: its form is already fresh.
   await mount(<Probe open />);
   assert.equal(last(), 0);
+});
+
+test("the search input's clear button empties the box as typing would, and gives way to the hint", async () => {
+  const onChange = mock.fn();
+  const onClear = mock.fn();
+  function Search() {
+    const [query, setQuery] = useState("abnormalhq.com");
+    return (
+      <SearchInput
+        aria-label="Search domains"
+        clearLabel="Clear"
+        hint={<kbd>/</kbd>}
+        value={query}
+        onChange={(event) => {
+          onChange(event.target.value);
+          setQuery(event.target.value);
+        }}
+        onClear={onClear}
+      />
+    );
+  }
+  const { container } = await mount(<Search />);
+  const input = container.querySelector("input")!;
+  assert.equal(input.type, "search");
+  assert.equal(container.querySelector("kbd"), null);
+
+  await click(button("Clear"));
+  assert.deepEqual(onChange.mock.calls[0]?.arguments, [""]);
+  assert.equal(onClear.mock.callCount(), 1);
+  assert.equal(input.value, "");
+  assert.equal(document.activeElement, input);
+  // An empty box has nothing to clear: the hint takes the corner.
+  assert.equal(container.querySelector("button"), null);
+  assert.equal(container.querySelector("kbd")?.textContent, "/");
+});
+
+test("an uncontrolled search input shows its clear button once it holds text, and not while disabled", async () => {
+  const { container, rerender } = await mount(<SearchInput aria-label="Search" clearLabel="Clear" />);
+  const input = container.querySelector("input")!;
+  assert.equal(container.querySelector("button"), null);
+
+  await act(async () => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, "ada");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  assert.ok(button("Clear"));
+
+  await rerender(<SearchInput aria-label="Search" clearLabel="Clear" disabled />);
+  assert.equal(container.querySelector("button"), null);
+
+  await rerender(<SearchInput aria-label="Search" clearLabel="Clear" />);
+  await click(button("Clear"));
+  assert.equal(input.value, "");
+  assert.equal(container.querySelector("button"), null);
+});
+
+test("a form reset puts an uncontrolled search input's clear button back in step with its text", async () => {
+  const { container } = await mount(
+    <form>
+      <SearchInput aria-label="Search" clearLabel="Clear" defaultValue="ada" />
+    </form>,
+  );
+  await click(button("Clear"));
+  assert.equal(container.querySelector("button"), null);
+
+  await act(async () => {
+    container.querySelector("form")!.reset();
+    await new Promise((resolve) => setTimeout(resolve));
+  });
+  assert.equal(container.querySelector("input")!.value, "ada");
+  assert.ok(button("Clear"));
+});
+
+test("the search input attaches the caller's ref once, not on every keystroke", async () => {
+  const ref = mock.fn();
+  function Search() {
+    const [query, setQuery] = useState("");
+    return (
+      <SearchInput
+        ref={ref}
+        aria-label="Search"
+        clearLabel="Clear"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+      />
+    );
+  }
+  const { container } = await mount(<Search />);
+  const input = container.querySelector("input")!;
+  await act(async () => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, "ada");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  assert.equal(input.value, "ada");
+  assert.deepEqual(
+    ref.mock.calls.map(({ arguments: [element] }) => element),
+    [input],
+  );
 });
