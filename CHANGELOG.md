@@ -6,6 +6,18 @@ Each entry names the items it touches, because a project installs items one by o
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-11
+
+A search box, so a project no longer shows the clear button each browser draws inside `type="search"`. One new item brings the registry to 65. No package was added.
+
+### Added
+
+- `search-input`: `Input` with the search icon at its start and a clear button at its end while it holds text. The button is the interface's close icon, the same in every browser, with a name (`clearLabel`, required) and a place in the tab order; the browser's own clear button is hidden. Clearing fires `onChange` with an empty value, controlled or not, then `onClear`, and puts the focus back in the box. `hint` shows in the same corner while the box is empty, such as the shortcut that focuses it. It takes `Input`'s three sizes and follows a form reset.
+
+### Upgrading from 0.3.1
+
+Nothing has to change. To adopt the item, install `search-input` and replace an `Input type="search"` and the icon beside it with `SearchInput`: `className` now sizes the box around the input, and `inputClassName` reaches the input.
+
 ## [0.3.1] - 2026-11-11
 
 Fixes to the form reset and to the calendar's edges that 0.3.0 left open. No item and no package was added.

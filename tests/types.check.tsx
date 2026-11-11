@@ -11,6 +11,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { Pagination, PaginationEllipsis } from "@/components/ui/pagination";
+import { SearchInput } from "@/components/ui/search-input";
 import { SheetContent } from "@/components/ui/sheet";
 import { Slider } from "@/components/ui/slider";
 import { StepperItem } from "@/components/ui/stepper";
@@ -72,6 +73,9 @@ export const names = [
     previousLabel="Previous"
     nextLabel="Next"
   />,
+  // @ts-expect-error The clear button needs a name.
+  <SearchInput key="search" aria-label="Search" />,
+  <SearchInput key="search-named" aria-label="Search" clearLabel="Clear" />,
   // @ts-expect-error A step has a status.
   <StepperItem key="step" />,
   <StepperItem key="step-current" status="current" />,

@@ -573,6 +573,20 @@
       ]
     },
     {
+      "name": "search-input",
+      "type": "registry:ui",
+      "title": "Search Input",
+      "description": "A search box with the search icon, a clear button of its own and room for a shortcut hint.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/form-reset", "@abnormal/input", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/search-input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "select",
       "type": "registry:ui",
       "title": "Select",

@@ -8,6 +8,7 @@ export const groups = [
       "button",
       "input",
       "input-group",
+      "search-input",
       "field-message",
       "textarea",
       "select",
