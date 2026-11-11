@@ -49,6 +49,15 @@ function SearchInput({
   // An uncontrolled box keeps its text in the DOM, so whether it holds any is followed here.
   const [typed, setTyped] = React.useState(() => String(defaultValue ?? "") !== "");
   useFormReset(input, () => setTyped(input.current?.value !== ""));
+  // One callback for as long as the caller's ref is the same one, so React does not detach and attach it on every keystroke.
+  const attach = React.useCallback(
+    (element: HTMLInputElement | null) => {
+      input.current = element;
+      if (typeof ref === "function") ref(element);
+      else if (ref) ref.current = element;
+    },
+    [ref],
+  );
   const filled = value === undefined ? typed : String(value) !== "";
   const sizes = SEARCH_INPUT_SIZES[size];
 
@@ -70,11 +79,7 @@ function SearchInput({
         className={cn("pointer-events-none absolute top-1/2 -translate-y-1/2 text-muted-foreground", sizes.icon)}
       />
       <Input
-        ref={(element) => {
-          input.current = element;
-          if (typeof ref === "function") return ref(element);
-          if (ref) ref.current = element;
-        }}
+        ref={attach}
         type="search"
         size={size}
         value={value}

@@ -731,3 +731,30 @@ test("a form reset puts an uncontrolled search input's clear button back in step
   assert.equal(container.querySelector("input")!.value, "ada");
   assert.ok(button("Clear"));
 });
+
+test("the search input attaches the caller's ref once, not on every keystroke", async () => {
+  const ref = mock.fn();
+  function Search() {
+    const [query, setQuery] = useState("");
+    return (
+      <SearchInput
+        ref={ref}
+        aria-label="Search"
+        clearLabel="Clear"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+      />
+    );
+  }
+  const { container } = await mount(<Search />);
+  const input = container.querySelector("input")!;
+  await act(async () => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, "ada");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  assert.equal(input.value, "ada");
+  assert.deepEqual(
+    ref.mock.calls.map(({ arguments: [element] }) => element),
+    [input],
+  );
+});
