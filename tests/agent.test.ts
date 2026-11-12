@@ -35,6 +35,14 @@ test("the overview Markdown links every item's Markdown and the registry", () =>
   for (const name of names) assert.ok(markdown.includes(`(${site}/md/components/${name}.md)`), name);
 });
 
+test("llms.txt follows the format and links every item's Markdown, the registry and the overview", () => {
+  const text = readFileSync("out/llms.txt", "utf8");
+  assert.match(text, /^# Abnormal UI\n\n> /);
+  assert.ok(text.includes(`(${site}/r/registry.json)`));
+  assert.ok(text.includes(`(${site}/md/index.md)`));
+  for (const name of names) assert.ok(text.includes(`(${site}/md/components/${name}.md)`), name);
+});
+
 test("each item's Markdown has its install command and its demo's source", () => {
   for (const { name, title } of registry.items) {
     const markdown = readFileSync(`out/md/components/${name}.md`, "utf8");
@@ -104,6 +112,9 @@ for (const [accept, served] of [
 test("a component page serves its own Markdown when asked for it", async () => {
   assert.equal((await request("/components/button", "text/markdown")).asked, "/md/components/button.md");
   assert.equal((await request("/components/button", browser)).asked, "/components/button");
+  const link = (await request("/components/button")).response.headers.get("Link")!;
+  assert.ok(link.includes(`</md/components/button.md>; rel="alternate"; type="text/markdown"`));
+  assert.ok(link.includes(`</llms.txt>; rel="describedby"; type="text/plain"`));
 });
 
 test("paths that aren't pages pass through untouched, whatever they accept", async () => {
@@ -125,6 +136,7 @@ test("the overview's Link header points at the registry, its Markdown and every 
   const link = (await request("/")).response.headers.get("Link")!;
   assert.ok(link.includes(`</r/registry.json>; rel="describedby"; type="application/json"`));
   assert.ok(link.includes(`</md/index.md>; rel="alternate"; type="text/markdown"`));
+  assert.ok(link.includes(`</llms.txt>; rel="describedby"; type="text/plain"`));
   for (const name of names) assert.ok(link.includes(`</components/${name}>; rel="item"`), name);
 });
 

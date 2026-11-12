@@ -10,17 +10,23 @@ type Env = { ASSETS: { fetch: typeof fetch } };
 const names = registry.items.map(({ name }) => name);
 
 const alternate = (path: string) => `<${path}>; rel="alternate"; type="text/markdown"`;
+/** Every page points at the llms.txt index, as the website's pages do. */
+const llms = `</llms.txt>; rel="describedby"; type="text/plain"`;
 
 const pages = new Map(
   names.map((name) => [
     `/components/${name}`,
-    { markdown: `/md/components/${name}.md`, link: alternate(`/md/components/${name}.md`) },
+    {
+      markdown: `/md/components/${name}.md`,
+      link: [alternate(`/md/components/${name}.md`), llms].join(", "),
+    },
   ]),
 );
 pages.set("/", {
   markdown: "/md/index.md",
   link: [
     alternate("/md/index.md"),
+    llms,
     `</r/registry.json>; rel="describedby"; type="application/json"`,
     ...names.map((name) => `</components/${name}>; rel="item"; type="text/html"`),
   ].join(", "),
