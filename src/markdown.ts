@@ -24,6 +24,22 @@ export function overviewMarkdown() {
   ].join("\n\n");
 }
 
+/**
+ * llms.txt (https://llmstxt.org/): the registry in one paragraph, how to add it, then every item by group, linking each item's
+ * Markdown. The overview Markdown carries the same list with the setup commands; this is the index agents look for first.
+ */
+export function llmsTxt() {
+  return `${[
+    "# Abnormal UI",
+    `> The shadcn registry behind the Abnormal website and mail: design tokens, base components and brand pieces, ${items.length} items installed as source into each project.`,
+    `Add the registry to \`components.json\` as \`"@abnormal": "${siteUrl}/r/{name}.json"\`, then install an item with \`${installCommand("button")}\`. The machine-readable index is [registry.json](${siteUrl}/r/registry.json); the overview with the setup steps is [index.md](${siteUrl}/md/index.md).`,
+    ...catalog.flatMap((group) => [
+      `## ${group.title}`,
+      group.items.map((item) => `- ${itemLink(item)}: ${item.description}`).join("\n"),
+    ]),
+  ].join("\n\n")}\n`;
+}
+
 export async function itemMarkdown(item: Item) {
   // Route handlers are exported at build, so these files are never read at runtime.
   const usage = await readFile(`src/demos/${item.name}.tsx`, "utf8");

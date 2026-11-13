@@ -125,13 +125,14 @@ pnpm serve
 
 Checked against the content-site items on [Is Your Site Agent-Ready](https://isitagentready.com/), which you can re-run with `POST https://isitagentready.com/api/scan`.
 
-| Entry               | Where                                      | Built by                                                          |
-| ------------------- | ------------------------------------------ | ----------------------------------------------------------------- |
-| Crawl rules         | `/robots.txt`                              | `public/robots.txt`, with Content Signals and the sitemap         |
-| Sitemap             | `/sitemap.xml`                             | `src/app/sitemap.ts`                                              |
-| Markdown pages      | `/md/index.md`, `/md/components/{name}.md` | `src/app/md/`, exported as files from `src/markdown.ts`           |
-| Content negotiation | A page + `Accept: text/markdown`           | `src/worker.ts`, which serves the Markdown file above             |
-| Discovery header    | `Link` on every page                       | `src/worker.ts`; on `/` it lists the registry and every component |
+| Entry               | Where                                      | Built by                                                                                 |
+| ------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Crawl rules         | `/robots.txt`                              | `public/robots.txt`, with Content Signals and the sitemap                                |
+| Sitemap             | `/sitemap.xml`                             | `src/app/sitemap.ts`                                                                     |
+| Index               | `/llms.txt`                                | `src/app/llms.txt/route.ts`, from `llmsTxt` in `src/markdown.ts`                         |
+| Markdown pages      | `/md/index.md`, `/md/components/{name}.md` | `src/app/md/`, exported as files from `src/markdown.ts`                                  |
+| Content negotiation | A page + `Accept: text/markdown`           | `src/worker.ts`, which serves the Markdown file above                                    |
+| Discovery header    | `Link` on every page                       | `src/worker.ts`: its Markdown and llms.txt; on `/` also the registry and every component |
 
 `Content-Signal` is `search=yes, ai-input=yes, ai-train=no`, the same as the website.
 
