@@ -530,3 +530,66 @@ test("a ScrollArea strip turns a vertical wheel sideways until an end, and fades
     /linear-gradient\(to right, transparent, #000 24px, #000 calc\(100% - 24px\), transparent\)/,
   );
 });
+
+/** A strip whose viewport is 100px wide over 300px of content, and a wheel turn on it. */
+async function strip(direction: "ltr" | "rtl") {
+  await mount(
+    <ScrollArea aria-label="Filters" strip fade>
+      <div className="flex">filters</div>
+    </ScrollArea>,
+  );
+  const viewport = document.querySelector<HTMLElement>('[data-slot="scroll-area-viewport"]')!;
+  viewport.style.direction = direction;
+  viewport.style.lineHeight = "20px";
+  Object.defineProperty(viewport, "scrollWidth", { configurable: true, value: 300 });
+  Object.defineProperty(viewport, "clientWidth", { configurable: true, value: 100 });
+  const wheel = (deltaY: number, deltaMode = 0) => {
+    const event = new WheelEvent("wheel", { deltaY, deltaMode, bubbles: true, cancelable: true });
+    viewport.dispatchEvent(event);
+    return event.defaultPrevented;
+  };
+  const mask = async () => {
+    await act(async () => void viewport.dispatchEvent(new Event("scroll")));
+    await tick(30);
+    return viewport.style.maskImage;
+  };
+  return { viewport, wheel, mask };
+}
+
+test("a right-to-left ScrollArea strip scrolls toward its end on the left, and fades the edge that hides content", async () => {
+  const { viewport, wheel, mask } = await strip("rtl");
+  // At the start, on the right: all the hidden content is to the left.
+  assert.equal(await mask(), "linear-gradient(to right, transparent, #000 24px, #000)");
+  assert.equal(wheel(-40), false, "the start lets the page scroll");
+  assert.equal(wheel(40), true);
+  assert.equal(viewport.scrollLeft, -40);
+  assert.match(
+    await mask(),
+    /^linear-gradient\(to right, transparent, #000 24px, #000 calc\(100% - 24px\), transparent\)$/,
+  );
+  viewport.scrollLeft = -200;
+  assert.equal(await mask(), "linear-gradient(to right, #000, #000 calc(100% - 24px), transparent)");
+  assert.equal(wheel(40), false, "the end lets the page scroll");
+});
+
+test("a ScrollArea strip turns a wheel that counts lines or pages into pixels", async () => {
+  const { viewport, wheel } = await strip("ltr");
+  assert.equal(wheel(3, 1), true);
+  assert.equal(viewport.scrollLeft, 60, "three lines of 20px");
+  assert.equal(wheel(1, 2), true);
+  assert.equal(viewport.scrollLeft, 160, "a page is the row's width");
+});
+
+test("scrollIntoRow centres a tab measured on screen, so a right-to-left row scrolls the right way", () => {
+  const row = document.createElement("div");
+  const item = document.createElement("a");
+  const scrollTo = mock.fn();
+  Object.defineProperty(row, "clientWidth", { value: 100 });
+  Object.defineProperty(row, "scrollLeft", { value: -50 });
+  Object.assign(row, { scrollTo });
+  row.getBoundingClientRect = () => ({ left: 0, width: 100, right: 100 }) as DOMRect;
+  // A tab past the left edge of a row scrolled 50px from its start on the right.
+  item.getBoundingClientRect = () => ({ left: -60, width: 40, right: -20 }) as DOMRect;
+  scrollIntoRow(row, item);
+  assert.deepEqual(scrollTo.mock.calls[0]?.arguments, [{ left: -140, behavior: "auto" }]);
+});

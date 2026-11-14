@@ -20,10 +20,20 @@ function edgeMask(direction: "right" | "bottom", start: boolean, end: boolean) {
 }
 
 /**
+ * How far a box has scrolled along its rows from their start, from 0 to `max`, in either reading direction: in a
+ * right-to-left box scrollLeft runs from 0 down to -max, the start being on the right.
+ */
+function inlineScroll(element: HTMLElement) {
+  const max = Math.max(0, element.scrollWidth - element.clientWidth);
+  const rtl = getComputedStyle(element).direction === "rtl";
+  return { max, rtl, done: Math.min(max, Math.max(0, rtl ? -element.scrollLeft : element.scrollLeft)) };
+}
+
+/**
  * Fades the edges of a scrolling box where content is hidden: the end while there is more past it, the start once the
  * box has been scrolled. A box that fits shows no fade. It is a mask, so it works over any background (a translucent
  * sticky bar included), and it is written straight onto the element's style, so scrolling never re-renders it.
- * Pass `null` as the axis to turn it off.
+ * In a right-to-left box the start is the right edge. Pass `null` as the axis to turn it off.
  */
 function useScrollFade(ref: RefObject<HTMLElement | null>, axis: ScrollAxis | null = "x") {
   useEffect(() => {
@@ -33,14 +43,11 @@ function useScrollFade(ref: RefObject<HTMLElement | null>, axis: ScrollAxis | nu
     const update = () => {
       frame = 0;
       // Rounding of fractional sizes leaves a pixel or so at either end.
-      const x =
-        axis === "y"
-          ? null
-          : edgeMask(
-              "right",
-              element.scrollLeft > 1,
-              element.scrollWidth - element.clientWidth - element.scrollLeft > 1,
-            );
+      const row = axis === "y" ? null : inlineScroll(element);
+      // The mask runs left to right: the hidden start is on the right in a right-to-left box.
+      const before = row && row.done > 1;
+      const after = row && row.max - row.done > 1;
+      const x = row === null ? null : edgeMask("right", !!(row.rtl ? after : before), !!(row.rtl ? before : after));
       const y =
         axis === "x"
           ? null
@@ -77,10 +84,23 @@ function useScrollFade(ref: RefObject<HTMLElement | null>, axis: ScrollAxis | nu
   }, [ref, axis]);
 }
 
+/** Pixels per unit of a wheel event's delta: 1, a line of the element's text (deltaMode 1), or its width (2). */
+function wheelUnit(event: WheelEvent, element: HTMLElement) {
+  if (event.deltaMode === 1) {
+    const style = getComputedStyle(element);
+    // A line height of "normal" has no number: take the usual 1.2 of the font size.
+    return parseFloat(style.lineHeight) || (parseFloat(style.fontSize) || 16) * 1.2;
+  }
+  if (event.deltaMode === 2) return element.clientWidth;
+  return 1;
+}
+
 /**
  * Lets a vertical mouse wheel scroll a one-line row sideways, since a mouse has no horizontal wheel. A trackpad already
  * scrolls it, and a gesture that is mostly sideways, or a pinch (ctrlKey), is left alone. At either end the wheel goes
- * back to scrolling the page, so the row never traps it. Pass `false` to turn it off.
+ * back to scrolling the page, so the row never traps it. Wheel down moves toward the end of the row, which is to the
+ * left in a right-to-left box, and a wheel that counts in lines or pages (as Firefox can) moves as far as a line of
+ * the row's text or the row's width. Pass `false` to turn it off.
  */
 function useWheelSideways(ref: RefObject<HTMLElement | null>, enabled = true) {
   useEffect(() => {
@@ -88,11 +108,12 @@ function useWheelSideways(ref: RefObject<HTMLElement | null>, enabled = true) {
     if (!element || !enabled) return;
     const onWheel = (event: WheelEvent) => {
       if (event.ctrlKey || Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return;
-      const max = element.scrollWidth - element.clientWidth;
+      const { max, rtl, done } = inlineScroll(element);
       if (max <= 0) return;
-      if ((event.deltaY < 0 && element.scrollLeft <= 0) || (event.deltaY > 0 && element.scrollLeft >= max)) return;
+      if ((event.deltaY < 0 && done <= 0) || (event.deltaY > 0 && done >= max)) return;
       event.preventDefault();
-      element.scrollLeft += event.deltaY;
+      const delta = event.deltaY * wheelUnit(event, element);
+      element.scrollLeft += rtl ? -delta : delta;
     };
     element.addEventListener("wheel", onWheel, { passive: false });
     return () => element.removeEventListener("wheel", onWheel);
@@ -106,9 +127,11 @@ function useWheelSideways(ref: RefObject<HTMLElement | null>, enabled = true) {
 function scrollIntoRow(container: HTMLElement, item: HTMLElement, behavior: ScrollBehavior = "auto") {
   const box = container.getBoundingClientRect();
   const rect = item.getBoundingClientRect();
-  const left = rect.left - box.left + container.scrollLeft;
-  if (left >= container.scrollLeft && left + rect.width <= container.scrollLeft + container.clientWidth) return;
-  container.scrollTo({ left: left - container.clientWidth / 2 + rect.width / 2, behavior });
+  // Measured on screen, so it holds in either reading direction: a larger scrollLeft moves the content left in both.
+  const start = rect.left - box.left;
+  if (start >= 0 && start + rect.width <= container.clientWidth) return;
+  const offset = start + rect.width / 2 - container.clientWidth / 2;
+  container.scrollTo({ left: container.scrollLeft + offset, behavior });
 }
 
 export { useScrollFade, useWheelSideways, scrollIntoRow, type ScrollAxis };
