@@ -12,7 +12,8 @@ import { Checkbox } from "@/components/ui/checkbox";
  * true to check every row, false to clear them. `count` is the words for how many are checked ("3 selected"), built by
  * the page for its language's plurals; while nothing is checked, `idle` takes its place, such as the list's filter
  * tabs, so the bar and the checkbox share one row. The actions (children) show only while something is checked.
- * The count is also a status region, so a screen reader hears it change.
+ * The count is also a status region, so a screen reader hears it change. While `disabled` nothing can be checked or
+ * done: the checkbox, the clear button and the actions, which sit in a disabled fieldset, links among them too.
  * It takes handlers from the page, so it is rendered by a Client Component; it keeps no state of its own.
  */
 function SelectionBar({
@@ -87,9 +88,15 @@ function SelectionBar({
       {some && (
         <>
           <span aria-hidden="true" className="mx-1 h-4 w-px bg-border" />
-          <div data-slot="selection-bar-actions" className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
+          {/* A disabled fieldset disables every control in it, from the server markup on; inert also stops a link. */}
+          <fieldset
+            data-slot="selection-bar-actions"
+            disabled={disabled}
+            inert={disabled}
+            className="m-0 flex min-w-0 flex-1 flex-wrap items-center gap-1.5 border-0 p-0"
+          >
             {children}
-          </div>
+          </fieldset>
           {onClear && clearLabel !== undefined && (
             <Button
               type="button"

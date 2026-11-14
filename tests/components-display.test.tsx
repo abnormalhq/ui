@@ -154,6 +154,35 @@ test("a SelectionBar over an empty list cannot be checked", async () => {
   assert.equal(container.querySelector<HTMLButtonElement>('[role="checkbox"]')!.disabled, true);
 });
 
+test("a disabled SelectionBar disables its actions too, links included, and its clear button", async () => {
+  const { container } = await mount(
+    <SelectionBar
+      label="Selected messages"
+      selectAllLabel="Select all"
+      selected={1}
+      total={3}
+      onSelectAll={() => {}}
+      count="1 selected"
+      clearLabel="Clear selection"
+      onClear={() => {}}
+      disabled
+    >
+      <button type="button">Archive</button>
+      <a href="#export">Export</a>
+    </SelectionBar>,
+  );
+  const actions = container.querySelector<HTMLFieldSetElement>('[data-slot="selection-bar-actions"]')!;
+  assert.equal(actions.tagName, "FIELDSET");
+  assert.equal(actions.disabled, true);
+  assert.equal(actions.hasAttribute("inert"), true);
+  // A browser disables every control in a disabled fieldset, and inert stops the link; happy-dom models neither, so the
+  // markup is what is checked here.
+  assert.equal(button("Archive").closest("fieldset"), actions);
+  assert.equal(container.querySelector<HTMLButtonElement>('[role="checkbox"]')!.disabled, true);
+  assert.equal(button("Clear selection").hasAttribute("disabled"), true);
+  assert.equal(container.querySelector('a[href="#export"]')?.closest("fieldset"), actions);
+});
+
 test("a Tag's remove button carries the name it is given, and a Tag without onRemove has none", async () => {
   const onRemove = mock.fn();
   const { container } = await mount(
