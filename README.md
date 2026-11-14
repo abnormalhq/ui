@@ -85,6 +85,8 @@ An item adds a package only when the behavior cannot reasonably be owned here. E
 
 A file with the `"use client"` directive exports components only: PascalCase functions, or `forwardRef`/`memo` of one, and no constants, `cva()` variants, contexts or re-exports. A Server Component receives every export of such a file as a client reference, so a class string or helper from it silently stops working there; helpers live in a file without the directive, such as `table-row.ts` next to `table.tsx` and `use-open-count.ts` next to `guarded-dialog.tsx`. Another item imports such a file by its module name (`@/components/ui/table-row`) and declares the item that brings it (`@abnormal/table`). A helper several items share is an item of its own, so each of them declares it and the CLI installs it with them: `form-reset` brings `use-form-reset.ts`.
 
+A file without the directive stays a server module, so a page made only of such items ships no client JavaScript. It imports neither `lucide-react`, whose 1.x `Icon` is a client module, nor an item with the directive, directly or through another item; `tests/registry.test.ts` checks both. Its icons are drawn inline with lucide's paths, size and stroke and `aria-hidden`, as in `disclosure`, `breadcrumb`, `pagination`, `stepper` and `pricing-card`. `label` is a client module (Radix's `Label`), so a page that must ship no client JavaScript labels its fields with a native `<label>`, given the same classes if it should look the same.
+
 When editing the theme, keep two things in step, both also tested: the dark values in `:root[data-theme="dark"]` and in the system preference fallback, and any new `--radius-*`, `--shadow-*` or `--animate-*` token with `CN_THEME` in `registry/lib/utils.ts`.
 
 ## Develop
