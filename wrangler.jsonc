@@ -12,4 +12,21 @@
   },
   "workers_dev": true,
   "routes": [{ "pattern": "ui.abnormalhq.com", "custom_domain": true }],
+  // Observability: logs and traces sample 10% of requests. Issues must be written here, or the next deploy turns off a switch enabled in the dashboard.
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.1,
+    "redact_query_string": true,
+    "issues": {
+      "enabled": true,
+    },
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 0.1,
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.1,
+    },
+  },
 }
