@@ -314,6 +314,56 @@ test("useTurnstile renders the widget once, in the page's theme, and holds a for
   delete (window as { turnstile?: unknown }).turnstile;
 });
 
+test("useTurnstile forgets a removed widget's token, so the same widget rendered again waits for its own", async () => {
+  const { api, widgets } = fakeTurnstile();
+  const submitted = mock.fn();
+  function Form({ shown, siteKey }: { shown: boolean; siteKey: string | null }) {
+    const { mount, status, guard, token } = useTurnstile({ siteKey });
+    return (
+      <form
+        onSubmit={(event) => {
+          guard(event);
+          if (event.defaultPrevented) return;
+          event.preventDefault();
+          submitted(token());
+        }}
+      >
+        {shown && <div ref={mount} />}
+        <output>{status}</output>
+      </form>
+    );
+  }
+  const status = () => one("output").textContent;
+  const submit = () => act(async () => void one<HTMLFormElement>("form").requestSubmit());
+  const pass = async () => {
+    await settle();
+    await act(async () => void widgets.at(-1)!.options.callback!("token"));
+    assert.equal(status(), "ready");
+  };
+
+  const { rerender } = await mount(<Form shown siteKey="site-key" />);
+  await pass();
+  // The mount element hidden and shown again: a new widget, with no token yet.
+  await rerender(<Form shown={false} siteKey="site-key" />);
+  await rerender(<Form shown siteKey="site-key" />);
+  await settle();
+  assert.equal(api.render.mock.callCount(), 2);
+  assert.equal(status(), "pending");
+  await submit();
+  assert.equal(submitted.mock.callCount(), 0, "the guard holds the form while token() is empty");
+
+  await pass();
+  // The key turned off and back on.
+  await rerender(<Form shown siteKey={null} />);
+  assert.equal(status(), "off");
+  await rerender(<Form shown siteKey="site-key" />);
+  await settle();
+  assert.equal(status(), "pending");
+  await submit();
+  assert.equal(submitted.mock.callCount(), 0);
+  delete (window as { turnstile?: unknown }).turnstile;
+});
+
 test("Turnstile renders nothing without a site key, and asks for a fresh token when its reset key changes", async () => {
   const { api } = fakeTurnstile();
   const onStatusChange = mock.fn();

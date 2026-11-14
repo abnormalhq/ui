@@ -116,8 +116,8 @@ function useTurnstile({
   const theme = themeOption ?? shown;
   const widget = useRef<string | null>(null);
   const token = useRef("");
-  // The status belongs to one widget: a new key, or a widget rendered again, starts out pending without an effect
-  // having to say so.
+  // The status belongs to one widget: a widget with other options starts out pending without an effect having to say
+  // so, and removing a widget forgets its status.
   const [state, setState] = useState<{ widget: string | null; status: TurnstileStatus }>({
     widget: null,
     status: "pending",
@@ -183,6 +183,9 @@ function useTurnstile({
       if (widget.current) window.turnstile?.remove(widget.current);
       widget.current = null;
       token.current = "";
+      // The status went with the widget: one rendered again, even with the same options (the mount element shown
+      // again, the key turned off and back on), waits for a token of its own.
+      setState({ widget: null, status: "pending" });
     };
     // identity stands for the options it is made of.
     // eslint-disable-next-line react-hooks/exhaustive-deps
