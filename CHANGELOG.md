@@ -36,6 +36,11 @@ Each entry names the items it touches, because a project installs items one by o
 - `sheet`: `SheetClose`, and `SheetPanel`, the bare portalled panel for a sheet that places and styles itself.
 - `table`: `SortableHead`, a header cell whose link sorts the list on the server, with `aria-sort` and an arrow for the direction. Now needs `lucide-react` and `radix-ui`.
 - `copy-button`: `text` is optional. Without it the button copies the code beside it when pressed: the text of the first `<code>` (else `<pre>`) in its parent, with each `<br>` read as a line break, so a code block rendered on the server sends its source once instead of again as a prop. With nothing beside it the copy fails as a refused clipboard does. Buttons that pass `text` work as before.
+- `copy-button`: without `write`, a page with no Clipboard API (one served over plain HTTP, such as an internal address) or one whose clipboard refuses now copies the older way, by selecting the text in a hidden textarea next to the button and calling `execCommand("copy")`; the focus goes back to the button. It reports a failure only when that fails too.
+- `scroll-area`: `fade` fades the edges that have more content past them, and `strip` makes a one-line row that scrolls sideways, a vertical mouse wheel included. `use-scroll-fade.ts` brings the two hooks behind them, `useScrollFade` and `useWheelSideways`, for a row of a project's own.
+- `tabs`: `TabsList` takes `variant="pill"`, the tabs as pills with the current one in the highlighter and no hairline, for the sections of a settings panel or tabs inside a card.
+- `sonner`: a `className`, `style`, `icons` or `toastOptions` given to `Toaster` now adds to the toaster's own instead of replacing it, and `toastOptions.classNames.toast` joins `cn-toast`, so a page no longer has to repeat that class.
+- `theme-picker`: `tooltip` and `tooltipSide` add a tooltip to the button, and `side` places the menu, for a sidebar's footer. With `value` undefined the button now shows the sun or the moon for the theme the page is painted in, instead of the system icon, so no wrong icon shows before the preference is known. Now needs `tooltip`.
 
 ### Fixed
 

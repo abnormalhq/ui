@@ -20,7 +20,9 @@ const BUBBLE_ROOM = 32;
  * viewport coordinates, so a clipping container (a scrolling table, a floating window) cannot cut it off.
  * The button keeps its name throughout; a status region announces the outcome once, so a screen reader does not
  * hear it a second time as a name change. With children it is a text button ("Copy address") and shows no bubble.
- * `write` replaces the clipboard call, for a page that needs a fallback outside secure contexts; it throws to fail.
+ * Without `write` it uses the Clipboard API, and where there is none (a page served over plain HTTP, such as an
+ * internal address) or it refuses, the older way: the text is selected in a hidden textarea next to the button and
+ * copied with execCommand, then the focus goes back to the button. `write` replaces both; it throws to fail.
  * Without `text` it copies the code shown next to it: the text of the first <code> (else <pre>) in the button's parent, read when
  * pressed, with line breaks kept. A code block rendered on the server then sends its source once, as the highlighted markup,
  * instead of a second time as a prop of this button.
@@ -37,6 +39,44 @@ function adjacentCode(button: HTMLElement): string {
   const code = button.parentElement?.querySelector("code") ?? button.parentElement?.querySelector("pre");
   if (!code) throw new Error("No code next to the copy button");
   return readText(code);
+}
+
+/**
+ * Copies with execCommand, for a page without the Clipboard API. The textarea goes next to the button rather than at
+ * the end of the body, so a dialog's focus trap lets the selection happen; it is gone before the next frame.
+ */
+function copyBySelection(text: string, button: HTMLElement) {
+  if (typeof document.execCommand !== "function") return false;
+  const area = document.createElement("textarea");
+  area.value = text;
+  area.setAttribute("readonly", "");
+  area.setAttribute("aria-hidden", "true");
+  area.tabIndex = -1;
+  area.style.cssText = "position:fixed;top:0;left:0;width:1px;height:1px;padding:0;border:0;opacity:0;";
+  (button.parentElement ?? document.body).append(area);
+  area.focus({ preventScroll: true });
+  area.select();
+  area.setSelectionRange(0, text.length);
+  try {
+    return document.execCommand("copy");
+  } catch {
+    return false;
+  } finally {
+    area.remove();
+    button.focus({ preventScroll: true });
+  }
+}
+
+async function copyText(text: string, button: HTMLElement) {
+  if (navigator.clipboard && window.isSecureContext !== false) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch {
+      // Refused, such as without permission or focus: the selection may still work.
+    }
+  }
+  if (!copyBySelection(text, button)) throw new Error("Copy failed");
 }
 
 function CopyButton({
@@ -108,14 +148,11 @@ function CopyButton({
           const rect = event.currentTarget.getBoundingClientRect();
           const below = rect.top < BUBBLE_ROOM;
           setAnchor({ x: rect.left + rect.width / 2, y: below ? rect.bottom : rect.top, below });
+          const button = event.currentTarget;
           try {
-            const value = text ?? adjacentCode(event.currentTarget);
+            const value = text ?? adjacentCode(button);
             if (write) await write(value);
-            else {
-              // There is no clipboard outside a secure context, and writeText rejects without permission or focus.
-              if (!navigator.clipboard) throw new Error("Clipboard unavailable");
-              await navigator.clipboard.writeText(value);
-            }
+            else await copyText(value, button);
             show("copied");
           } catch {
             show("failed");

@@ -705,12 +705,16 @@
       "name": "scroll-area",
       "type": "registry:ui",
       "title": "Scroll Area",
-      "description": "A scrolling box with thin bars of its own, reachable from the keyboard.",
+      "description": "A scrolling box with thin bars of its own, reachable from the keyboard, with an optional edge fade and a one-line strip mode.",
       "dependencies": ["radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/scroll-area.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/use-scroll-fade.ts",
           "type": "registry:ui"
         }
       ]
@@ -971,7 +975,7 @@
       "title": "Theme Picker",
       "description": "The system, light and dark menu behind a header button, holding no state: the page passes the saved preference and writes back the choice.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["@abnormal/button", "@abnormal/dropdown-menu", "@abnormal/utils"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/dropdown-menu", "@abnormal/tooltip", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/theme-picker.tsx",
