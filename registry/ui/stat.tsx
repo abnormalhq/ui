@@ -1,6 +1,5 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { ArrowDownRightIcon, ArrowRightIcon, ArrowUpRightIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -105,7 +104,13 @@ const statDeltaVariants = cva("inline-flex w-fit items-center gap-0.5 text-xs fo
   defaultVariants: { tone: "muted" },
 });
 
-const directionIcons = { up: ArrowUpRightIcon, down: ArrowDownRightIcon, flat: ArrowRightIcon };
+// lucide's arrow-up-right, arrow-down-right and arrow-right, drawn inline: lucide-react's icon is a client module, and a
+// tile needs no script.
+const directionPaths = {
+  up: ["M7 7h10v10", "M7 17 17 7"],
+  down: ["m7 7 10 10", "M17 7v10H7"],
+  flat: ["M5 12h14", "m12 5 7 7-7 7"],
+};
 
 /**
  * The change since the period before, such as "+12%" against "last week". The arrow shows `direction` and is
@@ -119,12 +124,26 @@ function StatDelta({
   ...props
 }: React.ComponentProps<"dd"> &
   VariantProps<typeof statDeltaVariants> & {
-    direction?: keyof typeof directionIcons;
+    direction?: keyof typeof directionPaths;
   }) {
-  const Icon = direction === undefined ? null : directionIcons[direction];
   return (
     <dd data-slot="stat-delta" className={cn(statDeltaVariants({ tone }), className)} {...props}>
-      {Icon && <Icon aria-hidden="true" className="size-3.5 shrink-0" />}
+      {direction !== undefined && (
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          className="size-3.5 shrink-0"
+        >
+          {directionPaths[direction].map((d) => (
+            <path key={d} d={d} />
+          ))}
+        </svg>
+      )}
       {children}
     </dd>
   );

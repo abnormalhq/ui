@@ -142,7 +142,7 @@
       "name": "banner",
       "type": "registry:ui",
       "title": "Banner",
-      "description": "A strip across the top of a page or pane about the state of the whole thing, with an icon, an action and a dismiss button, in five tones.",
+      "description": "A strip across the top of a page or pane, or a tinted panel, about the state of the whole thing, in five tones, with an action and a dismiss button.",
       "dependencies": ["class-variance-authority"],
       "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
       "files": [
@@ -157,7 +157,7 @@
       "type": "registry:ui",
       "title": "Breadcrumb",
       "description": "The trail of links from the top of a site to the current page.",
-      "dependencies": ["lucide-react", "radix-ui"],
+      "dependencies": ["radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
@@ -230,8 +230,8 @@
       "name": "code-block",
       "type": "registry:ui",
       "title": "Code Block",
-      "description": "Code to read and copy: a pre that scrolls sideways, with an optional header and a copy button that copies the code beside it.",
-      "registryDependencies": ["@abnormal/copy-button", "@abnormal/utils"],
+      "description": "Code to read and copy: a pre that scrolls sideways, with an optional header and a corner slot for a CopyButton, which copies the code beside it.",
+      "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/code-block.tsx",
@@ -396,7 +396,6 @@
       "type": "registry:ui",
       "title": "Disclosure",
       "description": "Questions and answers on native details, with no client JavaScript.",
-      "dependencies": ["lucide-react"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
@@ -576,7 +575,7 @@
       "type": "registry:ui",
       "title": "Item List",
       "description": "A short bordered list with a line between rows, each row a link, a button or plain, with a title, a description, meta and a chevron.",
-      "dependencies": ["lucide-react", "radix-ui"],
+      "dependencies": ["radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
@@ -675,7 +674,7 @@
       "type": "registry:ui",
       "title": "Page Header",
       "description": "The top of a product page: the h1, a description, the page's actions and a way back, sticky if asked.",
-      "dependencies": ["lucide-react", "radix-ui"],
+      "dependencies": ["radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
@@ -703,7 +702,7 @@
       "type": "registry:ui",
       "title": "Pagination",
       "description": "Page links under a list or table, with the current page marked.",
-      "dependencies": ["lucide-react", "radix-ui"],
+      "dependencies": ["radix-ui"],
       "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
       "files": [
         {
@@ -976,7 +975,7 @@
       "type": "registry:ui",
       "title": "Stat",
       "description": "The headline numbers of a page: tiles with a name, a value, a hint and a change, as cards or one joined block.",
-      "dependencies": ["class-variance-authority", "lucide-react"],
+      "dependencies": ["class-variance-authority"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
@@ -1004,7 +1003,6 @@
       "type": "registry:ui",
       "title": "Stepper",
       "description": "Progress through a fixed sequence of steps, such as checkout or onboarding.",
-      "dependencies": ["lucide-react"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
@@ -1063,7 +1061,7 @@
       "type": "registry:ui",
       "title": "Tag",
       "description": "A chip for a chosen value with a named remove button, and the list that holds them.",
-      "dependencies": ["class-variance-authority", "lucide-react"],
+      "dependencies": ["class-variance-authority"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
@@ -1258,7 +1256,6 @@
       "type": "registry:ui",
       "title": "Pricing Card",
       "description": "One plan on a pricing page: name, price, period, features and a call to action, with a featured state and an optional discount.",
-      "dependencies": ["lucide-react"],
       "registryDependencies": ["@abnormal/badge", "@abnormal/card", "@abnormal/marker", "@abnormal/utils"],
       "files": [
         {

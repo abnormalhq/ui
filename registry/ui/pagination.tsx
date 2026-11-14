@@ -1,5 +1,4 @@
 import * as React from "react";
-import { EllipsisIcon } from "lucide-react";
 import { Slot } from "radix-ui";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -108,7 +107,21 @@ function PaginationEllipsis({ label, className, ...props }: React.ComponentProps
       className={cn("flex size-8 items-center justify-center text-muted-foreground", className)}
       {...props}
     >
-      <EllipsisIcon className="size-4" aria-hidden="true" />
+      {/* lucide's ellipsis, drawn inline: lucide-react's icon is a client module, and pagination renders on the server. */}
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        className="size-4"
+      >
+        <circle cx="12" cy="12" r="1" />
+        <circle cx="19" cy="12" r="1" />
+        <circle cx="5" cy="12" r="1" />
+      </svg>
       <span className="sr-only">{label}</span>
     </span>
   );

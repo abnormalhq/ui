@@ -10,7 +10,7 @@ const days: { up: number; total: number }[] = Array.from({ length: 30 }, (_, day
 
 const buckets: UptimeBucket[] = days.map(({ up, total }, day) => ({
   status: uptimeStatus(up, total),
-  label: total === 0 ? `Day ${day + 1}: no data` : `Day ${day + 1}: ${up} of ${total} checks passed`,
+  title: total === 0 ? `Day ${day + 1}: no data` : `Day ${day + 1}: ${up} of ${total} checks passed`,
 }));
 
 export default function UptimeBarDemo() {

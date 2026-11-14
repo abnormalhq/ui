@@ -7,7 +7,7 @@ import { test } from "node:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { encode } from "uqr";
 import { Badge, BadgeCount, BadgeDot } from "@/components/ui/badge";
-import { Banner, BannerClose, BannerText } from "@/components/ui/banner";
+import { Banner, BannerClose, BannerDot, BannerText } from "@/components/ui/banner";
 import { CodeBlock } from "@/components/ui/code-block";
 import { DescriptionDetails, DescriptionItem, DescriptionList } from "@/components/ui/description-list";
 import { EmptyState, EmptyStateTitle } from "@/components/ui/empty-state";
@@ -52,9 +52,9 @@ test("an UptimeBar is one named image of titled bars, colored by status, with no
       label="Last 4 days"
       buckets={[
         { status: "none" },
-        { status: "up", label: "Day 2: all passed" },
-        { status: "degraded", label: "Day 3: 3 of 4 passed" },
-        { status: "down", label: "Day 4: none passed" },
+        { status: "up", title: "Day 2: all passed" },
+        { status: "degraded", title: "Day 3: 3 of 4 passed" },
+        { status: "down", title: "Day 4: none passed" },
       ]}
     />,
   );
@@ -138,7 +138,19 @@ test("a Banner is a status unless told to interrupt, and its close button carrie
       <BannerClose label="Dismiss" />
     </Banner>,
   );
-  assert.match(html, /^<div data-slot="banner" data-tone="warning" role="status"/);
+  assert.match(html, /^<div data-slot="banner" data-variant="strip" data-tone="warning" role="status"/);
+  // The close button's ×, drawn inline rather than from lucide-react.
+  assert.match(html, /<button[^>]*><svg[^>]*aria-hidden="true"[^>]*><path d="M18 6 6 18"/);
+  const panel = renderToStaticMarkup(
+    <Banner variant="panel" tone="success">
+      <BannerText>
+        <BannerDot />
+        All systems operational
+      </BannerText>
+    </Banner>,
+  );
+  assert.match(panel, /class="[^"]*rounded-panel[^"]*bg-success\/8[^"]*border-success\/40/);
+  assert.match(panel, /<span data-slot="banner-dot" aria-hidden="true"/);
   assert.match(html, /<button[^>]*aria-label="Dismiss"[^>]*title="Dismiss"/);
   assert.match(renderToStaticMarkup(<Banner role="alert">Sending is paused</Banner>), /role="alert"/);
 });

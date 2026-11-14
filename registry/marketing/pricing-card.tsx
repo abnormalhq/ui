@@ -1,5 +1,4 @@
 import * as React from "react";
-import { CheckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -126,7 +125,19 @@ function PricingCardFeature({ className, children, ...props }: React.ComponentPr
   return (
     <li data-slot="pricing-card-feature" className={cn("flex items-start gap-2.5", className)} {...props}>
       <span className="grid h-[1.5em] w-4 shrink-0 place-items-center" aria-hidden="true">
-        <CheckIcon className="size-3.5 text-success" strokeWidth={2.5} />
+        {/* lucide's check, drawn inline: lucide-react's icon is a client module, and a pricing page needs no script. */}
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          className="size-3.5 text-success"
+        >
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
       </span>
       <span className="min-w-0">{children}</span>
     </li>

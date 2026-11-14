@@ -111,12 +111,18 @@ function TimelineTime({ className, ...props }: React.ComponentProps<"time">) {
   );
 }
 
-/** What there is to say about it: a message, the details of a step. Line breaks the text carries are kept. */
+/**
+ * What there is to say about it: a message, the details of a step. Line breaks the text carries are kept, and a long
+ * word or address wraps anywhere, since these are often typed by people.
+ */
 function TimelineContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="timeline-content"
-      className={cn("text-sm leading-relaxed text-pretty whitespace-pre-line text-muted-foreground", className)}
+      className={cn(
+        "text-sm leading-relaxed text-pretty whitespace-pre-line wrap-anywhere text-muted-foreground",
+        className,
+      )}
       {...props}
     />
   );

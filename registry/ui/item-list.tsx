@@ -1,5 +1,4 @@
 import * as React from "react";
-import { ChevronRightIcon } from "lucide-react";
 import { Slot } from "radix-ui";
 import { cn } from "@/lib/utils";
 
@@ -84,14 +83,23 @@ function ItemListMeta({ className, ...props }: React.ComponentProps<"span">) {
 }
 
 /** The arrow at the end of a row that opens something. It is decoration: the link or button says where it goes. */
-function ItemListChevron({ className, ...props }: React.ComponentProps<typeof ChevronRightIcon>) {
+function ItemListChevron({ className, ...props }: Omit<React.ComponentProps<"svg">, "children">) {
+  // lucide's chevron-right, drawn inline: lucide-react's icon is a client module, and a list of links needs no script.
   return (
-    <ChevronRightIcon
-      data-slot="item-list-chevron"
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
       aria-hidden="true"
+      data-slot="item-list-chevron"
       className={cn("size-4 shrink-0 text-muted-foreground", className)}
       {...props}
-    />
+    >
+      <path d="m9 18 6-6-6-6" />
+    </svg>
   );
 }
 

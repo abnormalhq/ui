@@ -5,6 +5,7 @@ import { afterEach, mock, test } from "node:test";
 import { act, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { CodeBlock } from "@/components/ui/code-block";
+import { CopyButton } from "@/components/ui/copy-button";
 import { ExpandableText } from "@/components/ui/expandable-text";
 import { Field, FieldControl, FieldHint, FieldLabel, SwitchField } from "@/components/ui/field";
 import { Progress } from "@/components/ui/progress";
@@ -240,7 +241,7 @@ test("a CodeBlock's copy button copies its code, and its title names the block",
   const writeText = mock.fn(async () => {});
   Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
   const { container } = await mount(
-    <CodeBlock title="Terminal" copyLabel="Copy" copiedLabel="Copied" failedLabel="Copy failed">
+    <CodeBlock title="Terminal" action={<CopyButton label="Copy" copiedLabel="Copied" failedLabel="Copy failed" />}>
       brew install mail
     </CodeBlock>,
   );

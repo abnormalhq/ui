@@ -1,6 +1,5 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { XIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -72,7 +71,20 @@ function Tag({
           onClick={onRemove}
           className="grid size-5 shrink-0 place-items-center rounded-chip opacity-70 transition-[opacity,background-color] duration-100 hover:bg-control hover:opacity-100 disabled:pointer-events-none disabled:opacity-40"
         >
-          <XIcon aria-hidden="true" className="size-3" />
+          {/* lucide's x, drawn inline: lucide-react's icon is a client module, and a tag that only shows its value needs no script. */}
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            className="size-3"
+          >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
         </button>
       )}
     </span>

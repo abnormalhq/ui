@@ -1,5 +1,4 @@
 import * as React from "react";
-import { ArrowLeftIcon } from "lucide-react";
 import { Slot } from "radix-ui";
 import { cn } from "@/lib/utils";
 
@@ -102,7 +101,20 @@ function PageHeaderBack({
       )}
       {...props}
     >
-      <ArrowLeftIcon aria-hidden="true" className="size-3.5 shrink-0" />
+      {/* lucide's arrow-left, drawn inline: lucide-react's icon is a client module, and a page header renders on the server. */}
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        className="size-3.5 shrink-0"
+      >
+        <path d="m12 19-7-7 7-7" />
+        <path d="M19 12H5" />
+      </svg>
       <Slot.Slottable>{children}</Slot.Slottable>
     </Comp>
   );

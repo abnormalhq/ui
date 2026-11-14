@@ -4,8 +4,11 @@ import { cn } from "@/lib/utils";
 /** How a span of time went: every check passed, some failed, all failed, or none ran. */
 type UptimeStatus = "up" | "degraded" | "down" | "none";
 
-/** One span of the strip: its status and, as `label`, the words for it ("12 May: 287 of 288 checks passed"). */
-type UptimeBucket = { status: UptimeStatus; label?: string };
+/**
+ * One span of the strip: its status and, as `title`, the words for it ("12 May: 287 of 288 checks passed"), shown as
+ * the bar's native tooltip. `key` identifies it across renders, such as the span's start; the position otherwise.
+ */
+type UptimeBucket = { status: UptimeStatus; title?: string; key?: React.Key };
 
 /**
  * The status of a span from its counts: `up` when every check passed, `down` when none did, `degraded` in between,
@@ -26,7 +29,7 @@ const bucketClassName: Record<UptimeStatus, string> = {
 
 /**
  * A service's history at a glance: a strip of small bars, one per span of time (a day, an hour), oldest first, colored
- * by how that span went. It is drawn on the server with no script: each bar's `label` is its native tooltip (`title`),
+ * by how that span went. It is drawn on the server with no script: each bar's `title` is its native tooltip,
  * and the strip as a whole is one image named by `label` ("Last 90 days"), since a screen reader would otherwise
  * read every bar. Give the uptime in words beside it, with UptimeValue, so the number is not only in the colors.
  */
@@ -50,9 +53,9 @@ function UptimeBar({
     >
       {buckets.map((bucket, index) => (
         <span
-          key={index}
+          key={bucket.key ?? index}
           data-status={bucket.status}
-          title={bucket.label}
+          title={bucket.title}
           className={cn("min-w-0 flex-1 rounded-[1px]", bucketClassName[bucket.status])}
         />
       ))}
