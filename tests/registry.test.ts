@@ -305,6 +305,76 @@ test('the "use client" export check sees constants, non-components and a directi
   for (const [text, problems] of cases) assert.deepEqual(nonComponentExports("x.tsx", text), problems, text);
 });
 
+/** Packages whose modules carry "use client": lucide-react 1.x marks its Icon, which every icon renders through. */
+const clientPackages = new Set(["lucide-react"]);
+
+const isClientModule = (path: string, text: string) =>
+  directivesOf(ts.createSourceFile(path, text, ts.ScriptTarget.Latest, false, ts.ScriptKind.TSX)).includes(
+    "use client",
+  );
+
+/**
+ * The first client import a module without "use client" reaches, directly or through other registry modules without
+ * it, as the chain of module names ending in the package or the client module; undefined when there is none.
+ */
+function clientImportOf(modules: Map<string, { path: string; text: string }>, start: string) {
+  const seen = new Set<string>();
+  const walk = (name: string): string[] | undefined => {
+    const file = modules.get(name);
+    if (!file || seen.has(name)) return undefined;
+    seen.add(name);
+    for (const specifier of importsOf(file.text)) {
+      if (clientPackages.has(packageOf(specifier))) return [name, packageOf(specifier)];
+      const component = specifier.match(/^@\/components\/ui\/([a-z-]+)$/)?.[1];
+      const target = component && modules.get(component);
+      if (!component || !target) continue;
+      if (isClientModule(target.path, target.text)) return [name, component];
+      const chain = walk(component);
+      if (chain) return [name, ...chain];
+    }
+    return undefined;
+  };
+  const first = modules.get(start);
+  return first && !isClientModule(first.path, first.text) ? walk(start) : undefined;
+}
+
+test('an item without "use client" imports no client module, so a page using it ships no client JavaScript', () => {
+  // A Server Component that imports a client module, even one that only draws an icon, makes the page load a client
+  // chunk for it. Icons in such an item are drawn inline, with lucide's paths, size and stroke.
+  const modules = new Map(
+    code.flatMap((item) => sources(item).map(({ path, text }) => [moduleName(path), { path, text }])),
+  );
+  const problems = [...modules.keys()].flatMap((name) => {
+    const chain = clientImportOf(modules, name);
+    return chain ? [chain.join(" -> ")] : [];
+  });
+  assert.deepEqual(problems, []);
+});
+
+test("the client import check follows registry modules and stops at a client boundary", () => {
+  const modules = new Map(
+    Object.entries({
+      icon: 'import { PlusIcon } from "lucide-react";',
+      card: 'import { Icon } from "@/components/ui/icon";',
+      menu: '"use client";\nimport { CheckIcon } from "lucide-react";',
+      header: 'import { Menu } from "@/components/ui/menu";',
+      deep: 'import { Card } from "@/components/ui/card";',
+      plain: 'import { Slot } from "radix-ui";\nimport { cn } from "@/lib/utils";',
+      typed: 'import type { LucideIcon } from "lucide-react/dist/lucide-react";',
+    }).map(([name, text]) => [name, { path: `${name}.tsx`, text }]),
+  );
+  const chains = Object.fromEntries([...modules.keys()].map((name) => [name, clientImportOf(modules, name)]));
+  assert.deepEqual(chains, {
+    icon: ["icon", "lucide-react"],
+    card: ["card", "icon", "lucide-react"],
+    menu: undefined,
+    header: ["header", "menu"],
+    deep: ["deep", "card", "icon", "lucide-react"],
+    plain: undefined,
+    typed: ["typed", "lucide-react"],
+  });
+});
+
 test("cn knows every custom token in the theme", () => {
   const utils = read("registry/lib/utils.ts");
   const listed = (key: string) =>

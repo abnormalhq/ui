@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";

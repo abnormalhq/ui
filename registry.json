@@ -143,7 +143,7 @@
       "type": "registry:ui",
       "title": "Breadcrumb",
       "description": "The trail of links from the top of a site to the current page.",
-      "dependencies": ["lucide-react", "radix-ui"],
+      "dependencies": ["radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
@@ -342,7 +342,6 @@
       "type": "registry:ui",
       "title": "Disclosure",
       "description": "Questions and answers on native details, with no client JavaScript.",
-      "dependencies": ["lucide-react"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
@@ -507,7 +506,7 @@
       "type": "registry:ui",
       "title": "Pagination",
       "description": "Page links under a list or table, with the current page marked.",
-      "dependencies": ["lucide-react", "radix-ui"],
+      "dependencies": ["radix-ui"],
       "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
       "files": [
         {
@@ -700,7 +699,6 @@
       "type": "registry:ui",
       "title": "Stepper",
       "description": "Progress through a fixed sequence of steps, such as checkout or onboarding.",
-      "dependencies": ["lucide-react"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
@@ -855,7 +853,6 @@
       "type": "registry:ui",
       "title": "Pricing Card",
       "description": "One plan on a pricing page: name, price, period, features and a call to action, with a featured state.",
-      "dependencies": ["lucide-react"],
       "registryDependencies": ["@abnormal/badge", "@abnormal/card", "@abnormal/marker", "@abnormal/utils"],
       "files": [
         {

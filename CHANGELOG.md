@@ -8,6 +8,8 @@ Each entry names the items it touches, because a project installs items one by o
 
 ### Changed
 
+- `disclosure`, `breadcrumb`, `pagination`, `stepper`, `pricing-card`: their icons are drawn inline, with lucide's paths, size and stroke, and no longer come from `lucide-react`, whose 1.x `Icon` is a client module. A Server Component page that uses them no longer loads a client chunk for an icon, so `disclosure` now needs no client JavaScript, as its notes say. None of the five needs `lucide-react` any more. The markup is the same SVG, without lucide's `lucide` and `lucide-<name>` classes.
+- `theme-picker`: carries `"use client"`. It renders `dropdown-menu`, a client module, and takes `onValueChange`, so it only ever ran in a client component; the directive says so.
 - `copy-button`: `text` is optional. Without it the button copies the code beside it when pressed: the text of the first `<code>` (else `<pre>`) in its parent, with each `<br>` read as a line break, so a code block rendered on the server sends its source once instead of again as a prop. With nothing beside it the copy fails as a refused clipboard does. Buttons that pass `text` work as before.
 
 ### Fixed
