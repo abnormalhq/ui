@@ -64,13 +64,15 @@ function BreadcrumbSeparator({ children, className, ...props }: React.ComponentP
       className={cn("inline-flex items-center text-muted-foreground/70 [&>svg]:size-3.5", className)}
       {...props}
     >
-      {/* lucide's chevron-right and ellipsis are drawn inline here: lucide-react's icon is a client module, and a breadcrumb renders on the server. */}
       {children ?? (
         <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth={2}
+          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
           aria-hidden="true"
@@ -95,10 +97,13 @@ function BreadcrumbEllipsis({ label, className, ...props }: React.ComponentProps
       {...props}
     >
       <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth={2}
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
         aria-hidden="true"

@@ -34,12 +34,14 @@ function DisclosureTrigger({
       {children}
       {indicator ?? (
         <span className="grid size-8 shrink-0 place-items-center rounded-control text-muted-foreground transition-[transform,background-color,color] duration-150 group-open/disclosure:rotate-45 group-open/disclosure:bg-control group-open/disclosure:text-foreground group-hover/trigger:bg-control group-hover/trigger:text-foreground">
-          {/* lucide's plus, drawn inline: lucide-react's icon is a client module, and a disclosure works without script. */}
           <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth={2}
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"

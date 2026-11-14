@@ -81,12 +81,14 @@ function StepperIndicator({ className, children, ...props }: React.ComponentProp
       {...props}
     >
       <span className="group-data-[status=complete]/step:hidden">{children}</span>
-      {/* lucide's check, drawn inline: lucide-react's icon is a client module, and a stepper renders on the server. */}
       <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth={2.5}
+        strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
         aria-hidden="true"

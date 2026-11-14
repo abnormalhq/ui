@@ -125,12 +125,14 @@ function PricingCardFeature({ className, children, ...props }: React.ComponentPr
   return (
     <li data-slot="pricing-card-feature" className={cn("flex items-start gap-2.5", className)} {...props}>
       <span className="grid h-[1.5em] w-4 shrink-0 place-items-center" aria-hidden="true">
-        {/* lucide's check, drawn inline: lucide-react's icon is a client module, and a pricing page needs no script. */}
         <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth={2.5}
+          strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
           aria-hidden="true"

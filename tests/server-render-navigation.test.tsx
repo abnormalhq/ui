@@ -139,7 +139,7 @@ function functionProps(node: ReactNode, expand: Set<unknown>): string[] {
   return [...found, ...inner, ...functionProps(element.props.children as ReactNode, expand)];
 }
 
-test("a LanguagePicker of links, without onValueChange, makes no function a Server Component would pass on", () => {
+test("a LanguagePicker of links, without onValueChange, gives its menu items no handler", () => {
   const options = [
     { value: "en", label: "English", lang: "en", href: "/en/docs" },
     { value: "zh", label: "中文", lang: "zh-CN", href: "/docs" },
