@@ -14,6 +14,11 @@ Each entry names the items it touches, because a project installs items one by o
 - `timeline`: events in order on a rail, each marked by a dot in its tone or, given `icon`, a round tile, with `TimelineTitle`, `TimelineTime` (a `<time>`) and `TimelineContent`. The list is named by the page.
 - `banner`: a strip across the top of a page or pane about the state of the whole thing (offline, an auto-reply that is on, maintenance), in five tones, with `BannerText`, `BannerMeta`, `BannerAction` and `BannerClose`, a dismiss button named by `label`. A status region unless given `role="alert"`.
 - `stat`: the headline numbers of a page: `StatGrid`, a `dl` of tiles or of `joined` cells, two to a row on a phone and up to `columns`; `Stat` with a label and a value; `StatHint`; and `StatDelta`, the change, with a direction arrow and a tone that says whether it is good news.
+- `kbd`: `Kbd`, a key cap in two sizes, and `KbdCombo`, keys pressed together. `use-modifier-key.ts` brings `useModifierKey`, which tells a Mac's ⌘ from Control after hydration and leaves the printed name to the page.
+- `selection-bar`: the toolbar above a list that acts on the rows checked in it: a select-all checkbox that shows none, some or all, the count in the page's words (also a status region), the actions while something is checked, and a clear button. While nothing is checked, `idle` can take the count's place, such as the list's filter tabs.
+- `item-list`: a short bordered list with a line between rows; `ItemListRow` is plain, or a whole-row link or button with `asChild`, with a title, a description, `ItemListMeta` and `ItemListChevron`.
+- `field`: `Field` wires a `FieldLabel`, the control in a `FieldControl` and a `FieldHint` together (`htmlFor`, `aria-describedby`, `aria-invalid`). `error` makes the control invalid and shows in the hint's place, announced at once. `orientation="row"` is the bordered setting row, and `SwitchField` that row with a `Switch`.
+- `tag`: a chip for a chosen value with an × button named by `removeLabel`, and `TagList` to hold them.
 
 ### Changed
 

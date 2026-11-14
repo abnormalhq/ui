@@ -408,6 +408,20 @@
       ]
     },
     {
+      "name": "field",
+      "type": "registry:ui",
+      "title": "Field",
+      "description": "A label, a control and the line under it with their ids wired, the error replacing the description, and a setting row with a switch.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/field-message", "@abnormal/label", "@abnormal/switch", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/field.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "field-message",
       "type": "registry:ui",
       "title": "Field Message",
@@ -500,6 +514,38 @@
       "files": [
         {
           "path": "registry/ui/input-otp.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "item-list",
+      "type": "registry:ui",
+      "title": "Item List",
+      "description": "A short bordered list with a line between rows, each row a link, a button or plain, with a title, a description, meta and a chevron.",
+      "dependencies": ["lucide-react", "radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/item-list.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "kbd",
+      "type": "registry:ui",
+      "title": "Kbd",
+      "description": "A key cap and a combination of keys, with useModifierKey to tell the platform's modifier.",
+      "dependencies": ["class-variance-authority"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/kbd.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/use-modifier-key.ts",
           "type": "registry:ui"
         }
       ]
@@ -652,6 +698,20 @@
       "files": [
         {
           "path": "registry/ui/select.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "selection-bar",
+      "type": "registry:ui",
+      "title": "Selection Bar",
+      "description": "The toolbar above a list that acts on the rows checked in it: a select-all checkbox, the count, actions and clear.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/checkbox", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/selection-bar.tsx",
           "type": "registry:ui"
         }
       ]
@@ -819,6 +879,20 @@
       "files": [
         {
           "path": "registry/ui/tabs.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "tag",
+      "type": "registry:ui",
+      "title": "Tag",
+      "description": "A chip for a chosen value with a named remove button, and the list that holds them.",
+      "dependencies": ["class-variance-authority", "lucide-react"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/tag.tsx",
           "type": "registry:ui"
         }
       ]
