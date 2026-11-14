@@ -308,6 +308,34 @@ test('the "use client" export check sees constants, non-components and a directi
 /** Packages whose modules carry "use client": lucide-react 1.x marks its Icon, which every icon renders through. */
 const clientPackages = new Set(["lucide-react"]);
 
+/**
+ * The modules a file loads at run time: static imports, re-exports and import("x"), without `import type` and
+ * `export type ... from`, which compile to nothing. An inline `import { type X }` still loads its module: it compiles
+ * to `import {} from "x"` under verbatimModuleSyntax.
+ */
+function runtimeImportsOf(path: string, text: string) {
+  const file = ts.createSourceFile(path, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const specifiers: string[] = [];
+  const visit = (node: ts.Node) => {
+    if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
+      const typeOnly = ts.isImportDeclaration(node) ? node.importClause?.isTypeOnly : node.isTypeOnly;
+      if (!typeOnly && node.moduleSpecifier && ts.isStringLiteral(node.moduleSpecifier)) {
+        specifiers.push(node.moduleSpecifier.text);
+      }
+    } else if (
+      ts.isCallExpression(node) &&
+      node.expression.kind === ts.SyntaxKind.ImportKeyword &&
+      node.arguments[0] &&
+      ts.isStringLiteralLike(node.arguments[0])
+    ) {
+      specifiers.push(node.arguments[0].text);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(file);
+  return specifiers;
+}
+
 const isClientModule = (path: string, text: string) =>
   directivesOf(ts.createSourceFile(path, text, ts.ScriptTarget.Latest, false, ts.ScriptKind.TSX)).includes(
     "use client",
@@ -323,7 +351,7 @@ function clientImportOf(modules: Map<string, { path: string; text: string }>, st
     const file = modules.get(name);
     if (!file || seen.has(name)) return undefined;
     seen.add(name);
-    for (const specifier of importsOf(file.text)) {
+    for (const specifier of runtimeImportsOf(file.path, file.text)) {
       if (clientPackages.has(packageOf(specifier))) return [name, packageOf(specifier)];
       const component = specifier.match(/^@\/components\/ui\/([a-z-]+)$/)?.[1];
       const target = component && modules.get(component);
@@ -360,7 +388,9 @@ test("the client import check follows registry modules and stops at a client bou
       header: 'import { Menu } from "@/components/ui/menu";',
       deep: 'import { Card } from "@/components/ui/card";',
       plain: 'import { Slot } from "radix-ui";\nimport { cn } from "@/lib/utils";',
-      typed: 'import type { LucideIcon } from "lucide-react/dist/lucide-react";',
+      typed: 'import type { LucideIcon } from "lucide-react";\nexport type { MenuProps } from "@/components/ui/menu";',
+      inline: 'import { type LucideIcon } from "lucide-react";',
+      lazy: 'const Menu = React.lazy(() => import("@/components/ui/menu"));',
     }).map(([name, text]) => [name, { path: `${name}.tsx`, text }]),
   );
   const chains = Object.fromEntries([...modules.keys()].map((name) => [name, clientImportOf(modules, name)]));
@@ -371,7 +401,9 @@ test("the client import check follows registry modules and stops at a client bou
     header: ["header", "menu"],
     deep: ["deep", "card", "icon", "lucide-react"],
     plain: undefined,
-    typed: ["typed", "lucide-react"],
+    typed: undefined,
+    inline: ["inline", "lucide-react"],
+    lazy: ["lazy", "menu"],
   });
 });
 
