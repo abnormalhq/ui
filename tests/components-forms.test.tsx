@@ -123,6 +123,30 @@ test("a DateTimePicker fills its default time, keeps the time to min and max on 
   assert.equal(dayButton().textContent, "12 Nov 2026");
 });
 
+test("a DateTimePicker keeps the seconds of its value, min and max when its step is under a minute", async () => {
+  const onValueChange = mock.fn();
+  const { container } = await mount(
+    <form>
+      <DateTimePicker
+        {...dateTimeProps}
+        name="start"
+        step={15}
+        defaultValue="2026-11-12T09:30:45"
+        min="2026-11-12T09:30:15"
+        max="2026-11-20T18:00:30.5"
+        onValueChange={onValueChange}
+      />
+    </form>,
+  );
+  const form = one<HTMLFormElement>("form", container);
+  assert.equal(timeInput().value, "09:30:45");
+  assert.equal(timeInput().min, "09:30:15");
+  assert.equal(new FormData(form).get("start"), "2026-11-12T09:30:45");
+  await type(timeInput(), "10:00:15");
+  assert.deepEqual(onValueChange.mock.calls.at(-1)?.arguments, ["2026-11-12T10:00:15"]);
+  assert.equal(new FormData(form).get("start"), "2026-11-12T10:00:15");
+});
+
 test("a controlled DateTimePicker shows what its owner holds", async () => {
   function Owner() {
     const [value, setValue] = useState("2026-11-12T10:15");

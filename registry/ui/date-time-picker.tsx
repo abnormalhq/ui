@@ -6,14 +6,15 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { useFormReset } from "@/components/ui/use-form-reset";
 
-/** A day and a time of day, as the two halves of "2026-11-10T09:30". */
+/** A day and a time of day, as the two halves of "2026-11-10T09:30" (or "2026-11-10T09:30:45"). */
 type Parts = { date: string; time: string };
 
 /** Omit over each member of a union, so the date picker's "both month names or neither" survives. */
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 
 const split = (value: string | null | undefined): Parts => {
-  const match = value?.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
+  // Seconds, and their fractions, are kept: a `step` under a minute makes the time input write them.
+  const match = value?.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?)/);
   return match ? { date: match[1]!, time: match[2]! } : { date: "", time: "" };
 };
 const join = ({ date, time }: Parts) => (date && time ? `${date}T${time}` : "");
@@ -23,7 +24,8 @@ const join = ({ date, time }: Parts) => (date && time ? `${date}T${time}` : "");
  * value is local text, "2026-11-10T09:30", exactly what <input type="datetime-local"> submits, so a server that took
  * that field takes this one, and a time zone is the page's to state (in a hint beside the field) and to apply.
  * The value is empty until both halves are set, and empties again when either is cleared. `defaultTime` fills the
- * time when a day is chosen first, such as "09:00".
+ * time when a day is chosen first, such as "09:00". With a `step` under a minute the time carries seconds too,
+ * "2026-11-10T09:30:45", as the native field writes it, and the value, `min` and `max` may carry them.
  * `min` and `max` are moments in the same form: the calendar stops at their days, and the time input at their times
  * on those days, so the browser's own validation reports a time out of range.
  * With a `name` the value submits as one hidden form field. A reset of the form puts an uncontrolled field back on its
