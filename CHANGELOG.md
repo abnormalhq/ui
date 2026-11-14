@@ -6,6 +6,10 @@ Each entry names the items it touches, because a project installs items one by o
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-14
+
+The pieces the projects kept building for themselves: page structure, lists and their states, navigation, and the fields that were still native inputs. Twenty-eight new items bring the registry to 93, and the items that render without a client module no longer bring one in through their icons. One package was added: `uqr`, for `qr-code`.
+
 ### Added
 
 - `empty-state`: what a list, a search or a page shows when it has nothing to show: an icon in a tile, a title, a sentence and the next steps. `default` is the large centered block that stands in for a whole list; `compact` the dashed box for one panel among others. The title is a paragraph unless `asChild` makes it the heading the outline needs.
