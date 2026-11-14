@@ -30,6 +30,7 @@ const join = ({ date, time }: Parts) => (date && time ? `${date}T${time}` : "");
  * on those days, so the browser's own validation reports a time out of range.
  * With a `name` the value submits as one hidden form field. A reset of the form puts an uncontrolled field back on its
  * default, unless the page cancels the reset; a controlled one follows its value prop.
+ * `clearable` with `clearLabel` adds the date picker's clear button, which empties the day and the time together.
  * The words are the page's: the date picker's (`placeholder`, `calendarLabel`, the month buttons) and `timeLabel`,
  * the time input's name. The other props, `id` and the aria ones included, go to the date button, so a Label names it.
  */
@@ -102,7 +103,10 @@ function DateTimePicker({
       <DatePicker
         locale={locale}
         value={parts.date || null}
-        onValueChange={(date) => change({ date, time: parts.time || defaultTime || "" })}
+        // A cleared day (`clearable`) empties the whole field, time included.
+        onValueChange={(date) =>
+          change(date ? { date, time: parts.time || defaultTime || "" } : { date: "", time: "" })
+        }
         min={low.date || undefined}
         max={high.date || undefined}
         disabled={disabled}

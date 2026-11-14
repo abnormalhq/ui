@@ -1658,3 +1658,124 @@ test("a form reset puts an uncontrolled InputOTP back on its default, unless the
   await settle();
   assert.deepEqual([input.value, boxes()], ["999999", "999999"]);
 });
+
+/** A button of the open popover, by its text. */
+const popoverButton = (name: string) => {
+  const match = [...document.querySelectorAll<HTMLButtonElement>('[role="dialog"] button')].find(
+    (button) => button.textContent === name,
+  );
+  assert.ok(match, `a button ${name} in the popover`);
+  return match;
+};
+
+test("a clearable DatePicker empties to an empty value, and a form reset brings the default back", async () => {
+  const onValueChange = mock.fn();
+  const { container } = await mount(
+    <form>
+      <DatePicker
+        {...datePickerProps}
+        name="expires"
+        defaultValue="2026-11-18"
+        clearable
+        clearLabel="Never expires"
+        onValueChange={onValueChange}
+      />
+    </form>,
+  );
+  const form = one<HTMLFormElement>("form", container);
+  await click(dateTrigger());
+  await click(popoverButton("Never expires"));
+  assert.deepEqual(onValueChange.mock.calls.at(-1)?.arguments, [""]);
+  assert.equal(document.querySelector('[role="dialog"]'), null);
+  assert.equal(new FormData(form).get("expires"), "");
+  assert.equal(dateTrigger().textContent, "Choose a date");
+  // Nothing to clear: no button.
+  await settle();
+  await click(dateTrigger());
+  assert.equal(document.querySelector('[data-slot="date-picker-clear"]'), null);
+  await press(document.activeElement!, "Escape");
+  await settle();
+
+  await act(async () => form.reset());
+  await settle();
+  assert.equal(new FormData(form).get("expires"), "2026-11-18");
+  assert.equal(dateTrigger().textContent, "18 Nov 2026");
+});
+
+test("a DatePicker that is not clearable offers no clear button", async () => {
+  await mount(<DatePicker {...datePickerProps} defaultValue="2026-11-18" />);
+  await click(dateTrigger());
+  assert.equal(document.querySelector('[data-slot="date-picker-clear"]'), null);
+});
+
+test("a DateRangePicker that allows a partial range keeps one day as the start or the end only", async () => {
+  const onValueChange = mock.fn();
+  const { container } = await mount(
+    <form>
+      <DateRangePicker
+        {...rangePickerProps}
+        fromName="since"
+        toName="before"
+        allowPartial
+        fromOnlyLabel="From this day"
+        toOnlyLabel="Until this day"
+        onValueChange={onValueChange}
+      />
+    </form>,
+  );
+  const form = one<HTMLFormElement>("form", container);
+  const fields = () => [new FormData(form).get("since"), new FormData(form).get("before")];
+  // The two buttons wait for a first day.
+  await click(rangeTrigger());
+  assert.equal(document.querySelector('[data-slot="date-range-picker-footer"]'), null);
+  await click(day("2026-11-10"));
+  await click(popoverButton("From this day"));
+  assert.deepEqual(onValueChange.mock.calls.at(-1)?.arguments, [{ from: "2026-11-10", to: null }]);
+  assert.equal(document.querySelector('[role="dialog"]'), null);
+  assert.deepEqual(fields(), ["2026-11-10", ""]);
+  assert.equal(rangeTrigger().textContent, "10 Nov 2026 –");
+
+  await settle();
+  await click(rangeTrigger());
+  await click(day("2026-11-20"));
+  await click(popoverButton("Until this day"));
+  assert.deepEqual(onValueChange.mock.calls.at(-1)?.arguments, [{ from: null, to: "2026-11-20" }]);
+  assert.deepEqual(fields(), ["", "2026-11-20"]);
+  assert.equal(rangeTrigger().textContent, "– 20 Nov 2026");
+
+  // Two days still close a full range.
+  await settle();
+  await click(rangeTrigger());
+  await click(day("2026-11-03"));
+  await click(day("2026-11-05"));
+  assert.deepEqual(onValueChange.mock.calls.at(-1)?.arguments, [{ from: "2026-11-03", to: "2026-11-05" }]);
+  assert.deepEqual(fields(), ["2026-11-03", "2026-11-05"]);
+});
+
+test("a clearable DateRangePicker empties to null and empty fields, and a form reset brings the default back", async () => {
+  const onValueChange = mock.fn();
+  const { container } = await mount(
+    <form>
+      <DateRangePicker
+        {...rangePickerProps}
+        fromName="from"
+        toName="to"
+        defaultValue={{ from: "2026-11-02", to: "2026-11-10" }}
+        clearable
+        clearLabel="Any time"
+        onValueChange={onValueChange}
+      />
+    </form>,
+  );
+  const form = one<HTMLFormElement>("form", container);
+  await click(rangeTrigger());
+  await click(popoverButton("Any time"));
+  assert.deepEqual(onValueChange.mock.calls.at(-1)?.arguments, [null]);
+  assert.deepEqual(period(form), ["", ""]);
+  assert.equal(rangeTrigger().textContent, "Choose a period");
+
+  await settle();
+  await act(async () => form.reset());
+  await settle();
+  assert.deepEqual(period(form), ["2026-11-02", "2026-11-10"]);
+});

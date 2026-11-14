@@ -3,10 +3,17 @@
 import * as React from "react";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { Calendar, type CalendarJumpProps } from "@/components/ui/calendar";
 import { parseISODate } from "@/components/ui/calendar-date";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useFormReset } from "@/components/ui/use-form-reset";
+
+/**
+ * A field that may be left empty: `clearable` adds a button under the calendar, named by `clearLabel`, that empties
+ * it. Both or neither.
+ */
+type DatePickerClearProps = { clearable: true; clearLabel: string } | { clearable?: false; clearLabel?: undefined };
 
 const DATE_PICKER_SIZES = {
   sm: "h-7 px-2 text-sm",
@@ -26,6 +33,9 @@ const DATE_PICKER_SIZES = {
  * date"), and the two month button names. A combobox takes no name from its content, so give the button one: a
  * Label (`id` and htmlFor), aria-label or aria-labelledby. `monthLabel` and `yearLabel` turn the calendar's caption
  * into two lists that jump to a month and a year.
+ * For a date that may be left empty (an expiry, the start of an import) pass `clearable` and `clearLabel`: while a
+ * day is chosen, a button under the calendar empties the field, which then submits an empty value and calls
+ * onValueChange with "".
  * On phones, or for a date typed far more often than picked (a date of birth), the browser's own
  * <input type="date"> in an Input is the better control.
  */
@@ -46,6 +56,8 @@ function DatePicker({
   max,
   isDateDisabled,
   weekStartsOn,
+  clearable = false,
+  clearLabel,
   name,
   form,
   size = "default",
@@ -61,7 +73,8 @@ function DatePicker({
     React.ComponentProps<typeof Calendar>,
     "locale" | "today" | "min" | "max" | "isDateDisabled" | "weekStartsOn" | "previousLabel" | "nextLabel"
   > &
-  CalendarJumpProps & {
+  CalendarJumpProps &
+  DatePickerClearProps & {
     value?: string | null;
     defaultValue?: string;
     onValueChange?: (value: string) => void;
@@ -164,6 +177,23 @@ function DatePicker({
             setOpen(false);
           }}
         />
+        {clearable && chosen && (
+          <div data-slot="date-picker-footer" className="mt-3 flex justify-end border-t border-border pt-3">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              data-slot="date-picker-clear"
+              onClick={() => {
+                if (valueProp === undefined) setInnerValue(null);
+                onValueChange?.("");
+                setOpen(false);
+              }}
+            >
+              {clearLabel}
+            </Button>
+          </div>
+        )}
       </PopoverContent>
     </Popover>
   );

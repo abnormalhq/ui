@@ -3,10 +3,68 @@
 import * as React from "react";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { Calendar, type CalendarJumpProps } from "@/components/ui/calendar";
 import { type ClosedDateRange, type DateRange, parseISODate } from "@/components/ui/calendar-date";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useFormReset } from "@/components/ui/use-form-reset";
+
+/** A range that may be open at one end, or at both while nothing is chosen: { from: "2026-11-10", to: null }. */
+type OpenDateRange = { from: string | null; to: string | null };
+
+/** The keys every mode below names, so the props can be read whichever mode the page chose. */
+type RangeModeKeys = {
+  allowPartial?: boolean;
+  fromOnlyLabel?: string;
+  toOnlyLabel?: string;
+  clearable?: boolean;
+  clearLabel?: string;
+};
+
+/**
+ * What the field holds and hands back. Closed, the default: both ends or nothing, and onValueChange only ever gets
+ * both. `clearable` (with `clearLabel`) lets it be emptied, and onValueChange then gets null. `allowPartial` (with
+ * `fromOnlyLabel` and `toOnlyLabel`) lets one end stand alone, such as "since 10 November".
+ */
+type DateRangePickerModeProps = RangeModeKeys &
+  (
+    | {
+        allowPartial?: false;
+        fromOnlyLabel?: undefined;
+        toOnlyLabel?: undefined;
+        clearable?: false;
+        clearLabel?: undefined;
+        value?: ClosedDateRange | null;
+        defaultValue?: ClosedDateRange;
+        /** Called once both ends are chosen, with the earlier day as `from`. */
+        onValueChange?: (value: ClosedDateRange) => void;
+      }
+    | {
+        allowPartial?: false;
+        fromOnlyLabel?: undefined;
+        toOnlyLabel?: undefined;
+        /** A button under the calendar empties the field. */
+        clearable: true;
+        /** The clear button's text, such as "Clear". */
+        clearLabel: string;
+        value?: ClosedDateRange | null;
+        defaultValue?: ClosedDateRange;
+        /** Called with both ends once they are chosen, and with null when the field is cleared. */
+        onValueChange?: (value: ClosedDateRange | null) => void;
+      }
+    | ({
+        /** One end may stand alone: after the first day, two buttons make it the start or the end. */
+        allowPartial: true;
+        /** The button that keeps the day as the start only, such as "From this day". */
+        fromOnlyLabel: string;
+        /** The button that keeps the day as the end only, such as "Until this day". */
+        toOnlyLabel: string;
+        value?: OpenDateRange | null;
+        defaultValue?: OpenDateRange;
+        /** Called with the range, either end of it null, and with null when the field is cleared. */
+        onValueChange?: (value: OpenDateRange | null) => void;
+      } & ({ clearable: true; clearLabel: string } | { clearable?: false; clearLabel?: undefined }))
+  );
 
 const DATE_RANGE_PICKER_SIZES = {
   sm: "h-7 px-2 text-sm",
@@ -27,6 +85,11 @@ const DATE_RANGE_PICKER_SIZES = {
  * the chosen range. The words are the page's: `placeholder`, `calendarLabel` to name the popover, the two month
  * button names and, for the lists that jump to a month and a year, `monthLabel` and `yearLabel`. Give the button a
  * name: a Label (`id` and htmlFor), aria-label or aria-labelledby.
+ * For a range that may be left empty pass `clearable` and `clearLabel`: a button under the calendar empties it, and
+ * onValueChange gets null. For one that may be open at one end, such as "messages since 10 November", pass
+ * `allowPartial` with `fromOnlyLabel` and `toOnlyLabel`: after the first day the popover offers to keep it as the
+ * start only or the end only, the value is then { from, to: null } or { from: null, to }, the button shows the day
+ * with a dash on the open side, and the missing end submits as an empty field.
  */
 function DateRangePicker({
   locale,
@@ -47,6 +110,11 @@ function DateRangePicker({
   weekStartsOn,
   fromName,
   toName,
+  allowPartial = false,
+  fromOnlyLabel,
+  toOnlyLabel,
+  clearable = false,
+  clearLabel,
   form,
   size = "default",
   align = "start",
@@ -61,11 +129,8 @@ function DateRangePicker({
     React.ComponentProps<typeof Calendar>,
     "locale" | "today" | "min" | "max" | "isDateDisabled" | "weekStartsOn" | "previousLabel" | "nextLabel"
   > &
-  CalendarJumpProps & {
-    value?: ClosedDateRange | null;
-    defaultValue?: ClosedDateRange;
-    /** Called once both ends are chosen, with the earlier day as `from`. */
-    onValueChange?: (value: ClosedDateRange) => void;
+  CalendarJumpProps &
+  DateRangePickerModeProps & {
     /** Shown on the button while no range is chosen. */
     placeholder: React.ReactNode;
     /** The accessible name of the popover that holds the calendar. */
@@ -80,8 +145,10 @@ function DateRangePicker({
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
   }) {
-  const [innerValue, setInnerValue] = React.useState(defaultValue ?? null);
-  const value = valueProp === undefined ? innerValue : valueProp;
+  const [innerValue, setInnerValue] = React.useState<OpenDateRange | null>(defaultValue ?? null);
+  const value: OpenDateRange | null = valueProp === undefined ? innerValue : valueProp;
+  // Each mode's callback differs only in what it is handed, and the props say which mode this is.
+  const report = onValueChange as ((value: OpenDateRange | null) => void) | undefined;
   // The range being chosen in the open popover: one end, until the second makes it the value.
   const [draft, setDraft] = React.useState<DateRange | null>(null);
   // The button finds the form, not the hidden inputs: a field without names, or a disabled one, has none to ask.
@@ -101,18 +168,24 @@ function DateRangePicker({
     if (openProp === undefined) setInnerOpen(next);
     onOpenChange?.(next);
   };
+  const choose = (chosen: OpenDateRange | null) => {
+    if (valueProp === undefined) setInnerValue(chosen);
+    if (chosen?.from !== value?.from || chosen?.to !== value?.to) report?.(chosen);
+    setOpen(false);
+  };
   // Both names or neither, as Calendar takes them.
   const jump: CalendarJumpProps = monthLabel !== undefined && yearLabel !== undefined ? { monthLabel, yearLabel } : {};
   const from = parseISODate(value?.from);
   const to = parseISODate(value?.to);
   const text = React.useMemo(
-    () =>
-      from &&
-      to &&
-      new Intl.DateTimeFormat(locale, { ...(dateFormat ?? { dateStyle: "medium" }), timeZone: "UTC" }).formatRange(
-        from,
-        to,
-      ),
+    () => {
+      const format = new Intl.DateTimeFormat(locale, { ...(dateFormat ?? { dateStyle: "medium" }), timeZone: "UTC" });
+      if (from && to) return format.formatRange(from, to);
+      // An open end has no words in Intl: the day, and a dash on the open side.
+      if (from) return `${format.format(from)} –`;
+      if (to) return `– ${format.format(to)}`;
+      return undefined;
+    },
     // The days are compared as text: a new Date object for the same day is not a change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [locale, dateFormat, value?.from, value?.to],
@@ -169,7 +242,11 @@ function DateRangePicker({
         <Calendar
           mode="range"
           locale={locale}
-          value={draft ?? value}
+          // An open range shows its one day; choosing starts a new range from there.
+          value={
+            draft ??
+            (value && (value.from ?? value.to) ? { from: (value.from ?? value.to)!, to: value.to ?? value.from } : null)
+          }
           today={today}
           min={min}
           max={max}
@@ -180,15 +257,40 @@ function DateRangePicker({
           {...jump}
           onValueChange={(next) => {
             if (next.to === null) return setDraft(next);
-            const chosen = { from: next.from, to: next.to };
-            if (valueProp === undefined) setInnerValue(chosen);
-            if (chosen.from !== value?.from || chosen.to !== value?.to) onValueChange?.(chosen);
-            setOpen(false);
+            choose({ from: next.from, to: next.to });
           }}
         />
+        {((allowPartial && draft !== null) || (clearable && (value?.from || value?.to))) && (
+          <div
+            data-slot="date-range-picker-footer"
+            className="mt-3 flex flex-wrap justify-end gap-1.5 border-t border-border pt-3"
+          >
+            {allowPartial && draft !== null && (
+              <>
+                <Button type="button" variant="ghost" size="sm" onClick={() => choose({ from: draft.from, to: null })}>
+                  {fromOnlyLabel}
+                </Button>
+                <Button type="button" variant="ghost" size="sm" onClick={() => choose({ from: null, to: draft.from })}>
+                  {toOnlyLabel}
+                </Button>
+              </>
+            )}
+            {clearable && (value?.from || value?.to) && draft === null && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                data-slot="date-range-picker-clear"
+                onClick={() => choose(null)}
+              >
+                {clearLabel}
+              </Button>
+            )}
+          </div>
+        )}
       </PopoverContent>
     </Popover>
   );
 }
 
-export { DateRangePicker };
+export { DateRangePicker, type OpenDateRange };

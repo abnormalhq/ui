@@ -147,6 +147,37 @@ test("a DateTimePicker keeps the seconds of its value, min and max when its step
   assert.equal(new FormData(form).get("start"), "2026-11-12T10:00:15");
 });
 
+test("a clearable DateTimePicker empties the day and the time together", async () => {
+  const onValueChange = mock.fn();
+  const { container } = await mount(
+    <form>
+      <DateTimePicker
+        {...dateTimeProps}
+        name="start"
+        defaultValue="2026-11-12T22:00"
+        clearable
+        clearLabel="No start"
+        onValueChange={onValueChange}
+      />
+    </form>,
+  );
+  const form = one<HTMLFormElement>("form", container);
+  await click(dayButton());
+  const clear = [...document.querySelectorAll<HTMLButtonElement>('[role="dialog"] button')].find(
+    (button) => button.textContent === "No start",
+  )!;
+  await click(clear);
+  assert.deepEqual(onValueChange.mock.calls.at(-1)?.arguments, [""]);
+  assert.equal(new FormData(form).get("start"), "");
+  assert.equal(timeInput().value, "");
+  assert.equal(dayButton().textContent, "Choose a date");
+
+  await settle();
+  await act(async () => form.reset());
+  await settle();
+  assert.equal(new FormData(form).get("start"), "2026-11-12T22:00");
+});
+
 test("a controlled DateTimePicker shows what its owner holds", async () => {
   function Owner() {
     const [value, setValue] = useState("2026-11-12T10:15");
