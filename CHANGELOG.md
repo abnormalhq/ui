@@ -6,6 +6,10 @@ Each entry names the items it touches, because a project installs items one by o
 
 ## [Unreleased]
 
+### Fixed
+
+- `command`: `CommandEmpty` shows on the first render of a list with no options. It looked for its options before the `Command` around it had attached its element, so an empty list showed nothing until the search changed.
+
 ## [0.5.0] - 2026-11-14
 
 The pieces the projects kept building for themselves: page structure, lists and their states, navigation, and the fields that were still native inputs. Twenty-eight new items bring the registry to 93, and the items that render without a client module no longer bring one in through their icons. One package was added: `uqr`, for `qr-code`.

@@ -356,6 +356,29 @@ test("typing in a Command filters by value and keywords, and says so when nothin
   assert.equal(status.textContent, "");
 });
 
+test("a Command with no options shows CommandEmpty from its first render, and as its items come and go", async () => {
+  const list = (items: string[]) => (
+    <Command>
+      <CommandInput label="Search mailboxes" />
+      <CommandList aria-label="Mailboxes">
+        {items.map((item) => (
+          <CommandItem key={item} value={item}>
+            {item}
+          </CommandItem>
+        ))}
+      </CommandList>
+      <CommandEmpty>No mailboxes yet</CommandEmpty>
+    </Command>
+  );
+  const empty = () => one('[data-slot="command-empty"]').textContent;
+  const { rerender } = await mount(list([]));
+  assert.equal(empty(), "No mailboxes yet");
+  await rerender(list(["ada@example.com"]));
+  assert.equal(empty(), "");
+  await rerender(list([]));
+  assert.equal(empty(), "No mailboxes yet");
+});
+
 test("a Command that does not filter shows what the page renders, and takes another rule", async () => {
   const { rerender } = await mount(palette({ shouldFilter: false, search: "zzz", onSearchChange: () => {} }));
   assert.equal(texts('[role="option"]').length, 4);

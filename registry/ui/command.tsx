@@ -210,11 +210,15 @@ function CommandList({ className, ...props }: React.ComponentProps<"div">) {
  * What to say when nothing matches, in the page's words. Put it after CommandList, not inside: a listbox may only
  * hold options. It is a status region that is always there, so the message is announced when it arrives.
  */
-function CommandEmpty({ className, children, ...props }: React.ComponentProps<"div">) {
+function CommandEmpty({ className, children, ref, ...props }: React.ComponentProps<"div">) {
   const { root, search } = useCommand("CommandEmpty");
   const [empty, setEmpty] = React.useState(false);
+  const own = React.useRef<HTMLDivElement>(null);
+  React.useImperativeHandle(ref, () => own.current as HTMLDivElement, []);
   React.useLayoutEffect(() => {
-    const element = root.current;
+    // On the first commit this effect runs before the Command's own ref is attached (a child's layout effects come
+    // first), so the root is found from this element, whose ref is already set.
+    const element = own.current?.closest<HTMLElement>('[data-slot="command"]') ?? root.current;
     if (!element) return;
     const sync = () => setEmpty(element.querySelector('[role="option"]') === null);
     sync();
@@ -224,6 +228,7 @@ function CommandEmpty({ className, children, ...props }: React.ComponentProps<"d
   }, [root, search]);
   return (
     <div
+      ref={own}
       role="status"
       data-slot="command-empty"
       className={cn("px-3 py-6 text-center text-sm text-muted-foreground empty:hidden", className)}
