@@ -6,6 +6,15 @@ Each entry names the items it touches, because a project installs items one by o
 
 ## [Unreleased]
 
+### Added
+
+- `empty-state`: what a list, a search or a page shows when it has nothing to show: an icon in a tile, a title, a sentence and the next steps. `default` is the large centered block that stands in for a whole list; `compact` the dashed box for one panel among others. The title is a paragraph unless `asChild` makes it the heading the outline needs.
+- `page-header`: the top of a product page: the h1, an ⓘ or a line saying what the page is for, the page's actions at 32px, and `PageHeaderBack`, a link back to the parent page (or a `breadcrumb` in its place). `sticky` keeps it at the top on an opaque background, and draws its line while the page sets `data-stuck`.
+- `description-list`: names and their values in a `dl`, the values starting on one line (`auto minmax(0,1fr)`), as a bare list, a tinted `panel`, or `spread` rows for a receipt. `DescriptionDetails` takes an `action` beside the value, such as a `CopyButton`.
+- `timeline`: events in order on a rail, each marked by a dot in its tone or, given `icon`, a round tile, with `TimelineTitle`, `TimelineTime` (a `<time>`) and `TimelineContent`. The list is named by the page.
+- `banner`: a strip across the top of a page or pane about the state of the whole thing (offline, an auto-reply that is on, maintenance), in five tones, with `BannerText`, `BannerMeta`, `BannerAction` and `BannerClose`, a dismiss button named by `label`. A status region unless given `role="alert"`.
+- `stat`: the headline numbers of a page: `StatGrid`, a `dl` of tiles or of `joined` cells, two to a row on a phone and up to `columns`; `Stat` with a label and a value; `StatHint`; and `StatDelta`, the change, with a direction arrow and a tone that says whether it is good news.
+
 ### Changed
 
 - `copy-button`: `text` is optional. Without it the button copies the code beside it when pressed: the text of the first `<code>` (else `<pre>`) in its parent, with each `<br>` read as a line break, so a code block rendered on the server sends its source once instead of again as a prop. With nothing beside it the copy fails as a refused clipboard does. Buttons that pass `text` work as before.

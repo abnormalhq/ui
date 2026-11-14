@@ -139,6 +139,20 @@
       ]
     },
     {
+      "name": "banner",
+      "type": "registry:ui",
+      "title": "Banner",
+      "description": "A strip across the top of a page or pane about the state of the whole thing, with an icon, an action and a dismiss button, in five tones.",
+      "dependencies": ["class-variance-authority", "lucide-react"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/banner.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "breadcrumb",
       "type": "registry:ui",
       "title": "Breadcrumb",
@@ -324,6 +338,20 @@
       ]
     },
     {
+      "name": "description-list",
+      "type": "registry:ui",
+      "title": "Description List",
+      "description": "Names and their values in a dl, the values starting on one line, with an optional control beside each value.",
+      "dependencies": ["class-variance-authority"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/description-list.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "dialog",
       "type": "registry:ui",
       "title": "Dialog",
@@ -361,6 +389,20 @@
       "files": [
         {
           "path": "registry/ui/dropdown-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "empty-state",
+      "type": "registry:ui",
+      "title": "Empty State",
+      "description": "What a list or page shows when it has nothing to show: an icon tile, a title, a sentence and the next step, large or compact.",
+      "dependencies": ["class-variance-authority", "radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/empty-state.tsx",
           "type": "registry:ui"
         }
       ]
@@ -498,6 +540,20 @@
       "files": [
         {
           "path": "registry/ui/native-select.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "page-header",
+      "type": "registry:ui",
+      "title": "Page Header",
+      "description": "The top of a product page: the h1, a description, the page's actions and a way back, sticky if asked.",
+      "dependencies": ["lucide-react", "radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/page-header.tsx",
           "type": "registry:ui"
         }
       ]
@@ -682,6 +738,20 @@
       ]
     },
     {
+      "name": "stat",
+      "type": "registry:ui",
+      "title": "Stat",
+      "description": "The headline numbers of a page: tiles with a name, a value, a hint and a change, as cards or one joined block.",
+      "dependencies": ["class-variance-authority", "lucide-react"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/stat.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "status-label",
       "type": "registry:ui",
       "title": "Status Label",
@@ -776,6 +846,20 @@
       "files": [
         {
           "path": "registry/ui/theme-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "timeline",
+      "type": "registry:ui",
+      "title": "Timeline",
+      "description": "Events in order on a rail, each marked by a toned dot or an icon, with a title, a time and a message.",
+      "dependencies": ["class-variance-authority"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/timeline.tsx",
           "type": "registry:ui"
         }
       ]
