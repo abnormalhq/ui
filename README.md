@@ -155,8 +155,9 @@ Connect `abnormalhq/ui` to the `abnormalhq-ui` Worker, with `main` as the produc
 - Build command: `pnpm install --frozen-lockfile && pnpm cf:build`
 - Deploy command: `pnpm cf:deploy`
 
-| Variable                  | Value     | Why                                                  |
-| ------------------------- | --------- | ---------------------------------------------------- |
-| `PNPM_VERSION`            | `12.18.0` | Matches `packageManager` in `package.json`           |
-| `SKIP_DEPENDENCY_INSTALL` | `1`       | Skips the default install in favor of the frozen one |
-| `NEXT_TELEMETRY_DISABLED` | `1`       | Turns off Next.js build telemetry                    |
+| Variable                  | Value | Why                                                  |
+| ------------------------- | ----- | ---------------------------------------------------- |
+| `SKIP_DEPENDENCY_INSTALL` | `1`   | Skips the default install in favor of the frozen one |
+| `NEXT_TELEMETRY_DISABLED` | `1`   | Turns off Next.js build telemetry                    |
+
+The pnpm version comes from `packageManager` in `package.json`: Workers Builds reads it before any `PNPM_VERSION` build variable, so none is set.
