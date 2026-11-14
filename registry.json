@@ -592,6 +592,20 @@
       ]
     },
     {
+      "name": "language-picker",
+      "type": "registry:ui",
+      "title": "Language Picker",
+      "description": "A languages button and menu holding no state: the page passes the current language and writes back the choice, or gives each language its page.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/dropdown-menu", "@abnormal/tooltip", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/language-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "link-row",
       "type": "registry:ui",
       "title": "Link Row",
@@ -627,6 +641,20 @@
       "files": [
         {
           "path": "registry/ui/page-header.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "nav-tabs",
+      "type": "registry:ui",
+      "title": "Nav Tabs",
+      "description": "Tabs and segmented controls made of links, for views with their own address, with the current one marked by aria-current.",
+      "dependencies": ["class-variance-authority", "radix-ui"],
+      "registryDependencies": ["@abnormal/scroll-area", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/nav-tabs.tsx",
           "type": "registry:ui"
         }
       ]
@@ -697,6 +725,23 @@
       "files": [
         {
           "path": "registry/ui/radio-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "resize-handle",
+      "type": "registry:ui",
+      "title": "Resize Handle",
+      "description": "A focusable separator that sizes a pane by drag or keyboard, with usePointerDrag for handles of a project's own.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/resize-handle.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/use-pointer-drag.ts",
           "type": "registry:ui"
         }
       ]
@@ -784,6 +829,24 @@
       "files": [
         {
           "path": "registry/ui/sheet.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "title": "Sidebar",
+      "description": "An app's column that collapses to an icon rail, with nav rows that carry a count or a dot, and useSidebar for rows of a project's own.",
+      "dependencies": ["lucide-react", "radix-ui"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/tooltip", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/sidebar.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/use-sidebar.ts",
           "type": "registry:ui"
         }
       ]
@@ -998,6 +1061,19 @@
       ]
     },
     {
+      "name": "toc",
+      "type": "registry:ui",
+      "title": "Table of Contents",
+      "description": "The links to a document's sections, marking the one being read with aria-current=\"location\" as the page scrolls.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/toc.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "toggle",
       "type": "registry:ui",
       "title": "Toggle",
@@ -1021,6 +1097,20 @@
       "files": [
         {
           "path": "registry/ui/toggle-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "toolbar",
+      "type": "registry:ui",
+      "title": "Toolbar",
+      "description": "A row of controls with one tab stop and arrow keys between them, in groups split by separators.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/toolbar.tsx",
           "type": "registry:ui"
         }
       ]

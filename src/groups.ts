@@ -27,6 +27,8 @@ export const groups = [
       "calendar",
       "date-picker",
       "date-range-picker",
+      "toolbar",
+      "resize-handle",
       "label",
       "form-reset",
     ],
@@ -62,7 +64,10 @@ export const groups = [
       "uptime-bar",
     ],
   },
-  { title: "Navigation", items: ["tabs", "breadcrumb", "pagination", "stepper", "page-header", "skip-link"] },
+  {
+    title: "Navigation",
+    items: ["tabs", "breadcrumb", "pagination", "stepper", "page-header", "skip-link", "nav-tabs", "sidebar", "toc"],
+  },
   {
     title: "Overlays",
     items: [
@@ -79,6 +84,9 @@ export const groups = [
       "tooltip",
     ],
   },
-  { title: "Patterns", items: ["copy-button", "link-row", "theme-picker", "selection-bar"] },
+  {
+    title: "Patterns",
+    items: ["copy-button", "link-row", "theme-picker", "selection-bar", "language-picker"],
+  },
   { title: "Marketing", items: ["container", "section-heading", "text-link", "icon-tile", "prose", "pricing-card"] },
 ];
