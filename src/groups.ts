@@ -9,6 +9,8 @@ export const groups = [
       "input",
       "input-group",
       "search-input",
+      "password-input",
+      "file-button",
       "field",
       "field-message",
       "tag",
@@ -27,6 +29,7 @@ export const groups = [
       "calendar",
       "date-picker",
       "date-range-picker",
+      "date-time-picker",
       "toolbar",
       "resize-handle",
       "label",
@@ -86,7 +89,7 @@ export const groups = [
   },
   {
     title: "Patterns",
-    items: ["copy-button", "link-row", "theme-picker", "selection-bar", "language-picker"],
+    items: ["copy-button", "link-row", "theme-picker", "selection-bar", "language-picker", "turnstile", "json-ld"],
   },
   { title: "Marketing", items: ["container", "section-heading", "text-link", "icon-tile", "prose", "pricing-card"] },
 ];

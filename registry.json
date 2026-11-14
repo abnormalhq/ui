@@ -351,6 +351,19 @@
       ]
     },
     {
+      "name": "date-time-picker",
+      "type": "registry:ui",
+      "title": "Date Time Picker",
+      "description": "A date and a time of day in one field, valued as local text like <input type=\"datetime-local\">, that follows a form reset.",
+      "registryDependencies": ["@abnormal/date-picker", "@abnormal/form-reset", "@abnormal/input", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/date-time-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "description-list",
       "type": "registry:ui",
       "title": "Description List",
@@ -458,6 +471,19 @@
       "files": [
         {
           "path": "registry/ui/field-message.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "file-button",
+      "type": "registry:ui",
+      "title": "File Button",
+      "description": "A Button that opens the file chooser and hands back the files, or submits them with its form.",
+      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/file-button.tsx",
           "type": "registry:ui"
         }
       ]
@@ -578,6 +604,19 @@
       ]
     },
     {
+      "name": "json-ld",
+      "type": "registry:ui",
+      "title": "JSON-LD",
+      "description": "A page's structured data as a <script type=\"application/ld+json\">, escaped for the script element.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/json-ld.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "label",
       "type": "registry:ui",
       "title": "Label",
@@ -669,6 +708,20 @@
       "files": [
         {
           "path": "registry/ui/pagination.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "password-input",
+      "type": "registry:ui",
+      "title": "Password Input",
+      "description": "A password field with a show and hide button in its border, and room for actions such as generate.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/form-reset", "@abnormal/input-group", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/password-input.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1125,6 +1178,23 @@
       "files": [
         {
           "path": "registry/ui/tooltip.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "turnstile",
+      "type": "registry:ui",
+      "title": "Turnstile",
+      "description": "The Cloudflare Turnstile check for a form, as a component and a hook: one script load, the page's theme, the token in a hidden field, and reset.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/turnstile.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/use-turnstile.ts",
           "type": "registry:ui"
         }
       ]
