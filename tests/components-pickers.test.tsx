@@ -1805,3 +1805,52 @@ test("a clearable DateRangePicker empties to null and empty fields, and a form r
   await settle();
   assert.deepEqual(period(form), ["2026-11-02", "2026-11-10"]);
 });
+
+test("a DatePicker given formatValue writes the day the page's way, and keeps the locale in its calendar", async () => {
+  const formatValue = mock.fn((value: string) => value);
+  await mount(<DatePicker {...datePickerProps} defaultValue="2026-11-18" formatValue={formatValue} />);
+  assert.equal(dateTrigger().textContent, "2026-11-18");
+  assert.deepEqual(formatValue.mock.calls.at(-1)?.arguments, ["2026-11-18"]);
+  await click(dateTrigger());
+  assert.equal(caption(), "November 2026");
+  await press(document.activeElement!, "ArrowRight");
+  await click(document.activeElement!);
+  assert.equal(dateTrigger().textContent, "2026-11-19");
+  await mounted.pop()!.unmount();
+
+  // Without a day it shows the placeholder, and never asks for a day it does not have.
+  const unused = mock.fn((value: string) => value);
+  await mount(<DatePicker {...datePickerProps} formatValue={unused} />);
+  assert.equal(dateTrigger().textContent, "Choose a date");
+  assert.equal(unused.mock.callCount(), 0);
+});
+
+test("a DateRangePicker given formatValue writes each end the page's way, with its dash, open ends included", async () => {
+  const formatValue = (day: string) => day;
+  const { rerender } = await mount(
+    <DateRangePicker
+      {...rangePickerProps}
+      value={{ from: "2026-11-02", to: "2026-11-10" }}
+      formatValue={formatValue}
+    />,
+  );
+  assert.equal(rangeTrigger().textContent, "2026-11-02 – 2026-11-10");
+  assert.equal(rangeTrigger().hasAttribute("data-placeholder"), false);
+  const open = (value: { from: string | null; to: string | null } | null) => (
+    <DateRangePicker
+      {...rangePickerProps}
+      allowPartial
+      fromOnlyLabel="From this day"
+      toOnlyLabel="Until this day"
+      value={value}
+      formatValue={formatValue}
+    />
+  );
+  await rerender(open({ from: "2026-11-02", to: null }));
+  assert.equal(rangeTrigger().textContent, "2026-11-02 –");
+  await rerender(open({ from: null, to: "2026-11-10" }));
+  assert.equal(rangeTrigger().textContent, "– 2026-11-10");
+  await rerender(open(null));
+  assert.equal(rangeTrigger().textContent, "Choose a period");
+  assert.equal(rangeTrigger().hasAttribute("data-placeholder"), true);
+});

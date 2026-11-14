@@ -490,3 +490,9 @@ test("the copy button tells the page how the copy went, with the text or the err
   assert.deepEqual(onCopyFailed.mock.calls[0]?.arguments, [failure]);
   assert.equal(onCopied.mock.callCount(), 1);
 });
+
+test("a DateTimePicker given formatValue writes its day the page's way beside the time", async () => {
+  await mount(<DateTimePicker {...dateTimeProps} defaultValue="2026-11-12T09:05" formatValue={(day) => day} />);
+  assert.equal(dayButton().textContent, "2026-11-12");
+  assert.equal(timeInput().value, "09:05");
+});

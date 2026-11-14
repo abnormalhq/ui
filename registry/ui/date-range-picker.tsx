@@ -84,7 +84,8 @@ const DATE_RANGE_PICKER_SIZES = {
  * The button is a combobox to assistive technology, one whose popup is a dialog, as DatePicker's is: its value is
  * the chosen range. The words are the page's: `placeholder`, `calendarLabel` to name the popover, the two month
  * button names and, for the lists that jump to a month and a year, `monthLabel` and `yearLabel`. Give the button a
- * name: a Label (`id` and htmlFor), aria-label or aria-labelledby.
+ * name: a Label (`id` and htmlFor), aria-label or aria-labelledby. `formatValue` writes each end the page's way
+ * instead, such as "2026-11-14 – 2026-11-20".
  * For a range that may be left empty pass `clearable` and `clearLabel`: a button under the calendar empties it, and
  * onValueChange gets null. For one that may be open at one end, such as "messages since 10 November", pass
  * `allowPartial` with `fromOnlyLabel` and `toOnlyLabel`: after the first day the popover offers to keep it as the
@@ -103,6 +104,7 @@ function DateRangePicker({
   monthLabel,
   yearLabel,
   dateFormat,
+  formatValue,
   today,
   min,
   max,
@@ -137,6 +139,11 @@ function DateRangePicker({
     calendarLabel: string;
     /** How the two days are written on the button; the locale's medium date unless given. */
     dateFormat?: Intl.DateTimeFormatOptions;
+    /**
+     * Writes each end on the button in place of Intl, from the day as the field holds it ("2026-11-14"), for a page
+     * with a date style of its own; the two ends are joined by a dash. The calendar keeps the locale's names.
+     */
+    formatValue?: (day: string) => React.ReactNode;
     /** The names of the two form fields, such as "from" and "to". */
     fromName?: string;
     toName?: string;
@@ -177,7 +184,7 @@ function DateRangePicker({
   const jump: CalendarJumpProps = monthLabel !== undefined && yearLabel !== undefined ? { monthLabel, yearLabel } : {};
   const from = parseISODate(value?.from);
   const to = parseISODate(value?.to);
-  const text = React.useMemo(
+  const intlText = React.useMemo(
     () => {
       const format = new Intl.DateTimeFormat(locale, { ...(dateFormat ?? { dateStyle: "medium" }), timeZone: "UTC" });
       if (from && to) return format.formatRange(from, to);
@@ -190,6 +197,21 @@ function DateRangePicker({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [locale, dateFormat, value?.from, value?.to],
   );
+  // The page's own style for each end, with the same dash between them and on an open side.
+  const fromDay = from ? value?.from : null;
+  const toDay = to ? value?.to : null;
+  let text: React.ReactNode = intlText;
+  if (formatValue) {
+    if (fromDay && toDay)
+      text = (
+        <>
+          {formatValue(fromDay)} – {formatValue(toDay)}
+        </>
+      );
+    else if (fromDay) text = <>{formatValue(fromDay)} –</>;
+    else if (toDay) text = <>– {formatValue(toDay)}</>;
+    else text = undefined;
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -201,7 +223,7 @@ function DateRangePicker({
           role="combobox"
           data-slot="date-range-picker-trigger"
           data-size={size}
-          data-placeholder={text ? undefined : ""}
+          data-placeholder={fromDay || toDay ? undefined : ""}
           disabled={disabled}
           form={form}
           ref={buttonRef}

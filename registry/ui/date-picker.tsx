@@ -29,6 +29,7 @@ const DATE_PICKER_SIZES = {
  * uncontrolled field back on its default, unless the page cancels the reset; a controlled one follows its value prop.
  * The button is a combobox to assistive technology, one whose popup is a dialog, as in the date picker of the ARIA
  * Authoring Practices: its value is the chosen day, so a screen reader reads the field's name and then the date.
+ * `formatValue` writes the day on the button the page's way instead, such as "2026-11-14".
  * The words are the page's: `placeholder` while no day is chosen, `calendarLabel` to name the popover ("Choose a
  * date"), and the two month button names. A combobox takes no name from its content, so give the button one: a
  * Label (`id` and htmlFor), aria-label or aria-labelledby. `monthLabel` and `yearLabel` turn the calendar's caption
@@ -51,6 +52,7 @@ function DatePicker({
   monthLabel,
   yearLabel,
   dateFormat,
+  formatValue,
   today,
   min,
   max,
@@ -84,6 +86,11 @@ function DatePicker({
     calendarLabel: string;
     /** How the chosen day is written on the button; the locale's medium date unless given. */
     dateFormat?: Intl.DateTimeFormatOptions;
+    /**
+     * Writes the chosen day on the button in place of Intl, from the value as the field holds it ("2026-11-14"), for a
+     * page with a date style of its own, such as the value itself. The calendar keeps the locale's names.
+     */
+    formatValue?: (value: string) => React.ReactNode;
     size?: keyof typeof DATE_PICKER_SIZES;
     align?: "start" | "center" | "end";
     open?: boolean;
@@ -108,7 +115,7 @@ function DatePicker({
   // Both names or neither, as Calendar takes them.
   const jump: CalendarJumpProps = monthLabel !== undefined && yearLabel !== undefined ? { monthLabel, yearLabel } : {};
   const chosen = parseISODate(value);
-  const text = React.useMemo(
+  const intlText = React.useMemo(
     () =>
       chosen &&
       new Intl.DateTimeFormat(locale, { ...(dateFormat ?? { dateStyle: "medium" }), timeZone: "UTC" }).format(chosen),
@@ -116,6 +123,7 @@ function DatePicker({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [locale, dateFormat, value],
   );
+  const text = chosen && value && formatValue ? formatValue(value) : intlText;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

@@ -31,6 +31,8 @@ const join = ({ date, time }: Parts) => (date && time ? `${date}T${time}` : "");
  * With a `name` the value submits as one hidden form field. A reset of the form puts an uncontrolled field back on its
  * default, unless the page cancels the reset; a controlled one follows its value prop.
  * `clearable` with `clearLabel` adds the date picker's clear button, which empties the day and the time together.
+ * `formatValue` is the date picker's: it writes the day on the button the page's way ("2026-11-14"), from the day
+ * alone, since the time beside it is the browser's own input, which writes the time as the browser does.
  * The words are the page's: the date picker's (`placeholder`, `calendarLabel`, the month buttons) and `timeLabel`,
  * the time input's name. The other props, `id` and the aria ones included, go to the date button, so a Label names it.
  */
