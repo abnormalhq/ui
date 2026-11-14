@@ -19,6 +19,12 @@ Each entry names the items it touches, because a project installs items one by o
 - `item-list`: a short bordered list with a line between rows; `ItemListRow` is plain, or a whole-row link or button with `asChild`, with a title, a description, `ItemListMeta` and `ItemListChevron`.
 - `field`: `Field` wires a `FieldLabel`, the control in a `FieldControl` and a `FieldHint` together (`htmlFor`, `aria-describedby`, `aria-invalid`). `error` makes the control invalid and shows in the hint's place, announced at once. `orientation="row"` is the bordered setting row, and `SwitchField` that row with a `Switch`.
 - `tag`: a chip for a chosen value with an × button named by `removeLabel`, and `TagList` to hold them.
+- `truncated-text`: a line cut with an ellipsis, or a few with `line-clamp-*`, that shows the whole text in a tooltip only when it was cut.
+- `expandable-text`: a long text clamped to `lines`, with a show more / show less button (`moreLabel`, `lessLabel`) only when it runs past them, measured again when its width changes.
+- `uptime-bar`: `UptimeBar`, a strip of up, degraded, down and empty bars, each with its native tooltip, named as one image and drawn with no script; `UptimeValue`, the uptime in its color; and `uptimeStatus`, a bucket's status from its counts.
+- `code-block`: a `pre` that scrolls sideways and takes focus, with an optional header naming it and a `CopyButton` that copies the code beside it, so the code reaches the page once.
+- `qr-code`: a QR code drawn as inline SVG on the server, dark on white in both themes, named as an image. It brings `uqr`, the encoder the storefront already uses: a QR encoder is not something to own here.
+- `skip-link`: the first link on a page, above the top edge until it takes the keyboard focus.
 
 ### Changed
 

@@ -227,6 +227,19 @@
       ]
     },
     {
+      "name": "code-block",
+      "type": "registry:ui",
+      "title": "Code Block",
+      "description": "Code to read and copy: a pre that scrolls sideways, with an optional header and a copy button that copies the code beside it.",
+      "registryDependencies": ["@abnormal/copy-button", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/code-block.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "collapsible",
       "type": "registry:ui",
       "title": "Collapsible",
@@ -403,6 +416,20 @@
       "files": [
         {
           "path": "registry/ui/empty-state.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "expandable-text",
+      "type": "registry:ui",
+      "title": "Expandable Text",
+      "description": "A long text clamped to a few lines, with a show more / show less button only when it runs past them.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/expandable-text.tsx",
           "type": "registry:ui"
         }
       ]
@@ -647,6 +674,20 @@
       ]
     },
     {
+      "name": "qr-code",
+      "type": "registry:ui",
+      "title": "QR Code",
+      "description": "A QR code drawn as inline SVG on the server, dark on white in both themes.",
+      "dependencies": ["uqr@^0.1.3"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/qr-code.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "radio-group",
       "type": "registry:ui",
       "title": "Radio Group",
@@ -752,6 +793,19 @@
       "files": [
         {
           "path": "registry/ui/skeleton.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "skip-link",
+      "type": "registry:ui",
+      "title": "Skip Link",
+      "description": "The first link on a page, hidden above the top until it takes the keyboard focus.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/skip-link.tsx",
           "type": "registry:ui"
         }
       ]
@@ -976,6 +1030,32 @@
       "files": [
         {
           "path": "registry/ui/tooltip.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "truncated-text",
+      "type": "registry:ui",
+      "title": "Truncated Text",
+      "description": "A line cut with an ellipsis that shows the whole text in a tooltip only when it was cut.",
+      "registryDependencies": ["@abnormal/tooltip", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/truncated-text.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "uptime-bar",
+      "type": "registry:ui",
+      "title": "Uptime Bar",
+      "description": "A service's history as a strip of up, degraded, down and empty bars, and the uptime in its color, with no script.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/uptime-bar.tsx",
           "type": "registry:ui"
         }
       ]
