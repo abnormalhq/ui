@@ -24,7 +24,8 @@ function currentSection(headingTops: readonly number[], offset: number, atBottom
  * The list is markup, so it renders on the server and works without JavaScript; the script only adds the mark. It
  * reads the links' own targets (`href="#id"`) and counts a heading as reached once it is where following its link
  * puts it: below the page's scroll-padding-top and the heading's own scroll-margin-top, so a sticky header is
- * accounted for, plus `offset` pixels of slack. A link whose target is missing turns the mark off.
+ * accounted for, plus `offset` pixels of slack. A link whose target is missing turns the mark off. The links are read
+ * again as the list changes, so a Toc that stays mounted while the page shows another document follows the new one.
  * `onCurrentChange` hears the section id as it changes, for a page that shows it elsewhere too.
  */
 function Toc({
@@ -47,14 +48,29 @@ function Toc({
   });
 
   React.useEffect(() => {
-    const links = [...(root.current?.querySelectorAll<HTMLAnchorElement>('a[href^="#"]') ?? [])];
-    const targets = links.map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))));
-    if (links.length === 0 || targets.some((target) => !target)) return;
-
+    const nav = root.current;
+    if (!nav) return;
     let frame = 0;
-    let shown = -2;
+    let marked: HTMLAnchorElement | null = null;
+    let reported: string | null | undefined;
+    const mark = (link: HTMLAnchorElement | null, id: string | null) => {
+      if (link !== marked) {
+        marked?.removeAttribute("aria-current");
+        link?.setAttribute("aria-current", "location");
+        marked = link;
+      }
+      if (id !== reported) {
+        reported = id;
+        report.current?.(id);
+      }
+    };
+    // The links and their headings are read again on every update, so the table of contents of another document,
+    // rendered into the same Toc, is followed instead of the links it replaced.
     const update = () => {
       frame = 0;
+      const links = [...nav.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')];
+      const targets = links.map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))));
+      if (links.length === 0 || targets.some((target) => !target)) return mark(null, null);
       const page = document.documentElement;
       const padding = parseFloat(getComputedStyle(page).scrollPaddingTop) || 0;
       const atBottom = Math.ceil(window.scrollY + window.innerHeight) >= page.scrollHeight - 2;
@@ -66,13 +82,7 @@ function Toc({
         padding + offset,
         atBottom,
       );
-      if (index === shown) return;
-      shown = index;
-      links.forEach((link, i) => {
-        if (i === index) link.setAttribute("aria-current", "location");
-        else link.removeAttribute("aria-current");
-      });
-      report.current?.(index === -1 ? null : targets[index]!.id);
+      mark(links[index] ?? null, index === -1 ? null : targets[index]!.id);
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -80,11 +90,15 @@ function Toc({
     update();
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
+    // New links, or links pointing elsewhere: the list changed under the same Toc. Its own mark is not watched.
+    const changed = typeof MutationObserver === "undefined" ? undefined : new MutationObserver(schedule);
+    changed?.observe(nav, { childList: true, subtree: true, attributes: true, attributeFilter: ["href"] });
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
-      for (const link of links) link.removeAttribute("aria-current");
+      changed?.disconnect();
+      marked?.removeAttribute("aria-current");
     };
   }, [offset]);
 

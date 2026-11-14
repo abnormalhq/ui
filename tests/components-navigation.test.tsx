@@ -593,3 +593,36 @@ test("scrollIntoRow centres a tab measured on screen, so a right-to-left row scr
   scrollIntoRow(row, item);
   assert.deepEqual(scrollTo.mock.calls[0]?.arguments, [{ left: -140, behavior: "auto" }]);
 });
+
+test("a Toc that stays mounted follows the links of the next document rendered into it", async () => {
+  const onCurrentChange = mock.fn();
+  const page = document.documentElement;
+  Object.defineProperty(page, "scrollHeight", { configurable: true, value: 5000 });
+  const placed = (top: number) => (node: HTMLElement | null) =>
+    void (node && (node.getBoundingClientRect = () => ({ top }) as DOMRect));
+  const doc = (ids: string[]) => (
+    <>
+      <Toc label="On this page" onCurrentChange={onCurrentChange}>
+        <TocList>
+          {ids.map((id) => (
+            <TocLink key={id} href={`#${id}`}>
+              {id}
+            </TocLink>
+          ))}
+        </TocList>
+      </Toc>
+      {ids.map((id, index) => (
+        <h2 key={id} id={id} ref={placed(index === 0 ? 0 : 900)} />
+      ))}
+    </>
+  );
+  const current = () => document.querySelector('a[aria-current="location"]')?.textContent ?? null;
+  const { rerender } = await mount(doc(["setup", "verify"]));
+  assert.equal(current(), "setup");
+
+  await rerender(doc(["pricing", "billing"]));
+  await tick(30);
+  assert.equal(current(), "pricing");
+  assert.deepEqual(onCurrentChange.mock.calls.at(-1)?.arguments, ["pricing"]);
+  delete (page as { scrollHeight?: number }).scrollHeight;
+});
