@@ -157,6 +157,6 @@ Connect `abnormalhq/ui` to the `abnormalhq-ui` Worker, with `main` as the produc
 
 | Variable                  | Value     | Why                                                  |
 | ------------------------- | --------- | ---------------------------------------------------- |
-| `PNPM_VERSION`            | `12.16.1` | Matches `packageManager` in `package.json`           |
+| `PNPM_VERSION`            | `12.18.0` | Matches `packageManager` in `package.json`           |
 | `SKIP_DEPENDENCY_INSTALL` | `1`       | Skips the default install in favor of the frozen one |
 | `NEXT_TELEMETRY_DISABLED` | `1`       | Turns off Next.js build telemetry                    |
