@@ -462,3 +462,31 @@ test("a Toaster given toastOptions keeps its own toast class next to the page's"
   assert.match(item.className, /\bpage-toast\b/);
   assert.match(one("[data-sonner-toaster]").className, /\btoaster\b.*\bmine\b/);
 });
+
+test("the copy button tells the page how the copy went, with the text or the error", async () => {
+  const onCopied = mock.fn();
+  const onCopyFailed = mock.fn();
+  const failure = new Error("Denied");
+  let refuse = false;
+  const write = async () => {
+    if (refuse) throw failure;
+  };
+  await mount(
+    <CopyButton
+      text="hello@example.com"
+      label="Copy"
+      copiedLabel="Copied"
+      failedLabel="Copy failed"
+      write={write}
+      onCopied={onCopied}
+      onCopyFailed={onCopyFailed}
+    />,
+  );
+  await click(named("Copy"));
+  assert.deepEqual(onCopied.mock.calls[0]?.arguments, ["hello@example.com"]);
+  assert.equal(onCopyFailed.mock.callCount(), 0);
+  refuse = true;
+  await click(named("Copy"));
+  assert.deepEqual(onCopyFailed.mock.calls[0]?.arguments, [failure]);
+  assert.equal(onCopied.mock.callCount(), 1);
+});

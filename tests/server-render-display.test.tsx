@@ -14,7 +14,7 @@ import { EmptyState, EmptyStateTitle } from "@/components/ui/empty-state";
 import { ItemListRow } from "@/components/ui/item-list";
 import { Kbd, KbdCombo } from "@/components/ui/kbd";
 import { PageHeader, PageHeaderActions, PageHeaderBack, PageHeaderTitle } from "@/components/ui/page-header";
-import { PricingCard } from "@/components/ui/pricing-card";
+import { PricingCard, PricingPrice } from "@/components/ui/pricing-card";
 import { QrCode } from "@/components/ui/qr-code";
 import { SkipLink } from "@/components/ui/skip-link";
 import { Stat, StatDelta, StatGrid } from "@/components/ui/stat";
@@ -265,4 +265,67 @@ test("PageHeaderActions wrap by default, and keep one scrolling line with scroll
   assert.match(scrolling, /overflow-x-auto/);
   assert.doesNotMatch(scrolling, /flex-wrap/);
   assert.match(scrolling, /aria-label="Actions"/);
+});
+
+test("a SkipLink casts its shadow only while it has the focus", () => {
+  const html = renderToStaticMarkup(<SkipLink href="#main">Skip to content</SkipLink>);
+  const classes = html.match(/class="([^"]*)"/)![1]!.split(" ");
+  assert.ok(classes.includes("focus:shadow-popover"));
+  assert.ok(!classes.includes("shadow-popover"), "no shadow while it waits above the edge");
+});
+
+test("a DescriptionList stacks each value under its name, or lines its rows with the values in one column", () => {
+  const list = (variant: "stacked" | "lined") =>
+    renderToStaticMarkup(
+      <DescriptionList variant={variant}>
+        <DescriptionItem label="Host">mail.example.com</DescriptionItem>
+        <DescriptionItem label="Port">993</DescriptionItem>
+      </DescriptionList>,
+    );
+  const stacked = list("stacked");
+  assert.match(stacked, /^<dl data-slot="description-list" data-variant="stacked"/);
+  assert.match(
+    stacked,
+    /<div data-slot="description-item" class="[^"]*group-data-\[variant=stacked\]\/description-list:flex-col/,
+  );
+  const lined = list("lined");
+  assert.match(
+    lined,
+    /^<dl[^>]*data-variant="lined"[^>]*class="[^"]*grid-cols-\[auto_minmax\(0,1fr\)\][^"]*max-sm:grid-cols-1/,
+  );
+  assert.match(lined, /group-data-\[variant=lined\]\/description-list:grid-cols-subgrid/);
+  assert.match(lined, /group-data-\[variant=lined\]\/description-list:border-t/);
+  assert.equal(lined.match(/<dt/g)?.length, 2);
+});
+
+test("PricingPrice renders the card's price on its own, and the card renders it unchanged", () => {
+  const html = renderToStaticMarkup(
+    <PricingPrice
+      price="$9"
+      period="per mailbox / month"
+      discount="25% off"
+      originalPrice="$12"
+      originalPriceLabel="Original price"
+      size="sm"
+    />,
+  );
+  assert.match(html, /^<div data-slot="pricing-price" data-size="sm"/);
+  assert.match(html, /<p data-slot="pricing-card-price"[^>]*><span class="[^"]*text-xl[^"]*">\$9<\/span>/);
+  assert.match(html, /<span class="sr-only">Original price <\/span><s>\$12<\/s>/);
+  assert.doesNotMatch(html, /data-slot="marker"/);
+  assert.match(renderToStaticMarkup(<PricingPrice price="$9" highlight />), /data-slot="marker"[^>]*>\$9</);
+
+  const card = renderToStaticMarkup(
+    <PricingCard name="Team" price="$9" icon={<svg data-icon="" />} discount="25% off" />,
+  );
+  assert.match(
+    card,
+    /<div data-slot="pricing-card-header"[^>]*><div data-slot="pricing-card-icon"[^>]*><svg data-icon=""><\/svg><\/div>/,
+  );
+  assert.match(
+    card,
+    /<div data-slot="pricing-price" data-size="default" class="grid gap-3"><p data-slot="pricing-card-price"/,
+  );
+  assert.match(card, /text-display-sm/);
+  assert.doesNotMatch(renderToStaticMarkup(<PricingCard name="Team" price="$9" />), /pricing-card-icon/);
 });
