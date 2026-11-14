@@ -1,7 +1,7 @@
 import { MoreHorizontalIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusLabel } from "@/components/ui/status-label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { SortableHead, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { rowActionClassName } from "@/components/ui/table-row";
 
 const mailboxes = [
@@ -15,8 +15,12 @@ function Mailboxes({ variant }: { variant: "default" | "plain" }) {
     <Table variant={variant}>
       <TableHeader>
         <TableRow>
-          <TableHead>Address</TableHead>
-          <TableHead>Owner</TableHead>
+          <SortableHead direction="asc" href="?sort=-address" title="Sort descending">
+            Address
+          </SortableHead>
+          <SortableHead href="?sort=owner" title="Sort ascending">
+            Owner
+          </SortableHead>
           <TableHead>Status</TableHead>
           <TableHead pinned>
             <span className="sr-only">Actions</span>

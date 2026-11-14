@@ -3,6 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
+import { type ScrollAxis, useScrollFade, useWheelSideways } from "@/components/ui/use-scroll-fade";
 
 /**
  * A box that scrolls its content under thin bars of its own, the same in every browser and system: a long list in a
@@ -12,21 +13,37 @@ import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
  * keys, Page Up, Page Down and Space scroll it; an area that fits adds none. Name it with aria-label or
  * aria-labelledby and it also becomes a region to assistive technology; the component has no words to name it with.
  * `orientation` picks the bars: vertical, horizontal or both.
+ * `fade` fades an edge while there is more content past it, so a cut-off row does not look as if it ended there. It
+ * is a mask on the scrolling element, so it works over any background.
+ * `strip` is a one-line row that scrolls sideways, such as filters above a list: the bar is horizontal, the content
+ * keeps its own width on one line, and a vertical mouse wheel scrolls it sideways until an end, then the page again.
  */
 function ScrollArea({
   className,
   children,
-  orientation = "vertical",
+  orientation: orientationProp = "vertical",
+  fade = false,
+  strip = false,
   viewportClassName,
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledby,
   ...props
 }: React.ComponentProps<typeof ScrollAreaPrimitive.Root> & {
   orientation?: "vertical" | "horizontal" | "both";
+  /** Fade the edges that have more content past them. */
+  fade?: boolean;
+  /** A one-line row that scrolls sideways, with a vertical wheel too; the bar is horizontal whatever `orientation` says. */
+  strip?: boolean;
   /** Classes for the scrolling element itself, such as padding that should scroll with the content. */
   viewportClassName?: string;
 }) {
+  const orientation = strip ? "horizontal" : orientationProp;
   const viewport = React.useRef<HTMLDivElement>(null);
+  useScrollFade(
+    viewport,
+    !fade ? null : orientation === "vertical" ? "y" : orientation === "horizontal" ? "x" : "both",
+  );
+  useWheelSideways(viewport, strip);
   const [scrollable, setScrollable] = React.useState(false);
 
   React.useEffect(() => {
@@ -48,7 +65,12 @@ function ScrollArea({
 
   const named = ariaLabel !== undefined || ariaLabelledby !== undefined;
   return (
-    <ScrollAreaPrimitive.Root data-slot="scroll-area" className={cn("relative overflow-hidden", className)} {...props}>
+    <ScrollAreaPrimitive.Root
+      data-slot="scroll-area"
+      data-strip={strip ? "" : undefined}
+      className={cn("relative overflow-hidden", className)}
+      {...props}
+    >
       <ScrollAreaPrimitive.Viewport
         ref={viewport}
         data-slot="scroll-area-viewport"
@@ -56,7 +78,12 @@ function ScrollArea({
         role={named ? "region" : undefined}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledby}
-        className={cn("size-full rounded-[inherit] focus-visible:-outline-offset-2", viewportClassName)}
+        className={cn(
+          "size-full rounded-[inherit] focus-visible:-outline-offset-2",
+          // Radix wraps the content in a table as wide as the viewport; a strip's is as wide as its content.
+          strip && "[&>div]:w-max",
+          viewportClassName,
+        )}
       >
         {children}
       </ScrollAreaPrimitive.Viewport>
@@ -91,4 +118,28 @@ function ScrollBar({
   );
 }
 
-export { ScrollArea, ScrollBar };
+/**
+ * A plain element that fades its edges while there is more to scroll to, and with `wheel` lets a vertical mouse wheel
+ * scroll it sideways: the browser's own scrolling, without ScrollArea's bars. The page gives it its overflow and
+ * layout classes. It suits a row that hides its scrollbar, such as a header's actions on a phone, and a server
+ * component's row can take it through asChild (PageHeaderActions with `scroll`).
+ */
+function ScrollFade({
+  axis = "x",
+  wheel = false,
+  ref,
+  ...props
+}: React.ComponentProps<"div"> & {
+  /** The edges to fade: sideways, up and down, or both. */
+  axis?: ScrollAxis;
+  /** A vertical wheel scrolls the row sideways. */
+  wheel?: boolean;
+}) {
+  const element = React.useRef<HTMLDivElement>(null);
+  React.useImperativeHandle(ref, () => element.current as HTMLDivElement, []);
+  useScrollFade(element, axis);
+  useWheelSideways(element, wheel);
+  return <div ref={element} data-slot="scroll-fade" {...props} />;
+}
+
+export { ScrollArea, ScrollBar, ScrollFade };

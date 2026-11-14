@@ -3,10 +3,17 @@
 import * as React from "react";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { Calendar, type CalendarJumpProps } from "@/components/ui/calendar";
 import { parseISODate } from "@/components/ui/calendar-date";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useFormReset } from "@/components/ui/use-form-reset";
+
+/**
+ * A field that may be left empty: `clearable` adds a button under the calendar, named by `clearLabel`, that empties
+ * it. Both or neither.
+ */
+type DatePickerClearProps = { clearable: true; clearLabel: string } | { clearable?: false; clearLabel?: undefined };
 
 const DATE_PICKER_SIZES = {
   sm: "h-7 px-2 text-sm",
@@ -22,10 +29,14 @@ const DATE_PICKER_SIZES = {
  * uncontrolled field back on its default, unless the page cancels the reset; a controlled one follows its value prop.
  * The button is a combobox to assistive technology, one whose popup is a dialog, as in the date picker of the ARIA
  * Authoring Practices: its value is the chosen day, so a screen reader reads the field's name and then the date.
+ * `formatValue` writes the day on the button the page's way instead, such as "2026-11-14".
  * The words are the page's: `placeholder` while no day is chosen, `calendarLabel` to name the popover ("Choose a
  * date"), and the two month button names. A combobox takes no name from its content, so give the button one: a
  * Label (`id` and htmlFor), aria-label or aria-labelledby. `monthLabel` and `yearLabel` turn the calendar's caption
  * into two lists that jump to a month and a year.
+ * For a date that may be left empty (an expiry, the start of an import) pass `clearable` and `clearLabel`: while a
+ * day is chosen, a button under the calendar empties the field, which then submits an empty value and calls
+ * onValueChange with "".
  * On phones, or for a date typed far more often than picked (a date of birth), the browser's own
  * <input type="date"> in an Input is the better control.
  */
@@ -41,11 +52,14 @@ function DatePicker({
   monthLabel,
   yearLabel,
   dateFormat,
+  formatValue,
   today,
   min,
   max,
   isDateDisabled,
   weekStartsOn,
+  clearable = false,
+  clearLabel,
   name,
   form,
   size = "default",
@@ -61,7 +75,8 @@ function DatePicker({
     React.ComponentProps<typeof Calendar>,
     "locale" | "today" | "min" | "max" | "isDateDisabled" | "weekStartsOn" | "previousLabel" | "nextLabel"
   > &
-  CalendarJumpProps & {
+  CalendarJumpProps &
+  DatePickerClearProps & {
     value?: string | null;
     defaultValue?: string;
     onValueChange?: (value: string) => void;
@@ -71,6 +86,11 @@ function DatePicker({
     calendarLabel: string;
     /** How the chosen day is written on the button; the locale's medium date unless given. */
     dateFormat?: Intl.DateTimeFormatOptions;
+    /**
+     * Writes the chosen day on the button in place of Intl, from the value as the field holds it ("2026-11-14"), for a
+     * page with a date style of its own, such as the value itself. The calendar keeps the locale's names.
+     */
+    formatValue?: (value: string) => React.ReactNode;
     size?: keyof typeof DATE_PICKER_SIZES;
     align?: "start" | "center" | "end";
     open?: boolean;
@@ -95,7 +115,7 @@ function DatePicker({
   // Both names or neither, as Calendar takes them.
   const jump: CalendarJumpProps = monthLabel !== undefined && yearLabel !== undefined ? { monthLabel, yearLabel } : {};
   const chosen = parseISODate(value);
-  const text = React.useMemo(
+  const intlText = React.useMemo(
     () =>
       chosen &&
       new Intl.DateTimeFormat(locale, { ...(dateFormat ?? { dateStyle: "medium" }), timeZone: "UTC" }).format(chosen),
@@ -103,6 +123,7 @@ function DatePicker({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [locale, dateFormat, value],
   );
+  const text = chosen && value && formatValue ? formatValue(value) : intlText;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -164,6 +185,23 @@ function DatePicker({
             setOpen(false);
           }}
         />
+        {clearable && chosen && (
+          <div data-slot="date-picker-footer" className="mt-3 flex justify-end border-t border-border pt-3">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              data-slot="date-picker-clear"
+              onClick={() => {
+                if (valueProp === undefined) setInnerValue(null);
+                onValueChange?.("");
+                setOpen(false);
+              }}
+            >
+              {clearLabel}
+            </Button>
+          </div>
+        )}
       </PopoverContent>
     </Popover>
   );

@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Theme = "light" | "dark";
 
@@ -29,21 +30,25 @@ function subscribe(onChange: () => void) {
  * Toasts sit on a popover surface; success and failure speak only through the icon color, without tinting the whole block.
  * The toaster reads the theme from <html data-theme> and the system preference, the same rule as the tokens, so it
  * needs no theme library: next-themes, a hand-written script or nothing at all give the same result.
+ * A page's own `className`, `style`, `icons` and `toastOptions` add to the toaster's instead of replacing them: its
+ * classes join the toaster's, its icons and toast options replace only the ones it names, and the class names of
+ * each part of a toast join the toaster's, so the toast keeps its look.
  */
-const Toaster = ({ ...props }: ToasterProps) => {
+const Toaster = ({ className, style, icons, toastOptions, ...props }: ToasterProps) => {
   // The server does not know the theme; the first client render corrects it before any toast can show.
   const theme = React.useSyncExternalStore(subscribe, currentTheme, () => "light" as Theme);
 
   return (
     <Sonner
       theme={theme}
-      className="toaster group"
+      className={cn("toaster group", className)}
       icons={{
         success: <CircleCheckIcon className="size-4 text-success" />,
         info: <InfoIcon className="size-4" />,
         warning: <TriangleAlertIcon className="size-4" />,
         error: <OctagonXIcon className="size-4 text-destructive" />,
         loading: <Loader2Icon className="size-4 animate-spin" />,
+        ...icons,
       }}
       style={
         {
@@ -51,11 +56,14 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--text)",
           "--normal-border": "var(--border)",
           "--border-radius": "var(--radius-panel)",
+          ...style,
         } as React.CSSProperties
       }
       toastOptions={{
+        ...toastOptions,
         classNames: {
-          toast: "cn-toast",
+          ...toastOptions?.classNames,
+          toast: cn("cn-toast", toastOptions?.classNames?.toast),
         },
       }}
       {...props}

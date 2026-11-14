@@ -491,6 +491,30 @@ test("a utility on the ink shell's own element overrides its fill and text color
   assert.match(base, /\.ink \{[^}]*background-color: var\(--bg\);[^}]*color: var\(--text\);/);
 });
 
+test("prose frames a bare <pre> from Markdown, and leaves a CodeBlock's own pre to it", async () => {
+  const compiler = await compile(`${theme}\n@tailwind utilities;`, {
+    base: process.cwd(),
+    loadStylesheet: async () => ({ path: "", base: "", content: "" }),
+  });
+  const source = read("registry/marketing/prose.tsx");
+  const classes = [...source.matchAll(/"([^"]*\[&_[^"]*)"/g)].flatMap(([, list]) => list!.split(" "));
+  const css = compiler.build(classes);
+  // Every rule on a pre skips the one CodeBlock renders.
+  const pre = [...css.matchAll(/^\s*([^{}\n]*\bpre\b[^{}\n]*)\{/gm)].map(([, selector]) => selector!.trim());
+  assert.ok(pre.length > 0, css);
+  // The rules on a pre itself, not on the code inside one or on inline code.
+  for (const selector of pre.filter((selector) => !/code/.test(selector))) {
+    assert.match(selector, /pre:not\(\[data-slot=code-block-pre\]\)/, selector);
+  }
+  assert.match(css, /pre:not\(\[data-slot=code-block-pre\]\) \{\s*border-style/);
+  // The spacing utilities need Tailwind's own theme, which this compile leaves out: the source says it instead.
+  assert.ok(classes.includes("[&_pre:not([data-slot=code-block-pre])]:my-5"));
+  assert.ok(classes.includes("[&_pre:not([data-slot=code-block-pre])]:p-4"));
+  assert.ok(classes.includes("[&_[data-slot=code-block]]:my-5"), "the block still takes the spacing a framed pre has");
+  assert.ok(!classes.some((name) => /^\[&_pre\]:/.test(name)), "no rule on every pre");
+  assert.match(read("registry/ui/code-block.tsx"), /data-slot="code-block-pre"/);
+});
+
 test("the selectors the list, code and page components lean on compile to what they mean", async () => {
   const compiler = await compile(`${theme}\n@tailwind utilities;`, {
     base: process.cwd(),
