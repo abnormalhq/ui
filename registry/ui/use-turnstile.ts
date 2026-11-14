@@ -62,7 +62,7 @@ function loadTurnstile(nonce?: string): Promise<TurnstileApi> {
     if (nonce) script.nonce = nonce;
     script.onload = () => (window.turnstile ? resolve(window.turnstile) : reject(new Error("Turnstile missing")));
     script.onerror = () => reject(new Error("Turnstile did not load"));
-    document.head.append(script);
+    document.head.appendChild(script);
   }).catch((error: unknown) => {
     loading = null;
     throw error;
