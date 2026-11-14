@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
+import { preload } from "react-dom";
 import { catalog } from "@/site/catalog";
 import { SiteHeader } from "@/site/components/site-header";
 import { SiteNav } from "@/site/components/site-nav";
@@ -16,7 +17,15 @@ const groups = catalog.map(({ title, items }) => ({
   items: items.map(({ name, title: itemTitle }) => ({ name, title: itemTitle })),
 }));
 
+// The fonts come only from @font-face in abnormal-fonts.css, which the browser reads late (after the style sheet, and only once text
+// needs them); preloading starts all three with the page. crossOrigin: font requests are always CORS, so a preload without it is not reused.
+const fontOptions = { as: "font", type: "font/woff2", crossOrigin: "anonymous" } as const;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  preload("/fonts/Inter-Variable.woff2", fontOptions);
+  preload("/fonts/BricolageGrotesque-Variable.woff2", fontOptions);
+  // Every page of the registry shows code (install commands, usage, sources).
+  preload("/fonts/JetBrainsMono-Variable.woff2", fontOptions);
   return (
     <html lang="en" suppressHydrationWarning>
       <body>

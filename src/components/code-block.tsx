@@ -8,8 +8,8 @@ export async function CodeBlock({ code, lang }: { code: string; lang: CodeLang }
       <pre tabIndex={0} className="overflow-x-auto p-3 pr-11 font-mono text-sm/relaxed">
         <code dangerouslySetInnerHTML={{ __html: await highlight(code, lang) }} />
       </pre>
+      {/* No text prop: the button copies the <code> above when pressed, so the source is not sent to the browser a second time. */}
       <CopyButton
-        text={code}
         label="Copy"
         copiedLabel="Copied"
         failedLabel="Copy failed"

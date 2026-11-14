@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { test } from "node:test";
 import { groups } from "../src/groups.ts";
-import { type CodeLang, highlight } from "../src/highlight.ts";
+import { type CodeLang, highlight, tokenClasses } from "../src/highlight.ts";
 
 const registry: { items: { name: string }[] } = JSON.parse(readFileSync("registry.json", "utf8"));
 const names = registry.items.map(({ name }) => name);
@@ -45,8 +45,23 @@ test("every code language highlights into the theme's variables", async () => {
   };
   for (const [lang, code] of Object.entries(samples)) {
     const html = await highlight(code, lang as CodeLang);
-    assert.match(html, /color:var\(--shiki-token-/, lang);
+    // The colors arrive as classes standing for the theme's variables (below), not as inline styles.
+    assert.match(html, /class="sk-[\w-]+"/, lang);
+    assert.doesNotMatch(html, /style="color:var\(--shiki-(foreground|token-)/, lang);
+    for (const [, name] of html.matchAll(/class="([^"]+)"/g)) {
+      assert.ok(Object.values(tokenClasses).includes(name!), `${lang}: ${name}`);
+    }
     assert.doesNotMatch(html, /<pre/, lang);
+  }
+});
+
+test("each token class draws exactly the color the theme would have written inline", () => {
+  const css = readFileSync("src/app/globals.css", "utf8");
+  for (const [style, name] of Object.entries(tokenClasses)) {
+    const [property, value] = style.split(":") as [string, string];
+    assert.ok(css.includes(`.${name} {\n  ${property}: ${value};\n}`), `${name}: ${style}`);
+    // The variable it reads is defined for both themes.
+    assert.match(css, new RegExp(`${value.slice(4, -1)}: `), name);
   }
 });
 

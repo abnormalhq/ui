@@ -16,3 +16,35 @@
   --shiki-token-function: light-dark(#1d5a9c, #8cbcf0);
   --shiki-token-constant: light-dark(#704800, #e8b85a);
 }
+
+/* The highlighter writes each token's color as one of these classes instead of an inline style (src/highlight.ts). */
+.sk-foreground {
+  color: var(--shiki-foreground);
+}
+.sk-comment {
+  color: var(--shiki-token-comment);
+}
+.sk-punctuation {
+  color: var(--shiki-token-punctuation);
+}
+.sk-parameter {
+  color: var(--shiki-token-parameter);
+}
+.sk-keyword {
+  color: var(--shiki-token-keyword);
+}
+.sk-string {
+  color: var(--shiki-token-string);
+}
+.sk-string-expression {
+  color: var(--shiki-token-string-expression);
+}
+.sk-link {
+  color: var(--shiki-token-link);
+}
+.sk-function {
+  color: var(--shiki-token-function);
+}
+.sk-constant {
+  color: var(--shiki-token-constant);
+}
