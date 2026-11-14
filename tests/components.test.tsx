@@ -506,6 +506,30 @@ test("the copy button reports a failed copy instead of throwing", async () => {
   }
 });
 
+test("without text the copy button copies the code beside it, line breaks included", async () => {
+  const writeText = mock.fn(async () => {});
+  Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+  // A highlighted block: token spans with <br> between the lines, as src/highlight.ts writes them.
+  const html = '<span class="sk-keyword">const</span><span> a = 1;</span><br><span>a &lt; 2;</span><br>';
+  await mount(
+    <div>
+      <pre>
+        <code dangerouslySetInnerHTML={{ __html: html }} />
+      </pre>
+      <CopyButton label="Copy" copiedLabel="Copied" failedLabel="Copy failed" />
+    </div>,
+  );
+  await click(button("Copy"));
+  assert.deepEqual(writeText.mock.calls[0]?.arguments, ["const a = 1;\na < 2;\n"]);
+  await mounted.pop()!.unmount();
+
+  // Nothing to copy beside it: a failed copy, not an empty clipboard.
+  await mount(<CopyButton label="Copy" copiedLabel="Copied" failedLabel="Copy failed" />);
+  await click(button("Copy"));
+  assert.equal(writeText.mock.callCount(), 1);
+  assert.equal(document.querySelector('[role="status"]')?.textContent, "Copy failed");
+});
+
 test("the copy button does nothing when a copy settles after it has gone", async () => {
   let settle = () => {};
   const writeText = () => new Promise<void>((resolve) => (settle = resolve));

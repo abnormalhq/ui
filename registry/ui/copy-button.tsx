@@ -21,7 +21,24 @@ const BUBBLE_ROOM = 32;
  * The button keeps its name throughout; a status region announces the outcome once, so a screen reader does not
  * hear it a second time as a name change. With children it is a text button ("Copy address") and shows no bubble.
  * `write` replaces the clipboard call, for a page that needs a fallback outside secure contexts; it throws to fail.
+ * Without `text` it copies the code shown next to it: the text of the first <code> (else <pre>) in the button's parent, read when
+ * pressed, with line breaks kept. A code block rendered on the server then sends its source once, as the highlighted markup,
+ * instead of a second time as a prop of this button.
  */
+/** Text as it reads on screen: a <br> (how highlighters often end a line) counts as a line break, which textContent drops. */
+function readText(node: Node): string {
+  if (node.nodeType === Node.TEXT_NODE) return node.nodeValue ?? "";
+  if (node.nodeName === "BR") return "\n";
+  return Array.from(node.childNodes, readText).join("");
+}
+
+/** The code beside the button: the first <code>, else <pre>, in its parent. Throws when there is none, which shows as a failed copy. */
+function adjacentCode(button: HTMLElement): string {
+  const code = button.parentElement?.querySelector("code") ?? button.parentElement?.querySelector("pre");
+  if (!code) throw new Error("No code next to the copy button");
+  return readText(code);
+}
+
 function CopyButton({
   text,
   label,
@@ -35,8 +52,8 @@ function CopyButton({
   onClick,
   ...props
 }: Omit<React.ComponentProps<typeof Button>, "asChild" | "loading"> & {
-  /** What is copied. */
-  text: string;
+  /** What is copied; leave it out to copy the <code> or <pre> beside the button. */
+  text?: string;
   /** The button's accessible name, such as "Copy address"; the title too. */
   label: string;
   /** Announced and shown after a copy, such as "Copied". */
@@ -92,11 +109,12 @@ function CopyButton({
           const below = rect.top < BUBBLE_ROOM;
           setAnchor({ x: rect.left + rect.width / 2, y: below ? rect.bottom : rect.top, below });
           try {
-            if (write) await write(text);
+            const value = text ?? adjacentCode(event.currentTarget);
+            if (write) await write(value);
             else {
               // There is no clipboard outside a secure context, and writeText rejects without permission or focus.
               if (!navigator.clipboard) throw new Error("Clipboard unavailable");
-              await navigator.clipboard.writeText(text);
+              await navigator.clipboard.writeText(value);
             }
             show("copied");
           } catch {

@@ -6,6 +6,10 @@ Each entry names the items it touches, because a project installs items one by o
 
 ## [Unreleased]
 
+### Changed
+
+- `copy-button`: `text` is optional. Without it the button copies the code beside it when pressed: the text of the first `<code>` (else `<pre>`) in its parent, with each `<br>` read as a line break, so a code block rendered on the server sends its source once instead of again as a prop. With nothing beside it the copy fails as a refused clipboard does. Buttons that pass `text` work as before.
+
 ### Fixed
 
 - `calendar`: a key that moves nowhere, such as Home on the first day of the week or an arrow past `min` or `max`, no longer leaves the grid waiting to move the focus. The next render of the calendar, whatever caused it, used to pull the focus back into the grid from the field the person had moved on to.
