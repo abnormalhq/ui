@@ -143,7 +143,7 @@
       "type": "registry:ui",
       "title": "Banner",
       "description": "A strip across the top of a page or pane about the state of the whole thing, with an icon, an action and a dismiss button, in five tones.",
-      "dependencies": ["class-variance-authority", "lucide-react"],
+      "dependencies": ["class-variance-authority"],
       "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
       "files": [
         {

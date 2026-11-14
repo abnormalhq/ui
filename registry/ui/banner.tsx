@@ -1,6 +1,5 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { XIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -91,7 +90,19 @@ function BannerClose({
       className={cn("-my-1 shrink-0", className)}
       {...props}
     >
-      <XIcon />
+      {/* lucide's x, drawn inline: lucide-react's icon is a client module, and a banner belongs on pages that ship no script. */}
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M18 6 6 18" />
+        <path d="m6 6 12 12" />
+      </svg>
     </Button>
   );
 }
