@@ -6,16 +6,6 @@ Each entry names the items it touches, because a project installs items one by o
 
 ## [Unreleased]
 
-### Changed
-
-- `date-picker`: `clearable`, with the required `clearLabel`, for a date that may be left empty, such as an expiry: while a day is chosen, a button under the calendar empties the field, which then submits an empty value and calls `onValueChange` with `""`. A form reset still brings the default back. Now needs `button`.
-- `date-range-picker`: `clearable` with `clearLabel` empties the range, and `onValueChange` then gets null. `allowPartial`, with the required `fromOnlyLabel` and `toOnlyLabel`, lets one end stand alone, such as the start of an import: after the first day the popover offers to keep it as the start only or the end only, the value is `{ from, to: null }` or `{ from: null, to }` (`OpenDateRange`), the button shows the day with a dash on the open side, and the missing end submits as an empty field. Without either, a range is both ends or nothing, as before. Now needs `button`.
-
-### Fixed
-
-- `command`: `CommandEmpty` shows on the first render of a list with no options. It looked for its options before the `Command` around it had attached its element, so an empty list showed nothing until the search changed.
-- `command`: a `ref` given to `Command` now receives its root element alongside the one the component keeps. It used to take that one's place, so the highlight, the arrow keys and the reset to the first match after a search stopped working.
-
 ## [0.5.0] - 2026-11-14
 
 The pieces the projects kept building for themselves: page structure, lists and their states, navigation, and the fields that were still native inputs. Twenty-eight new items bring the registry to 93, and the items that render without a client module no longer bring one in through their icons. One package was added: `uqr`, for `qr-code`.
@@ -66,11 +56,15 @@ The pieces the projects kept building for themselves: page structure, lists and 
 - `tabs`: `TabsList` takes `variant="pill"`, the tabs as pills with the current one in the highlighter and no hairline, for the sections of a settings panel or tabs inside a card.
 - `sonner`: a `className`, `style`, `icons` or `toastOptions` given to `Toaster` now adds to the toaster's own instead of replacing it, and `toastOptions.classNames.toast` joins `cn-toast`, so a page no longer has to repeat that class.
 - `theme-picker`: `tooltip` and `tooltipSide` add a tooltip to the button, and `side` places the menu, for a sidebar's footer. With `value` undefined the button now shows the sun or the moon for the theme the page is painted in, instead of the system icon, so no wrong icon shows before the preference is known. Now needs `tooltip`. It also carries `"use client"`: it renders `dropdown-menu`, a client module, and takes `onValueChange`, so it only ever ran in a client component, and the directive says so.
+- `date-picker`: `clearable`, with the required `clearLabel`, for a date that may be left empty, such as an expiry: while a day is chosen, a button under the calendar empties the field, which then submits an empty value and calls `onValueChange` with `""`. A form reset still brings the default back. Now needs `button`.
+- `date-range-picker`: `clearable` with `clearLabel` empties the range, and `onValueChange` then gets null. `allowPartial`, with the required `fromOnlyLabel` and `toOnlyLabel`, lets one end stand alone, such as the start of an import: after the first day the popover offers to keep it as the start only or the end only, the value is `{ from, to: null }` or `{ from: null, to }` (`OpenDateRange`), the button shows the day with a dash on the open side, and the missing end submits as an empty field. Without either, a range is both ends or nothing, as before. Now needs `button`.
 
 ### Fixed
 
 - `breadcrumb`, `disclosure`, `pagination`, `stepper`, `pricing-card`: no longer import `lucide-react`, whose 1.x `Icon` is a client module, so a Server Component page that shows them, and nothing interactive, loads no client chunk for an icon; `disclosure` now needs no client JavaScript at all, as its notes say. Their icons are drawn inline with lucide's own paths, size and stroke, the same SVG without lucide's `lucide` and `lucide-<name>` classes, and they no longer need `lucide-react`. The new items without a client module (`banner`, `page-header`, `stat`, `item-list`, `tag`, `code-block` and the rest) are built the same way.
 - `calendar`: a key that moves nowhere, such as Home on the first day of the week or an arrow past `min` or `max`, no longer leaves the grid waiting to move the focus. The next render of the calendar, whatever caused it, used to pull the focus back into the grid from the field the person had moved on to.
+- `command`: `CommandEmpty` shows on the first render of a list with no options. It looked for its options before the `Command` around it had attached its element, so an empty list showed nothing until the search changed.
+- `command`: a `ref` given to `Command` now receives its root element alongside the one the component keeps. It used to take that one's place, so the highlight, the arrow keys and the reset to the first match after a search stopped working.
 
 ## [0.4.0] - 2026-11-11
 
