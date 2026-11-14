@@ -16,12 +16,17 @@ import { Toc, TocLink, TocList } from "@/components/ui/toc";
 import { Turnstile } from "@/components/ui/turnstile";
 
 test("JsonLd writes its data as JSON that cannot end the script element", () => {
-  const data = { "@type": "Organization", name: "a </script><script>alert(1)</script> <!-- b" };
+  const data = {
+    "@type": "Organization",
+    name: "a </script><script>alert(1)</script> </SCRIPT ><Script>alert(2)</sCrIpT> <!-- b",
+  };
   const html = renderToStaticMarkup(<JsonLd data={data} />);
   assert.match(html, /^<script type="application\/ld\+json" data-slot="json-ld">/);
-  assert.equal(html.match(/<\/script>/g)?.length, 1, "only the element's own end tag");
+  // An end tag in any case, with or without a space before ">", closes the element: the only one is its own.
+  assert.equal(html.match(/<\/script\b/gi)?.length, 1, "only the element's own end tag");
+  assert.equal(html.match(/<script\b/gi)?.length, 1, "only the element's own start tag");
   assert.doesNotMatch(html, /<!--/);
-  const text = html.replace(/^<script[^>]*>/, "").replace(/<\/script>$/, "");
+  const text = html.slice(html.indexOf(">") + 1, html.lastIndexOf("</"));
   assert.deepEqual(JSON.parse(text), data);
   assert.equal(serializeJsonLd(["<"]), '["\\u003c"]');
 });
