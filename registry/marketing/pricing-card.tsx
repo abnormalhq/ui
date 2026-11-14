@@ -15,7 +15,21 @@ import { Marker } from "@/components/ui/marker";
  * `price` is text the page has already formatted ("$12", "Free", "12 €"): currency and number format belong to the
  * page's locale. `period` is the unit after it ("per mailbox / month"). The name is an h3 unless `heading` names
  * another level. Children are the feature list, and `action` the call to action, usually a Button.
+ * A discounted plan gives `discount`, the offer in words ("20% off"), and `originalPrice`, the price before it, which
+ * shows struck through on a line under the price, so prices in neighbouring cards stay level whether or not a plan is
+ * discounted. `originalPriceLabel` ("Original price") goes before it for a screen reader, which does not read a
+ * strike-through.
  */
+/** The struck price comes with the words a screen reader says before it, which it cannot see struck. */
+type OriginalPrice =
+  | { originalPrice?: undefined; originalPriceLabel?: string }
+  | {
+      /** The price before the discount, formatted like `price`, shown struck through. */
+      originalPrice: React.ReactNode;
+      /** Read before the struck price by a screen reader: "Original price". */
+      originalPriceLabel: string;
+    };
+
 function PricingCard({
   name,
   price,
@@ -23,6 +37,9 @@ function PricingCard({
   description,
   badge,
   action,
+  discount,
+  originalPrice,
+  originalPriceLabel,
   featured = false,
   heading: Heading = "h3",
   className,
@@ -38,9 +55,11 @@ function PricingCard({
   badge?: React.ReactNode;
   /** The call to action. */
   action?: React.ReactNode;
+  /** The offer, as a highlighter chip under the price: "20% off". */
+  discount?: React.ReactNode;
   featured?: boolean;
   heading?: "h2" | "h3" | "h4";
-}) {
+} & OriginalPrice) {
   return (
     <Card
       data-slot="pricing-card"
@@ -68,6 +87,24 @@ function PricingCard({
         </span>
         {period !== undefined && <span className="text-sm text-muted-foreground">{period}</span>}
       </p>
+      {(discount !== undefined || originalPrice !== undefined) && (
+        <p
+          data-slot="pricing-card-discount"
+          className="-mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-2 text-xs text-muted-foreground"
+        >
+          {discount !== undefined && (
+            <Badge variant="brand" className="font-semibold">
+              {discount}
+            </Badge>
+          )}
+          {originalPrice !== undefined && (
+            <span>
+              <span className="sr-only">{originalPriceLabel} </span>
+              <s>{originalPrice}</s>
+            </span>
+          )}
+        </p>
+      )}
       <div data-slot="pricing-card-features" className="flex-1">
         {children}
       </div>

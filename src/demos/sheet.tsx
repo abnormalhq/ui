@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetBody,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetField,
@@ -30,6 +31,9 @@ export default function SheetDemo() {
           </SheetFields>
         </SheetBody>
         <SheetFooter>
+          <SheetClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </SheetClose>
           <Button>Save</Button>
         </SheetFooter>
       </SheetContent>

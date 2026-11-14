@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { ArrowDownIcon, ArrowUpIcon, ChevronsUpDownIcon } from "lucide-react";
+import { Slot } from "radix-ui";
 import { cn } from "@/lib/utils";
 
 type TableVariant = "default" | "plain";
@@ -164,6 +166,67 @@ function TableHead({ className, pinned = false, ...props }: React.ComponentProps
   );
 }
 
+/**
+ * A column header that sorts the table by its column, when the sorting happens on the server: a link to the same
+ * list sorted the other way, so it can be opened in a new tab, prefetched, and is read as a link. The cell carries
+ * `aria-sort` from `direction` ("asc", "desc", or none for a column the list is not sorted by), and an arrow shows it,
+ * with a faint double arrow on the other columns.
+ * `href` is the list sorted by this column; pass asChild with the router's link instead, as the only child. `title`
+ * says what the click does ("Sort descending"), in the page's words. `aside` sits in the cell beside the link, such
+ * as a refresh button.
+ */
+function SortableHead({
+  direction,
+  href,
+  title,
+  asChild = false,
+  aside,
+  children,
+  ...props
+}: Omit<React.ComponentProps<typeof TableHead>, "aria-sort" | "title"> & {
+  /** How the list is sorted by this column now; leave it out for a column it is not sorted by. */
+  direction?: "asc" | "desc" | null;
+  /** The list sorted by this column, as the next click would sort it. */
+  href?: string;
+  /** What the click does, such as "Sort descending". */
+  title?: string;
+  /** The child is the link itself, such as the router's, with the column's name in it. */
+  asChild?: boolean;
+  /** Beside the link in the same cell. */
+  aside?: React.ReactNode;
+}) {
+  const active = direction === "asc" || direction === "desc";
+  const Icon = !active ? ChevronsUpDownIcon : direction === "asc" ? ArrowUpIcon : ArrowDownIcon;
+  const Comp = asChild ? Slot.Root : "a";
+  const link = (
+    <Comp
+      data-slot="sortable-head-link"
+      data-active={active || undefined}
+      href={asChild ? undefined : href}
+      title={title}
+      className="group/sort -mx-1.5 inline-flex h-6 items-center gap-1 rounded-control px-1.5 transition-colors duration-150 select-none hover:bg-accent hover:text-foreground data-active:text-foreground"
+    >
+      <Slot.Slottable>{children}</Slot.Slottable>
+      <Icon
+        aria-hidden="true"
+        className="size-3 shrink-0 opacity-40 transition-opacity group-hover/sort:opacity-100 group-data-active/sort:opacity-100"
+      />
+    </Comp>
+  );
+  return (
+    <TableHead aria-sort={direction === "asc" ? "ascending" : direction === "desc" ? "descending" : "none"} {...props}>
+      {aside === undefined ? (
+        link
+      ) : (
+        <span className="inline-flex items-center gap-1.5">
+          {link}
+          {aside}
+        </span>
+      )}
+    </TableHead>
+  );
+}
+
 /** Cell background of a plain table: hover, menu-open and selected are all drawn on the cells, with the first and last cells rounded so together they form one rounded row; rows such as empty states carry `data-static` and do not respond to hover. */
 const plainCell =
   "transition-colors duration-100 first:rounded-l-control last:rounded-r-control [tr:not([data-static]):hover>&]:bg-accent [tr:has([aria-expanded=true])>&]:bg-accent [tr[data-state=selected]>&]:bg-highlight-muted";
@@ -203,4 +266,4 @@ function TableCaption({ className, ...props }: React.ComponentProps<"caption">) 
   );
 }
 
-export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption };
+export { Table, TableHeader, TableBody, TableFooter, TableHead, SortableHead, TableRow, TableCell, TableCaption };

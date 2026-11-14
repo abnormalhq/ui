@@ -23,6 +23,9 @@ export default function PricingCardDemo() {
         description="For a company that shares its mail."
         price="$9"
         period="per mailbox / month"
+        discount="25% off"
+        originalPrice="$12"
+        originalPriceLabel="Original price"
         action={<Button>Choose Team</Button>}
       >
         <PricingCardFeatures>

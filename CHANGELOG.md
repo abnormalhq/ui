@@ -28,6 +28,13 @@ Each entry names the items it touches, because a project installs items one by o
 
 ### Changed
 
+- `badge`: a `size`, with `sm` the 20px chip for a dense row. `BadgeCount` is a number in a round chip, capped at `max` with a plus ("99+") and hidden at zero; `BadgeDot` a dot that says there is something new, decoration unless given a `label`. Badges without `size` are as before.
+- `text-link`: `variant="inline"`, the link inside a sentence: the foreground color with a faint underline that deepens on hover. Now needs `class-variance-authority`.
+- `prose`: styles for code blocks, tables, block quotes and rules, for documentation rendered from Markdown. A table scrolls sideways inside the column instead of widening the page.
+- `pricing-card`: `discount`, the offer as a chip under the price, and `originalPrice` with `originalPriceLabel`, the price before it, struck through and read out first by a screen reader.
+- `progress`: `tone`, `warning` or `destructive`, for a usage meter near or at its limit.
+- `sheet`: `SheetClose`, and `SheetPanel`, the bare portalled panel for a sheet that places and styles itself.
+- `table`: `SortableHead`, a header cell whose link sorts the list on the server, with `aria-sort` and an arrow for the direction. Now needs `lucide-react` and `radix-ui`.
 - `copy-button`: `text` is optional. Without it the button copies the code beside it when pressed: the text of the first `<code>` (else `<pre>`) in its parent, with each `<br>` read as a line break, so a code block rendered on the server sends its source once instead of again as a prop. With nothing beside it the copy fails as a refused clipboard does. Buttons that pass `text` work as before.
 
 ### Fixed

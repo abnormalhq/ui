@@ -71,6 +71,22 @@ function SheetContent({
   );
 }
 
+function SheetClose(props: React.ComponentProps<typeof SheetPrimitive.Close>) {
+  return <SheetPrimitive.Close data-slot="sheet-close" {...props} />;
+}
+
+/**
+ * The bare panel for a sheet that places and styles itself (the console's notification panel next to its sidebar): no overlay, no
+ * close button, no position. Portalled like SheetContent; give it a SheetTitle, and a SheetClose where the layout wants one.
+ */
+function SheetPanel(props: React.ComponentProps<typeof SheetPrimitive.Content>) {
+  return (
+    <SheetPrimitive.Portal>
+      <SheetPrimitive.Content data-slot="sheet-panel" {...props} />
+    </SheetPrimitive.Portal>
+  );
+}
+
 function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -137,7 +153,9 @@ function SheetField({ label, children }: { label: React.ReactNode; children: Rea
 export {
   Sheet,
   SheetTrigger,
+  SheetClose,
   SheetContent,
+  SheetPanel,
   SheetHeader,
   SheetBody,
   SheetFooter,

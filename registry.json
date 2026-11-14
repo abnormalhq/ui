@@ -128,7 +128,7 @@
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",
-      "description": "A small chip for counts, domains and roles.",
+      "description": "A small chip for counts, domains and roles, in two sizes, with a capped count and a dot.",
       "dependencies": ["class-variance-authority", "radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
@@ -663,7 +663,7 @@
       "name": "progress",
       "type": "registry:ui",
       "title": "Progress",
-      "description": "A thin bar in the signal color, determinate from 0 to 100 or sweeping while indeterminate.",
+      "description": "A thin bar in the signal color, determinate from 0 to 100 or sweeping while indeterminate, with warning and destructive tones for usage meters.",
       "dependencies": ["radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
@@ -910,7 +910,8 @@
       "name": "table",
       "type": "registry:ui",
       "title": "Table",
-      "description": "Tables with plain and bordered variants and pinned columns. table-row.ts holds the row action class and row click helper, usable from Server Components.",
+      "description": "Tables with plain and bordered variants, pinned columns and link-based sortable headers. table-row.ts holds the row action class and row click helper, usable from Server Components.",
+      "dependencies": ["lucide-react", "radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
@@ -1092,7 +1093,7 @@
       "name": "pricing-card",
       "type": "registry:ui",
       "title": "Pricing Card",
-      "description": "One plan on a pricing page: name, price, period, features and a call to action, with a featured state.",
+      "description": "One plan on a pricing page: name, price, period, features and a call to action, with a featured state and an optional discount.",
       "dependencies": ["lucide-react"],
       "registryDependencies": ["@abnormal/badge", "@abnormal/card", "@abnormal/marker", "@abnormal/utils"],
       "files": [
@@ -1106,7 +1107,7 @@
       "name": "prose",
       "type": "registry:ui",
       "title": "Prose",
-      "description": "Styles for long-form copy such as rendered MDX.",
+      "description": "Styles for long-form copy such as rendered MDX or Markdown, code blocks and tables included.",
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
@@ -1133,8 +1134,8 @@
       "name": "text-link",
       "type": "registry:ui",
       "title": "Text Link",
-      "description": "A quiet link that brightens on hover.",
-      "dependencies": ["radix-ui"],
+      "description": "A quiet link that brightens on hover, and an underlined one for inside a sentence.",
+      "dependencies": ["class-variance-authority", "radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {
