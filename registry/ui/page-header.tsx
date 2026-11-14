@@ -67,13 +67,35 @@ function PageHeaderDescription({ className, ...props }: React.ComponentProps<"p"
   );
 }
 
-/** The page's own actions. Every link and button in it is 32px tall, whatever size it was given, so the row stays level. */
-function PageHeaderActions({ className, ...props }: React.ComponentProps<"div">) {
+/**
+ * The page's own actions. Every link and button in it is 32px tall, whatever size it was given, so the row stays level.
+ * They wrap onto a second line when the header is narrow; `scroll` keeps them on one line that scrolls sideways
+ * without a scrollbar, for a phone. The row stays markup only, so for its edges to fade where actions are cut off,
+ * pass `asChild` with a `ScrollFade` (scroll-area) around the actions: `<PageHeaderActions scroll asChild>
+ * <ScrollFade wheel>…</ScrollFade></PageHeaderActions>`.
+ */
+function PageHeaderActions({
+  className,
+  scroll = false,
+  asChild = false,
+  ...props
+}: React.ComponentProps<"div"> & {
+  /** One line that scrolls sideways instead of wrapping. */
+  scroll?: boolean;
+  /** Put the row's slot and classes on the child given, such as a ScrollFade. */
+  asChild?: boolean;
+}) {
+  const Comp = asChild ? Slot.Root : "div";
   return (
-    <div
+    <Comp
       data-slot="page-header-actions"
+      data-scroll={scroll || undefined}
       className={cn(
-        "flex min-w-0 flex-wrap items-center gap-2 [&>*]:shrink-0 [&>:is(a,button)]:h-8 [&>:is(a,button)]:text-sm",
+        "flex min-w-0 items-center gap-2 [&>*]:shrink-0 [&>:is(a,button)]:h-8 [&>:is(a,button)]:text-sm",
+        // The focus ring of an action at either end stays inside the scrolling box.
+        scroll
+          ? "-m-0.5 flex-nowrap overflow-x-auto p-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          : "flex-wrap",
         className,
       )}
       {...props}

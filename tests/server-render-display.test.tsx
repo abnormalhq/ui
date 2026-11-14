@@ -13,7 +13,7 @@ import { DescriptionDetails, DescriptionItem, DescriptionList } from "@/componen
 import { EmptyState, EmptyStateTitle } from "@/components/ui/empty-state";
 import { ItemListRow } from "@/components/ui/item-list";
 import { Kbd, KbdCombo } from "@/components/ui/kbd";
-import { PageHeader, PageHeaderBack, PageHeaderTitle } from "@/components/ui/page-header";
+import { PageHeader, PageHeaderActions, PageHeaderBack, PageHeaderTitle } from "@/components/ui/page-header";
 import { PricingCard } from "@/components/ui/pricing-card";
 import { QrCode } from "@/components/ui/qr-code";
 import { SkipLink } from "@/components/ui/skip-link";
@@ -243,4 +243,26 @@ test("useModifierKey knows no platform on the server", () => {
   }
   renderToStaticMarkup(<Probe />);
   assert.equal(seen, null);
+});
+
+test("PageHeaderActions wrap by default, and keep one scrolling line with scroll, on any element given asChild", () => {
+  const wrapped = renderToStaticMarkup(
+    <PageHeaderActions>
+      <button type="button">Export</button>
+    </PageHeaderActions>,
+  );
+  assert.match(wrapped, /^<div data-slot="page-header-actions" class="[^"]*flex-wrap/);
+  assert.doesNotMatch(wrapped, /overflow-x-auto|data-scroll/);
+
+  const scrolling = renderToStaticMarkup(
+    <PageHeaderActions scroll asChild>
+      <section aria-label="Actions">
+        <button type="button">Export</button>
+      </section>
+    </PageHeaderActions>,
+  );
+  assert.match(scrolling, /^<section [^>]*data-slot="page-header-actions" data-scroll="true" class="[^"]*flex-nowrap/);
+  assert.match(scrolling, /overflow-x-auto/);
+  assert.doesNotMatch(scrolling, /flex-wrap/);
+  assert.match(scrolling, /aria-label="Actions"/);
 });

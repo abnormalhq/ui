@@ -6,7 +6,8 @@ import { act, useState } from "react";
 import { LanguagePicker } from "@/components/ui/language-picker";
 import { NavTab, NavTabs } from "@/components/ui/nav-tabs";
 import { ResizeHandle } from "@/components/ui/resize-handle";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { PageHeaderActions } from "@/components/ui/page-header";
+import { ScrollArea, ScrollFade } from "@/components/ui/scroll-area";
 import {
   Sidebar,
   SidebarFooter,
@@ -625,4 +626,28 @@ test("a Toc that stays mounted follows the links of the next document rendered i
   assert.equal(current(), "pricing");
   assert.deepEqual(onCurrentChange.mock.calls.at(-1)?.arguments, ["pricing"]);
   delete (page as { scrollHeight?: number }).scrollHeight;
+});
+
+test("a ScrollFade under PageHeaderActions fades the cut-off end of the row and turns a wheel sideways", async () => {
+  const ref = { current: null as HTMLDivElement | null };
+  await mount(
+    <PageHeaderActions scroll asChild>
+      <ScrollFade ref={ref} wheel>
+        <button type="button">Export</button>
+        <button type="button">Invite</button>
+      </ScrollFade>
+    </PageHeaderActions>,
+  );
+  const row = document.querySelector<HTMLElement>('[data-slot="page-header-actions"]')!;
+  assert.equal(ref.current, row, "one element, the row, with the caller's ref");
+  assert.match(row.className, /overflow-x-auto/);
+  Object.defineProperty(row, "scrollWidth", { configurable: true, value: 300 });
+  Object.defineProperty(row, "clientWidth", { configurable: true, value: 100 });
+  await act(async () => void row.dispatchEvent(new Event("scroll")));
+  await tick(30);
+  assert.equal(row.style.maskImage, "linear-gradient(to right, #000, #000 calc(100% - 24px), transparent)");
+  const event = new WheelEvent("wheel", { deltaY: 40, bubbles: true, cancelable: true });
+  row.dispatchEvent(event);
+  assert.equal(event.defaultPrevented, true);
+  assert.equal(row.scrollLeft, 40);
 });

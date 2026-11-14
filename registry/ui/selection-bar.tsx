@@ -7,6 +7,20 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
 /**
+ * The bar's own select-all checkbox, or none: a list whose select-all sits in its table header leaves out
+ * `onSelectAll`, and the bar keeps the count, the actions and the clear button.
+ */
+type SelectAllProps =
+  | {
+      /** The checkbox's accessible name, such as "Select all on this page". */
+      selectAllLabel: string;
+      /** Rows listed, which the checkbox checks all of. */
+      total: number;
+      onSelectAll: (checked: boolean) => void;
+    }
+  | { selectAllLabel?: undefined; total?: number; onSelectAll?: undefined };
+
+/**
  * The strip above a list that acts on the rows checked in it: a checkbox that checks every row listed, how many are
  * checked, what can be done to them, and a way to clear the choice. It is a toolbar, named by `label` ("Selected
  * mailboxes"), in the page's language.
@@ -16,6 +30,8 @@ import { Checkbox } from "@/components/ui/checkbox";
  * tabs, so the bar and the checkbox share one row. The actions (children) show only while something is checked.
  * The count is also a status region, so a screen reader hears it change. While `disabled` nothing can be checked or
  * done: the checkbox, the clear button and the actions, which sit in a disabled fieldset, links among them too.
+ * Without `onSelectAll` the bar has no checkbox, for a list whose select-all is in its table header; the rest is the
+ * same, and `idle` is all that shows while nothing is checked.
  * It takes handlers from the page, so it is rendered by a Client Component; it keeps no state of its own.
  */
 function SelectionBar({
@@ -35,13 +51,8 @@ function SelectionBar({
 }: Omit<React.ComponentProps<"div">, "role" | "aria-label"> & {
   /** The toolbar's accessible name, such as "Selected messages". */
   label: string;
-  /** The checkbox's accessible name, such as "Select all on this page". */
-  selectAllLabel: string;
   /** Rows checked. */
   selected: number;
-  /** Rows listed, which the checkbox checks all of. */
-  total: number;
-  onSelectAll: (checked: boolean) => void;
   /** How many are checked, in words: "3 selected". */
   count: React.ReactNode;
   /** What shows beside the checkbox while nothing is checked; the select-all name by default. */
@@ -51,9 +62,9 @@ function SelectionBar({
   onClear?: () => void;
   /** Nothing can be checked or done now, such as while the rows listed are being replaced. */
   disabled?: boolean;
-}) {
+} & SelectAllProps) {
   const some = selected > 0;
-  const checked = !some ? false : selected >= total ? true : "indeterminate";
+  const checked = !some ? false : selected >= (total ?? 0) ? true : "indeterminate";
   return (
     <div
       role="toolbar"
@@ -66,25 +77,28 @@ function SelectionBar({
       )}
       {...props}
     >
-      <Checkbox
-        checked={checked}
-        disabled={disabled || total === 0}
-        onCheckedChange={(next) => onSelectAll(next === true)}
-        aria-label={selectAllLabel}
-        className="mr-1"
-      />
+      {onSelectAll && (
+        <Checkbox
+          checked={checked}
+          disabled={disabled || !total}
+          onCheckedChange={(next) => onSelectAll(next === true)}
+          aria-label={selectAllLabel}
+          className="mr-1"
+        />
+      )}
       {some ? (
         <span data-slot="selection-bar-count" aria-hidden="true" className="mr-1 tabular-nums">
           {count}
         </span>
       ) : (
         <span data-slot="selection-bar-idle" className="min-w-0 flex-1">
-          {idle ?? (
-            // The checkbox already carries these words as its name.
-            <span aria-hidden="true" className="text-muted-foreground">
-              {selectAllLabel}
-            </span>
-          )}
+          {idle ??
+            (selectAllLabel !== undefined && (
+              // The checkbox already carries these words as its name.
+              <span aria-hidden="true" className="text-muted-foreground">
+                {selectAllLabel}
+              </span>
+            ))}
         </span>
       )}
       {some && (

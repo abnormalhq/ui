@@ -290,3 +290,39 @@ test("a Progress bar takes the tone of a meter near or at its limit", async () =
   await rerender(<Progress value={100} tone="destructive" aria-label="Storage" />);
   assert.match(bar().className, /bg-destructive/);
 });
+
+test("a Progress bar that stopped or finished turns grey with tone=muted, and keeps its value", async () => {
+  const { container } = await mount(<Progress value={40} tone="muted" aria-label="Search" />);
+  const root = container.querySelector<HTMLElement>('[data-slot="progress"]')!;
+  const bar = container.querySelector<HTMLElement>('[data-slot="progress-indicator"]')!;
+  assert.equal(root.dataset.tone, "muted");
+  assert.match(bar.className, /bg-muted-foreground/);
+  assert.doesNotMatch(bar.className, /bg-signal/);
+  assert.equal(bar.style.transform, "translateX(-60%)");
+});
+
+test("a SelectionBar without onSelectAll has no checkbox, and keeps its count, actions and clear button", async () => {
+  const onClear = mock.fn();
+  const bar = (selected: number) => (
+    <SelectionBar
+      label="Selected mailboxes"
+      selected={selected}
+      count={`${selected} selected`}
+      idle="Filters"
+      clearLabel="Clear selection"
+      onClear={onClear}
+    >
+      <button type="button">Suspend</button>
+    </SelectionBar>
+  );
+  const { container, rerender } = await mount(bar(0));
+  assert.equal(container.querySelector('[role="checkbox"]'), null);
+  assert.equal(container.querySelector('[data-slot="selection-bar-idle"]')?.textContent, "Filters");
+
+  await rerender(bar(2));
+  assert.equal(container.querySelector('[role="checkbox"]'), null);
+  assert.equal(container.querySelector('[role="status"]')?.textContent, "2 selected");
+  assert.ok(button("Suspend"));
+  await click(button("Clear selection"));
+  assert.equal(onClear.mock.callCount(), 1);
+});

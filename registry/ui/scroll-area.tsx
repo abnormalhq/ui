@@ -3,7 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
-import { useScrollFade, useWheelSideways } from "@/components/ui/use-scroll-fade";
+import { type ScrollAxis, useScrollFade, useWheelSideways } from "@/components/ui/use-scroll-fade";
 
 /**
  * A box that scrolls its content under thin bars of its own, the same in every browser and system: a long list in a
@@ -118,4 +118,28 @@ function ScrollBar({
   );
 }
 
-export { ScrollArea, ScrollBar };
+/**
+ * A plain element that fades its edges while there is more to scroll to, and with `wheel` lets a vertical mouse wheel
+ * scroll it sideways: the browser's own scrolling, without ScrollArea's bars. The page gives it its overflow and
+ * layout classes. It suits a row that hides its scrollbar, such as a header's actions on a phone, and a server
+ * component's row can take it through asChild (PageHeaderActions with `scroll`).
+ */
+function ScrollFade({
+  axis = "x",
+  wheel = false,
+  ref,
+  ...props
+}: React.ComponentProps<"div"> & {
+  /** The edges to fade: sideways, up and down, or both. */
+  axis?: ScrollAxis;
+  /** A vertical wheel scrolls the row sideways. */
+  wheel?: boolean;
+}) {
+  const element = React.useRef<HTMLDivElement>(null);
+  React.useImperativeHandle(ref, () => element.current as HTMLDivElement, []);
+  useScrollFade(element, axis);
+  useWheelSideways(element, wheel);
+  return <div ref={element} data-slot="scroll-fade" {...props} />;
+}
+
+export { ScrollArea, ScrollBar, ScrollFade };

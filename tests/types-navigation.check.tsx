@@ -9,6 +9,7 @@ import { LanguagePicker } from "@/components/ui/language-picker";
 import { NavTabs } from "@/components/ui/nav-tabs";
 import { PasswordInput } from "@/components/ui/password-input";
 import { ResizeHandle } from "@/components/ui/resize-handle";
+import { SelectionBar } from "@/components/ui/selection-bar";
 import { SidebarItem, SidebarNav, SidebarToggle } from "@/components/ui/sidebar";
 import { Toc } from "@/components/ui/toc";
 import { Toolbar } from "@/components/ui/toolbar";
@@ -90,4 +91,29 @@ export const optionalDates = [
   />,
   // @ts-expect-error Only a range that allows it may miss an end.
   <DateRangePicker key="partial-value" {...picker} defaultValue={{ from: null, to: "2026-11-20" }} />,
+];
+
+/** A bar with its own select-all names the checkbox; a bar without one needs neither the name nor the row count. */
+export const selectionBars = [
+  <SelectionBar
+    key="own"
+    label="Selected"
+    selected={0}
+    count="0"
+    total={3}
+    onSelectAll={() => {}}
+    selectAllLabel="All"
+  />,
+  // @ts-expect-error The checkbox needs its name.
+  <SelectionBar key="own-unnamed" label="Selected" selected={0} count="0" total={3} onSelectAll={() => {}} />,
+  // @ts-expect-error And the rows it checks.
+  <SelectionBar
+    key="own-uncounted"
+    label="Selected"
+    selected={0}
+    count="0"
+    onSelectAll={() => {}}
+    selectAllLabel="All"
+  />,
+  <SelectionBar key="header" label="Selected" selected={2} count="2 selected" />,
 ];
