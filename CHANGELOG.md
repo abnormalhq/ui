@@ -14,6 +14,7 @@ Each entry names the items it touches, because a project installs items one by o
 ### Fixed
 
 - `command`: `CommandEmpty` shows on the first render of a list with no options. It looked for its options before the `Command` around it had attached its element, so an empty list showed nothing until the search changed.
+- `command`: a `ref` given to `Command` now receives its root element alongside the one the component keeps. It used to take that one's place, so the highlight, the arrow keys and the reset to the first match after a search stopped working.
 
 ## [0.5.0] - 2026-11-14
 

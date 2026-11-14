@@ -379,6 +379,32 @@ test("a Command with no options shows CommandEmpty from its first render, and as
   assert.equal(empty(), "No mailboxes yet");
 });
 
+test("a Command given a ref hands it the root, and still highlights its options and shows CommandEmpty", async () => {
+  const ref = { current: null as HTMLDivElement | null };
+  const list = (items: string[]) => (
+    <Command ref={ref}>
+      <CommandInput label="Search mailboxes" />
+      <CommandList aria-label="Mailboxes">
+        {items.map((item) => (
+          <CommandItem key={item} value={item}>
+            {item}
+          </CommandItem>
+        ))}
+      </CommandList>
+      <CommandEmpty>No mailboxes yet</CommandEmpty>
+    </Command>
+  );
+  const { rerender } = await mount(list(["ada@example.com", "bob@example.com"]));
+  assert.equal(ref.current?.dataset.slot, "command");
+  const input = one<HTMLInputElement>('input[role="combobox"]');
+  const active = () => document.getElementById(input.getAttribute("aria-activedescendant") ?? "")?.textContent;
+  assert.equal(active(), "ada@example.com");
+  await press(input, "ArrowDown");
+  assert.equal(active(), "bob@example.com");
+  await rerender(list([]));
+  assert.equal(one('[data-slot="command-empty"]').textContent, "No mailboxes yet");
+});
+
 test("a Command that does not filter shows what the page renders, and takes another rule", async () => {
   const { rerender } = await mount(palette({ shouldFilter: false, search: "zzz", onSearchChange: () => {} }));
   assert.equal(texts('[role="option"]').length, 4);

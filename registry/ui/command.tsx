@@ -57,6 +57,7 @@ function Command({
   onSearchChange,
   shouldFilter = true,
   filter = containsEveryWord,
+  ref,
   ...props
 }: React.ComponentProps<"div"> & {
   search?: string;
@@ -71,6 +72,8 @@ function Command({
   const search = searchProp ?? inner;
   const [activeId, setActiveId] = React.useState<string>();
   const root = React.useRef<HTMLDivElement>(null);
+  // The page's ref gets the same element; it must not take the place of the one the list and its parts read.
+  React.useImperativeHandle(ref, () => root.current as HTMLDivElement, []);
   const listId = React.useId();
   const trimmed = search.trim();
 
