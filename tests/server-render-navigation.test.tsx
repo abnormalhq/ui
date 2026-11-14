@@ -4,10 +4,12 @@
  */
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { isValidElement, type ReactElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { FileButton } from "@/components/ui/file-button";
 import { JsonLd, serializeJsonLd } from "@/components/ui/json-ld";
+import { LanguageOptions, LanguagePicker } from "@/components/ui/language-picker";
 import { NavTab, NavTabs } from "@/components/ui/nav-tabs";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Sidebar, SidebarItem, SidebarNav } from "@/components/ui/sidebar";
@@ -116,5 +118,42 @@ test("the form fields render the inputs a form submits before any script runs", 
   assert.equal(
     renderToStaticMarkup(<Turnstile siteKey="key" />),
     '<div data-slot="turnstile" class="max-w-full"></div>',
+  );
+});
+
+/**
+ * The function props in the tree a component of a file without "use client" returns, expanding the components of
+ * that file named in `expand`: what a Server Component would try to hand to the client components inside.
+ */
+function functionProps(node: ReactNode, expand: Set<unknown>): string[] {
+  if (Array.isArray(node)) return node.flatMap((child) => functionProps(child, expand));
+  if (!isValidElement(node)) return [];
+  const element = node as ReactElement<Record<string, unknown>>;
+  const name = typeof element.type === "function" ? element.type.name : String(element.type);
+  const found = Object.entries(element.props)
+    .filter(([key, value]) => key !== "children" && typeof value === "function")
+    .map(([key]) => `${name}.${key}`);
+  const inner = expand.has(element.type)
+    ? functionProps((element.type as (props: unknown) => ReactNode)(element.props), expand)
+    : [];
+  return [...found, ...inner, ...functionProps(element.props.children as ReactNode, expand)];
+}
+
+test("a LanguagePicker of links, without onValueChange, makes no function a Server Component would pass on", () => {
+  const options = [
+    { value: "en", label: "English", lang: "en", href: "/en/docs" },
+    { value: "zh", label: "中文", lang: "zh-CN", href: "/docs" },
+  ];
+  const expand = new Set<unknown>([LanguageOptions]);
+  assert.deepEqual(functionProps(LanguagePicker({ options, value: "zh", label: "Language" }), expand), []);
+  // The walk does see one where the page passed a handler: each link item then calls it.
+  assert.deepEqual(functionProps(LanguageOptions({ options, value: "zh", onValueChange: () => {} }), expand), [
+    "DropdownMenuRadioGroup.onValueChange",
+    "DropdownMenuItem.onSelect",
+    "DropdownMenuItem.onSelect",
+  ]);
+  assert.match(
+    renderToStaticMarkup(<LanguagePicker options={options} value="zh" label="Language" />),
+    /aria-label="Language"/,
   );
 });

@@ -36,6 +36,8 @@ type LanguageOptionsProps = {
  * The languages as menu radio items, for a menu the page already has, such as the "Language" submenu of an account
  * menu. LanguagePicker wraps them in a button of their own. Each name carries its own `lang`, and an option with
  * `href` is a link (with hreflang) for a site that has a page per language, the current one marked aria-current.
+ * Like ThemeOptions it has no "use client": a picker of links, with no `onValueChange`, renders from a Server
+ * Component, and creates no function on the way.
  */
 function LanguageOptions({ options, value, onValueChange }: LanguageOptionsProps) {
   return (
@@ -47,8 +49,14 @@ function LanguageOptions({ options, value, onValueChange }: LanguageOptionsProps
           </DropdownMenuRadioItem>
         ) : (
           // A link in the menu, which opens the page in that language; the current one is marked as such, with
-          // the check a radio item draws.
-          <DropdownMenuItem key={option.value} asChild className="pr-8" onSelect={() => onValueChange?.(option.value)}>
+          // the check a radio item draws. The handler exists only when the page gave one: a Server Component renders
+          // a picker of links without one, and a function it made here could not cross to the client menu.
+          <DropdownMenuItem
+            key={option.value}
+            asChild
+            className="pr-8"
+            onSelect={onValueChange && (() => onValueChange(option.value))}
+          >
             <a
               href={option.href}
               hrefLang={option.lang}
