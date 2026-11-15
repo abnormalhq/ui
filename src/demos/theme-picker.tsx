@@ -5,7 +5,7 @@ import { ThemePicker, type ThemePreference } from "@/components/ui/theme-picker"
 
 const labels = { system: "System", light: "Light", dark: "Dark" };
 
-/* The page holds the preference (here in state; a project keeps it with next-themes, a cookie or its own script). */
+/* The page holds the preference (here in state; a project keeps it with theme-script, next-themes or a cookie). */
 export default function ThemePickerDemo() {
   const [preference, setPreference] = useState<ThemePreference>("system");
   return (

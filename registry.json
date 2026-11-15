@@ -44,6 +44,19 @@
       ]
     },
     {
+      "name": "template",
+      "type": "registry:lib",
+      "title": "Template",
+      "description": "fillTemplate and the Template type: copy strings with {name} slots, whose slot names the compiler checks against what each component passes.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/lib/template.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "brand-mark",
       "type": "registry:ui",
       "title": "Brand Mark",
@@ -1105,6 +1118,23 @@
       "files": [
         {
           "path": "registry/ui/theme-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "theme-script",
+      "type": "registry:ui",
+      "title": "Theme Script",
+      "description": "ThemeScript, the inline <head> script that applies the saved or system theme before the first paint and keeps it in the browser, and useThemePreference, its preference for a ThemePicker.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/theme-script.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/use-theme-preference.ts",
           "type": "registry:ui"
         }
       ]
