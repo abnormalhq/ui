@@ -131,7 +131,7 @@ test("rows hovered while the Sidebar is expanded do not open their tooltips on t
   };
   const tooltips = () =>
     [...document.querySelectorAll('[data-slot="tooltip-content"]')].map((tooltip) => tooltip.textContent);
-  await mount(sidebar());
+  await mount(sidebar({ shortcut: "b" }));
   for (const name of ["Inbox", "Archive"]) {
     const row = label(name).closest("button")!;
     await pointer(row, "pointermove");
@@ -145,6 +145,14 @@ test("rows hovered while the Sidebar is expanded do not open their tooltips on t
   // On the rail a hovered row still names itself.
   await pointer(label("Archive").closest("button")!, "pointermove");
   assert.deepEqual(tooltips(), ["Archive40"]);
+
+  // Expanding under an open tooltip forgets it, so collapsing again does not bring it back.
+  await press(document.body, "b", { metaKey: true });
+  await tick(350);
+  assert.deepEqual(tooltips(), []);
+  await press(document.body, "b", { metaKey: true });
+  await tick(350);
+  assert.deepEqual(tooltips(), []);
 });
 
 test("the Sidebar shortcut toggles it from the page, but not while typing in a field", async () => {
