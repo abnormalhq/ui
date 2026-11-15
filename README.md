@@ -41,13 +41,13 @@ pnpm dlx shadcn@latest add @abnormal/button @abnormal/dialog
 
 | Group      | Items                                                                                                                                                                                                                                                                                                                                                                                         |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Foundation | `theme`, `fonts`, `utils`                                                                                                                                                                                                                                                                                                                                                                     |
+| Foundation | `theme`, `fonts`, `utils`, `template`                                                                                                                                                                                                                                                                                                                                                         |
 | Brand      | `brand-mark`, `marker`                                                                                                                                                                                                                                                                                                                                                                        |
 | Controls   | `button`, `input`, `input-group`, `search-input`, `password-input`, `file-button`, `field`, `field-message`, `tag`, `textarea`, `select`, `native-select`, `checkbox`, `radio-group`, `switch`, `toggle`, `toggle-group`, `slider`, `input-otp`, `combobox`, `command`, `calendar`, `date-picker`, `date-range-picker`, `date-time-picker`, `toolbar`, `resize-handle`, `label`, `form-reset` |
 | Display    | `accordion`, `alert`, `avatar`, `badge`, `banner`, `card`, `code-block`, `collapsible`, `description-list`, `disclosure`, `empty-state`, `expandable-text`, `item-list`, `kbd`, `progress`, `qr-code`, `scroll-area`, `separator`, `skeleton`, `spinner`, `stat`, `status-label`, `table`, `timeline`, `truncated-text`, `uptime-bar`                                                         |
 | Navigation | `tabs`, `breadcrumb`, `pagination`, `stepper`, `page-header`, `skip-link`, `nav-tabs`, `sidebar`, `toc`                                                                                                                                                                                                                                                                                       |
 | Overlays   | `alert-dialog`, `confirm-dialog`, `context-menu`, `dialog`, `guarded-dialog`, `dropdown-menu`, `info-hint`, `popover`, `sheet`, `sonner`, `tooltip`                                                                                                                                                                                                                                           |
-| Patterns   | `copy-button`, `link-row`, `theme-picker`, `selection-bar`, `language-picker`, `turnstile`, `json-ld`                                                                                                                                                                                                                                                                                         |
+| Patterns   | `copy-button`, `link-row`, `theme-picker`, `theme-script`, `selection-bar`, `language-picker`, `turnstile`, `json-ld`                                                                                                                                                                                                                                                                         |
 | Marketing  | `container`, `section-heading`, `text-link`, `icon-tile`, `prose`, `pricing-card`                                                                                                                                                                                                                                                                                                             |
 
 Type runs from `text-2xs` (11px) to `text-4xl` (42px) for interfaces, and a display scale on top for marketing pages and the rare large line in a product: `text-display-sm` (34px), `text-display` (40px) and `text-display-lg` (56px), always in the heading face.
@@ -59,6 +59,10 @@ Three items open and close content, and each has its case. `disclosure` is a nat
 Dates are text, not `Date` objects: `calendar` and `date-picker` take and return `"2026-11-10"`, the form `<input type="date">` submits, so a day is the same day on the server and in every time zone. A range is two of them, `{ from, to }`: `calendar` with `mode="range"`, and `date-range-picker`, which submits the pair as two form fields. All three take the `locale` from the page and never assume one.
 
 Fields that hold their value in React state (`switch`, `combobox`, `date-picker`, `date-range-picker`, `date-time-picker`, `input-otp`) follow their form like native ones: a reset puts an uncontrolled field back on its default, with or without a `name` and disabled or not, and a reset the page cancels (`event.preventDefault()` in `onReset`) leaves it alone. They share `useFormReset` from `form-reset`, which a project's own field can call too.
+
+The theme needs something to keep the visitor's choice. A page with its own provider (next-themes, a cookie the server reads) passes that to `ThemePicker`; a page without one renders `ThemeScript` once in `<head>`, an inline script that applies the saved or system theme before the first paint and follows the system and other tabs, and gives `ThemePicker` the `[preference, setPreference]` of `useThemePreference`. This site does the latter.
+
+Copy strings with slots, such as a sentence holding two links, are `Template<"terms" | "privacy">` strings from `template`: `fillTemplate` swaps each `{name}` for its part, and the type makes the compiler check that a component passes exactly the slots its copy declares.
 
 Patterns are the pieces the projects kept rewriting: they hold no product state (`ThemePicker` takes the saved preference and hands back the choice; `LinkRow` takes the router's `navigate`), and every word they show comes in as a prop.
 
@@ -76,6 +80,16 @@ git diff
 ```
 
 `--overwrite` replaces the project's copy, local edits included, so the diff is where those are restored. Name every item an entry mentions in the same command, `theme` and `utils` included when it says an item needs a newer one. An item nobody reinstalls keeps working as it was.
+
+To see what has drifted, a project can call this repository's reusable workflow, which dry-runs every item against the project's `components.json` and fails on each file that differs from the registry's current item, whether it was edited by hand or not reinstalled since a release. Run it on a schedule or by hand, not on each pull request, since every release makes it fail until the project takes it:
+
+```yaml
+jobs:
+  registry:
+    uses: abnormalhq/ui/.github/workflows/registry-drift.yml@main
+    with:
+      working-directory: . # where components.json is
+```
 
 ## Rules for items
 

@@ -1,33 +1,22 @@
 "use client";
 
 import { MenuIcon } from "lucide-react";
-import { useTheme } from "next-themes";
 import Link from "next/link";
-import { useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import { BrandMark, BrandName } from "@/components/ui/brand-mark";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetBody, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { TextLink } from "@/components/ui/text-link";
 import { ThemePicker, type ThemePreference } from "@/components/ui/theme-picker";
+import { useThemePreference } from "@/components/ui/use-theme-preference";
 import { SiteNav, type NavGroup } from "@/site/components/site-nav";
 
 const labels: Record<ThemePreference, string> = { system: "System", light: "Light", dark: "Dark" };
-const isPreference = (value: string | undefined): value is ThemePreference => value !== undefined && value in labels;
-
-const subscribe = () => () => {};
-
-/** The registry's ThemePicker over next-themes, which is what the site uses to keep the preference. */
+/** The registry's ThemePicker over the preference the registry's ThemeScript keeps. */
 function SiteThemePicker() {
-  const { theme, setTheme } = useTheme();
-  // The stored choice is unknown in the static HTML, so it stays on System until hydration.
-  const hydrated = useSyncExternalStore(
-    subscribe,
-    () => true,
-    () => false,
-  );
-  const value = hydrated && isPreference(theme) ? theme : undefined;
+  const [value, setValue] = useThemePreference();
   return (
-    <ThemePicker value={value} onValueChange={setTheme} labels={labels} label={`Theme: ${labels[value ?? "system"]}`} />
+    <ThemePicker value={value} onValueChange={setValue} labels={labels} label={`Theme: ${labels[value ?? "system"]}`} />
   );
 }
 
