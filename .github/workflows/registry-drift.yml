@@ -30,6 +30,8 @@ jobs:
     timeout-minutes: 10
     defaults:
       run:
+        # shell: bash runs with pipefail, so a fetch or shadcn failure fails the job instead of passing through tee.
+        shell: bash
         working-directory: ${{ inputs.working-directory }}
     steps:
       - uses: actions/checkout@v7
