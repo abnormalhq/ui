@@ -257,7 +257,7 @@ function SidebarItem({
           aria-current={current ? "page" : undefined}
           {...(asChild ? {} : { type: "button" as const })}
           className={cn(
-            "group/sidebar-item relative flex h-8 shrink-0 items-center gap-2 rounded-control text-left text-base text-muted-foreground transition-colors duration-150 hover:bg-control hover:text-foreground focus-visible:-outline-offset-2 disabled:pointer-events-none disabled:opacity-50 data-current:bg-highlight data-current:text-highlight-foreground data-current:hover:bg-highlight data-current:hover:text-highlight-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+            "group/sidebar-item relative flex h-8 shrink-0 items-center gap-2 rounded-control text-left text-base text-muted-foreground hover:bg-control hover:text-foreground focus-visible:-outline-offset-2 disabled:pointer-events-none disabled:opacity-50 data-current:bg-highlight data-current:text-highlight-foreground data-current:hover:bg-highlight data-current:hover:text-highlight-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
             collapsed ? "size-9 justify-center px-0" : "w-full px-3",
             attention && "text-foreground",
             className,
