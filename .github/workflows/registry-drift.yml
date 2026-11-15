@@ -1,0 +1,53 @@
+name: Registry drift
+
+# For the projects that install this registry: lists every file of theirs that differs from the registry's current
+# item, so a copy that was edited by hand, or not reinstalled after a release, shows up. Call it from a project's own
+# workflow, on a schedule or by hand rather than on every pull request, since a new release of an item also counts:
+#
+#   jobs:
+#     registry:
+#       uses: abnormalhq/ui/.github/workflows/registry-drift.yml@main
+#       with:
+#         working-directory: apps/developers   # where components.json is
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: The directory of the project's components.json.
+        type: string
+        default: .
+      registry:
+        description: The registry's index.
+        type: string
+        default: https://ui.abnormalhq.com/r/registry.json
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        # shell: bash runs with pipefail, so a fetch or shadcn failure fails the job instead of passing through tee.
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Compare the installed copies with the registry
+        env:
+          REGISTRY: ${{ inputs.registry }}
+        run: |
+          items=$(curl -fsSL "$REGISTRY" | node -e 'let s="";process.stdin.on("data",(d)=>(s+=d)).on("end",()=>console.log(JSON.parse(s).items.map(({name})=>`@abnormal/${name}`).join(" ")))')
+          # A dry run writes nothing; it marks each file of the items as created, identical or to be overwritten.
+          npx --yes shadcn@4.23.0 add $items --dry-run | tee "$RUNNER_TEMP/dry-run.txt"
+          if grep -E '^│ ~ ' "$RUNNER_TEMP/dry-run.txt"; then
+            echo "::error::These copies differ from the registry. Reinstall their items with --overwrite and review the diff (README, \"Versions and updates\"); see each difference with: npx shadcn add @abnormal/<item> --dry-run --diff <path>"
+            exit 1
+          fi

@@ -6,6 +6,11 @@ Each entry names the items it touches, because a project installs items one by o
 
 ## [Unreleased]
 
+### Added
+
+- `template`: `fillTemplate` and the `Template<Slot>` type, the copy strings with `{name}` slots that the website and the developer site each kept a copy of. The slots exist only in the type, so a component that passes a slot its copy does not declare, or leaves one out, fails the type check.
+- `theme-script`: `ThemeScript`, the inline `<head>` script that applies the saved or system theme before the first paint, with `<meta name="theme-color">` in each theme's `--bg`, and follows the system and other tabs; and `useThemePreference` (`use-theme-preference.ts`), its preference and setter for `ThemePicker`. It keeps the choice under the same `abnormal-theme` key and `window.abnormalTheme` as the website and the developer site, which each kept a copy of the script.
+
 ## [0.5.0] - 2026-11-14
 
 The pieces the projects kept building for themselves: page structure, lists and their states, navigation, and the fields that were still native inputs. Twenty-eight new items bring the registry to 93, and the items that render without a client module no longer bring one in through their icons. One package was added: `uqr`, for `qr-code`.
