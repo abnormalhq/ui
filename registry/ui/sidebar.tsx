@@ -243,13 +243,16 @@ function SidebarItem({
 }) {
   const { collapsed } = useSidebar();
   const [tooltipOpen, setTooltipOpen] = React.useState(false);
+  // Radix reports a change only against the `open` it was given, so a tooltip shut by an expanded row never hears its
+  // close. Forget it on expanding, or every row hovered meanwhile opens at once on the rail.
+  if (tooltipOpen && !collapsed) setTooltipOpen(false);
   const Comp = asChild ? Slot.Root : "button";
   const hasCount = count !== undefined && count !== null && count !== false;
   const marked = collapsed ? attention || dot : dot && !hasCount;
 
   return (
     // Always controlled, so the tooltip never opens over the expanded row that already shows its name.
-    <Tooltip open={collapsed && tooltipOpen} onOpenChange={setTooltipOpen}>
+    <Tooltip open={collapsed && tooltipOpen} onOpenChange={(open) => setTooltipOpen(collapsed && open)}>
       <TooltipTrigger asChild>
         <Comp
           data-slot="sidebar-item"
