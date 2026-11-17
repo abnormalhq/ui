@@ -15,10 +15,23 @@ export default function OverviewPage() {
           </h1>
         </SectionTitle>
         <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-          Design tokens, base components and brand pieces shared by the website and mail. Each one installs as source
+          Design tokens, base components and brand pieces shared by the Abnormal family. Each one installs as source
           into the project.
         </p>
       </header>
+
+      <section aria-labelledby="family-style" className="grid gap-3 border-y border-border py-6">
+        <h2 id="family-style" className="font-heading text-2xl font-semibold">
+          Paper, ink and purpose.
+        </h2>
+        <p className="max-w-2xl text-muted-foreground">
+          A shared visual contract for the website, Mail, Doppel and Status: warm paper, ink structure and one
+          restrained highlighter. Same family, different layouts.
+        </p>
+        <Link href="/design" className="w-fit rounded-control font-medium underline underline-offset-4">
+          Explore the family style and composition examples
+        </Link>
+      </section>
 
       <section aria-labelledby="start" className="grid gap-5">
         <h2 id="start" className="font-heading text-2xl font-semibold">

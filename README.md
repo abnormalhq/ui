@@ -41,7 +41,7 @@ pnpm dlx shadcn@latest add @abnormal/button @abnormal/dialog
 
 | Group      | Items                                                                                                                                                                                                                                                                                                                                                                                         |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Foundation | `theme`, `fonts`, `utils`, `template`                                                                                                                                                                                                                                                                                                                                                         |
+| Foundation | `theme`, `fonts`, `utils`, `template`, `workspace`                                                                                                                                                                                                                                                                                                                                            |
 | Brand      | `brand-mark`, `marker`                                                                                                                                                                                                                                                                                                                                                                        |
 | Controls   | `button`, `input`, `input-group`, `search-input`, `password-input`, `file-button`, `field`, `field-message`, `tag`, `textarea`, `select`, `native-select`, `checkbox`, `radio-group`, `switch`, `toggle`, `toggle-group`, `slider`, `input-otp`, `combobox`, `command`, `calendar`, `date-picker`, `date-range-picker`, `date-time-picker`, `toolbar`, `resize-handle`, `label`, `form-reset` |
 | Display    | `accordion`, `alert`, `avatar`, `badge`, `banner`, `card`, `code-block`, `collapsible`, `description-list`, `disclosure`, `empty-state`, `expandable-text`, `item-list`, `kbd`, `progress`, `qr-code`, `scroll-area`, `separator`, `skeleton`, `spinner`, `stat`, `status-label`, `table`, `timeline`, `truncated-text`, `uptime-bar`                                                         |
@@ -65,6 +65,30 @@ The theme needs something to keep the visitor's choice. A page with its own prov
 Copy strings with slots, such as a sentence holding two links, are `Template<"terms" | "privacy">` strings from `template`: `fillTemplate` swaps each `{name}` for its part, and the type makes the compiler check that a component passes exactly the slots its copy declares.
 
 Patterns are the pieces the projects kept rewriting: they hold no product state (`ThemePicker` takes the saved preference and hands back the choice; `LinkRow` takes the router's `navigate`), and every word they show comes in as a prop.
+
+## Family style and workspace compositions
+
+The family direction is **paper-like tool minimalism**: warm paper, ink structure and a restrained yellow highlighter. Keep the existing palette and type; share visual rules without forcing the website, Mail, Doppel and Status into the same layout. The [family guide](https://ui.abnormalhq.com/design) contains the palette's roles, type hierarchy, density and responsive rules, and working composition examples. Agents can read the same contract at [/md/design.md](https://ui.abnormalhq.com/md/design.md).
+
+`workspace` supplies the ink frame and paper surfaces without adding product state:
+
+```tsx
+<Workspace>
+  <WorkspaceNavigation className="md:w-52">
+    <nav aria-label={messages.navigationLabel}>{navigation}</nav>
+  </WorkspaceNavigation>
+  <WorkspacePane padding="compact">{list}</WorkspacePane>
+  <WorkspacePane asChild>
+    <article aria-labelledby="message-title">{reader}</article>
+  </WorkspacePane>
+</Workspace>
+```
+
+The navigation and panes must be siblings: only the navigation carries `ink`, so light paper does not inherit dark tokens. `Workspace` stacks on small screens and hides nothing. The product owns collapse / back behavior, pane widths, height, scroll boundaries and landmarks. For the existing collapsible `Sidebar`, put it inside `WorkspaceNavigation className="p-0"`; do not give the wrapper a fixed width, so the sidebar can collapse normally. Status and marketing pages need not use an ink frame at all.
+
+`WorkspacePane` padding is local (`none`, `compact`, `comfortable`, default `comfortable`). A compact list can sit beside a comfortable reader without shrinking either one's controls. `ItemListRow` separately accepts `density="compact"` (default `comfortable`, unchanged spacing) and `selected` for the muted-highlight row. Supply the matching semantics on the child: `aria-current` for a current link or `aria-pressed` for a toggle button. Saturated `highlight` remains for the current navigation item or a new signal; success / warning / failure keep their semantic colors and visible words.
+
+Install `@abnormal/workspace` and reinstall `@abnormal/item-list` only where these new opt-in pieces are needed, using the update procedure below. The theme and existing component defaults do not need to change. The site examples use sample data; they do not connect to or replace any product's screens.
 
 ## Versions and updates
 

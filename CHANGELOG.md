@@ -8,8 +8,14 @@ Each entry names the items it touches, because a project installs items one by o
 
 ### Added
 
+- `workspace`: server-safe ink / paper composition primitives. `WorkspaceNavigation` carries the permanent ink scope; sibling `WorkspacePane` surfaces follow the page theme, with local `none`, `compact` or `comfortable` padding. Product navigation, widths, height and scrolling remain the consumer's responsibility.
+- `/design`: the family style contract and live reading-workspace, operational-list and service-health compositions, with a discoverable Markdown alternate. The existing palette is preserved; product repositories are not changed by adopting this guide.
 - `template`: `fillTemplate` and the `Template<Slot>` type, the copy strings with `{name}` slots that the website and the developer site each kept a copy of. The slots exist only in the type, so a component that passes a slot its copy does not declare, or leaves one out, fails the type check.
 - `theme-script`: `ThemeScript`, the inline `<head>` script that applies the saved or system theme before the first paint, with `<meta name="theme-color">` in each theme's `--bg`, and follows the system and other tabs; and `useThemePreference` (`use-theme-preference.ts`), its preference and setter for `ThemePicker`. It keeps the choice under the same `abnormal-theme` key and `window.abnormalTheme` as the website and the developer site, which each kept a copy of the script.
+
+### Changed
+
+- `item-list`: opt-in `density="compact"` row spacing and a `selected` muted-highlight treatment. Default spacing is unchanged. The product supplies selection semantics (`aria-current`, `aria-pressed`, or its widget's role); the visual prop does not invent them. Row transitions now respect reduced motion.
 
 ## [0.5.0] - 2026-11-14
 

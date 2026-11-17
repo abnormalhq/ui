@@ -17,13 +17,16 @@ test("robots.txt allows crawling, declares content signals and points at the sit
   assert.match(robots, new RegExp(`^Sitemap: ${site}/sitemap.xml$`, "m"));
 });
 
-test("the sitemap lists the overview and every component page", () => {
+test("the sitemap lists the overview, family guide and every component page", () => {
   const urls = [...readFileSync("out/sitemap.xml", "utf8").matchAll(/<loc>(.+?)<\/loc>/g)].map((match) => match[1]);
-  assert.deepEqual(urls.toSorted(), [site, ...names.map((name) => `${site}/components/${name}`)].toSorted());
+  assert.deepEqual(
+    urls.toSorted(),
+    [site, `${site}/design`, ...names.map((name) => `${site}/components/${name}`)].toSorted(),
+  );
 });
 
 test("the pages in the sitemap can be indexed", () => {
-  for (const file of ["index", ...names.map((name) => `components/${name}`)]) {
+  for (const file of ["index", "design", ...names.map((name) => `components/${name}`)]) {
     assert.doesNotMatch(readFileSync(`out/${file}.html`, "utf8"), /<meta name="robots"/, file);
   }
 });
@@ -77,6 +80,20 @@ async function request(path: string, accept?: string) {
   const response = await worker.fetch(new Request(`${site}${path}`, { headers }), { ASSETS });
   return { asked: asked[0], response };
 }
+
+test("the family guide has a discoverable Markdown alternate with the shared adoption contract", async () => {
+  const html = readFileSync("out/design.html", "utf8");
+  const markdown = readFileSync("out/md/design.md", "utf8");
+  assert.match(html, /Paper, ink,/);
+  assert.match(markdown, /WorkspaceNavigation.*WorkspacePane/);
+  assert.match(markdown, /density="compact"/);
+  for (const file of ["out/md/index.md", "out/llms.txt"]) {
+    assert.ok(readFileSync(file, "utf8").includes(`${site}/md/design.md`), file);
+  }
+  const response = await request("/design", "text/markdown");
+  assert.equal(response.asked, "/md/design.md");
+  assert.match(response.response.headers.get("Link")!, /\/md\/design\.md/);
+});
 
 const browser = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 
