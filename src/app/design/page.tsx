@@ -66,6 +66,7 @@ export default function DesignPage() {
         aria-label="Style guide sections"
         className="flex flex-wrap gap-x-5 gap-y-2 border-y border-border py-3 text-sm"
       >
+        {/* Keep fragment navigation in the router so Back can restore the guide after visiting a component. */}
         {[
           ["principles", "Principles"],
           ["palette", "Palette"],
@@ -74,9 +75,9 @@ export default function DesignPage() {
           ["products", "Products"],
           ["adopt", "Adopt"],
         ].map(([id, title]) => (
-          <a key={id} href={`#${id}`} className="rounded-chip text-muted-foreground hover:text-foreground">
+          <Link key={id} href={`#${id}`} className="rounded-chip text-muted-foreground hover:text-foreground">
             {title}
-          </a>
+          </Link>
         ))}
       </nav>
       <GuideSection id="principles" title="A shared visual contract">
