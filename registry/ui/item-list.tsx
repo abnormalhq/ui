@@ -30,15 +30,34 @@ function ItemListItem({ className, ...props }: React.ComponentProps<"li">) {
 /**
  * The row itself: what it shows, in a line. As a link or a button (asChild) the whole row takes the pointer and the
  * focus, and lights up under either; the focus ring is drawn inside the box, which clips anything outside it.
+ * `density="compact"` reduces row spacing without shrinking its text; the default spacing is unchanged.
+ * `selected` uses the muted highlighter, distinct from the saturated current navigation item. It is visual only:
+ * the page supplies aria-current on a link, aria-pressed on a toggle button, or the semantics its widget requires.
  */
-function ItemListRow({ className, asChild = false, ...props }: React.ComponentProps<"div"> & { asChild?: boolean }) {
+function ItemListRow({
+  className,
+  asChild = false,
+  density = "comfortable",
+  selected = false,
+  ...props
+}: React.ComponentProps<"div"> & {
+  asChild?: boolean;
+  density?: "compact" | "comfortable";
+  selected?: boolean;
+}) {
   const Comp = asChild ? Slot.Root : "div";
   return (
     <Comp
       data-slot="item-list-row"
+      data-density={density}
+      data-selected={selected || undefined}
       className={cn(
-        "flex w-full min-w-0 items-center gap-3 px-4 py-3 text-left",
-        "[&:is(a,button)]:cursor-pointer [&:is(a,button)]:transition-colors [&:is(a,button)]:duration-100 [&:is(a,button)]:hover:bg-accent [&:is(a,button)]:focus-visible:bg-accent [&:is(a,button)]:focus-visible:-outline-offset-2 [&:is(a,button)]:disabled:pointer-events-none [&:is(a,button)]:disabled:opacity-50",
+        "flex w-full min-w-0 items-center gap-3 text-left",
+        density === "compact" ? "px-3 py-2" : "px-4 py-3",
+        "[&:is(a,button)]:cursor-pointer [&:is(a,button)]:transition-colors [&:is(a,button)]:duration-100 motion-reduce:transition-none [&:is(a,button)]:focus-visible:-outline-offset-2 [&:is(a,button)]:disabled:pointer-events-none [&:is(a,button)]:disabled:opacity-50",
+        selected
+          ? "bg-highlight-muted text-foreground [&:is(a,button)]:hover:bg-highlight-muted [&:is(a,button)]:focus-visible:bg-highlight-muted"
+          : "[&:is(a,button)]:hover:bg-accent [&:is(a,button)]:focus-visible:bg-accent",
         className,
       )}
       {...props}

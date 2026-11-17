@@ -4,6 +4,15 @@
   "homepage": "https://ui.abnormalhq.com",
   "items": [
     {
+      "name": "workspace",
+      "type": "registry:ui",
+      "title": "Workspace",
+      "description": "An ink frame with sibling navigation and paper panes. Local padding for reading and compact lists, without imposing product navigation or scroll behavior.",
+      "dependencies": ["class-variance-authority", "radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [{ "path": "registry/ui/workspace.tsx", "type": "registry:ui" }]
+    },
+    {
       "name": "theme",
       "type": "registry:style",
       "title": "Abnormal Theme",

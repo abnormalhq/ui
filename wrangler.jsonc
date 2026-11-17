@@ -8,7 +8,7 @@
     "directory": "out",
     "binding": "ASSETS",
     "not_found_handling": "404-page",
-    "run_worker_first": ["/", "/components/*", "!/components/*.txt"],
+    "run_worker_first": ["/", "/design", "/components/*", "!/components/*.txt"],
   },
   "workers_dev": true,
   "routes": [{ "pattern": "ui.abnormalhq.com", "custom_domain": true }],

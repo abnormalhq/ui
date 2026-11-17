@@ -61,7 +61,12 @@ export function SiteNav({ groups, onNavigate }: { groups: NavGroup[]; onNavigate
         )}
       </div>
       <div id={resultsId} className="grid gap-6">
-        {words.length === 0 && <NavLink href="/" label="Overview" onNavigate={onNavigate} />}
+        {words.length === 0 && (
+          <div className="grid gap-1">
+            <NavLink href="/" label="Overview" onNavigate={onNavigate} />
+            <NavLink href="/design" label="Family style" onNavigate={onNavigate} />
+          </div>
+        )}
         {shown.map((group) => (
           <div key={group.title} className="grid gap-1">
             <h2 className="px-2 pb-1 text-xs font-medium text-muted-foreground">{group.title}</h2>
