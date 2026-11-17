@@ -175,3 +175,7 @@ Connect `abnormalhq/ui` to the `abnormalhq-ui` Worker, with `main` as the produc
 | `NEXT_TELEMETRY_DISABLED` | `1`   | Turns off Next.js build telemetry                    |
 
 The pnpm version comes from `packageManager` in `package.json`: Workers Builds reads it before any `PNPM_VERSION` build variable, so none is set.
+
+## License
+
+The code and the registry items are under the [MIT License](LICENSE). The fonts in `public/fonts` (Bricolage Grotesque, Inter, JetBrains Mono) keep their own SIL Open Font License, and the Abnormal name and logo are not licensed for reuse.
