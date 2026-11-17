@@ -33,7 +33,7 @@ function WorkspaceNavigation({
   return (
     <Comp
       data-slot="workspace-navigation"
-      className={cn("ink flex shrink-0 flex-col gap-4 rounded-popover p-3", className)}
+      className={cn("ink flex shrink-0 flex-col gap-4 rounded-mark p-3", className)}
       {...props}
     />
   );
@@ -41,7 +41,7 @@ function WorkspaceNavigation({
 
 /** Padding is local to the pane, not a global density switch: a reading pane can sit beside a compact list. */
 const workspacePaneVariants = cva(
-  "flex min-h-0 min-w-0 flex-none flex-col rounded-popover bg-background text-foreground md:flex-1",
+  "flex min-h-0 min-w-0 flex-none flex-col rounded-mark bg-background text-foreground md:flex-1",
   {
     variants: {
       padding: {
