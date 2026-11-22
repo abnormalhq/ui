@@ -56,5 +56,8 @@
     "wrangler": "^4.166.0"
   },
   "packageManager": "pnpm@12.21.0",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "next-intl": "4.15.3"
+  }
 }

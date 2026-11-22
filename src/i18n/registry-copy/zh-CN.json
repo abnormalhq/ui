@@ -1,0 +1,386 @@
+{
+  "workspace": {
+    "title": "工作区",
+    "description": "以墨色框架、并列导航与纸色面板组成的布局。阅读和紧凑列表的内边距由面板自行控制，不会强加产品导航或滚动行为。"
+  },
+  "theme": {
+    "title": "Abnormal 主题",
+    "description": "包含明暗两套颜色、字体、圆角与动效令牌。请在 Tailwind 后导入一次 abnormal.css。"
+  },
+  "fonts": {
+    "title": "Abnormal 字体",
+    "description": "适用于不使用 next/font 的项目的 @font-face 规则；woff2 文件由 /fonts 提供。"
+  },
+  "utils": {
+    "title": "工具函数",
+    "description": "cn 类名合并函数可识别主题自定义的圆角、阴影与动画名称。"
+  },
+  "template": {
+    "title": "模板",
+    "description": "fillTemplate 函数与 Template 类型：复制带有 {name} 占位符的字符串，编译器会根据组件传入的值检查占位符名称。"
+  },
+  "brand-mark": {
+    "title": "品牌标记",
+    "description": "Abnormal 方块、文字标志，以及标记中的箭头。"
+  },
+  "marker": {
+    "title": "标记",
+    "description": "为数字或单个词语添加荧光笔效果的强调笔画。"
+  },
+  "accordion": {
+    "title": "折叠面板",
+    "description": "可分组展开和收起的内容区；支持一次打开一个或多个面板，并可用方向键在标题间移动。"
+  },
+  "alert": {
+    "title": "提示",
+    "description": "包含图标、标题与描述的行内通知。"
+  },
+  "alert-dialog": {
+    "title": "警告对话框",
+    "description": "会打断当前流程的模态确认对话框。"
+  },
+  "avatar": {
+    "title": "头像",
+    "description": "用图片表示人物或工作区；图片加载前或不可用时显示姓名首字母。"
+  },
+  "badge": {
+    "title": "徽标",
+    "description": "用于计数、域名与角色的小标签，提供两种尺寸、上限计数与圆点样式。"
+  },
+  "banner": {
+    "title": "横幅",
+    "description": "横跨页面或面板顶部的提示条，或带色调的提示面板。提供五种色调，并可包含操作与关闭按钮，用于说明整体状态。"
+  },
+  "breadcrumb": {
+    "title": "面包屑",
+    "description": "从站点顶部一路指向当前页面的链接路径。"
+  },
+  "button": {
+    "title": "按钮",
+    "description": "高度为 32px 的按钮，支持 primary、outline、secondary、ghost、destructive 和 link 变体，以及加载状态。"
+  },
+  "calendar": {
+    "title": "日历",
+    "description": "用于选择单日或日期范围的月历网格；支持完整键盘导航、跳转到月份和年份的列表，以及调用方提供的 locale。"
+  },
+  "card": {
+    "title": "卡片",
+    "description": "无填充色的细边框面板，也可渲染为链接。标题支持 asChild，以匹配页面的标题层级。"
+  },
+  "checkbox": {
+    "title": "复选框",
+    "description": "复选框控件。"
+  },
+  "code-block": {
+    "title": "代码块",
+    "description": "用于阅读和复制的代码区域：pre 内容可横向滚动，可选标题与角落操作位。CopyButton 会复制旁边的代码。"
+  },
+  "collapsible": {
+    "title": "可折叠区域",
+    "description": "可由任意按钮显示或隐藏、并由页面控制状态的区域。"
+  },
+  "combobox": {
+    "title": "组合框",
+    "description": "带搜索框的选择器，适合选项过多、不便逐项浏览的列表；表单重置时恢复默认值。"
+  },
+  "command": {
+    "title": "命令面板",
+    "description": "由键盘驱动的选项列表搜索框，适用于命令面板和可搜索列表。"
+  },
+  "confirm-dialog": {
+    "title": "确认对话框",
+    "description": "在执行操作前再次确认；可受控打开，也可由按钮触发，关闭后焦点返回到打开它的控件。"
+  },
+  "context-menu": {
+    "title": "上下文菜单",
+    "description": "通过鼠标右键打开的菜单。"
+  },
+  "copy-button": {
+    "title": "复制按钮",
+    "description": "复制一个值，并通过图标、提示气泡与状态区域展示结果；所有文案均由调用方传入。"
+  },
+  "date-picker": {
+    "title": "日期选择器",
+    "description": "日期字段：点击按钮即可在弹出层中打开 Calendar；表单重置时恢复默认值。"
+  },
+  "date-range-picker": {
+    "title": "日期范围选择器",
+    "description": "用于选择日期跨度的字段：点击按钮即可在弹出层中以范围模式打开 Calendar，并将起止日期作为一对表单字段提交。"
+  },
+  "date-time-picker": {
+    "title": "日期时间选择器",
+    "description": "在一个字段中选择日期与时间，值为本地日期时间文本，格式与 datetime-local 输入一致；支持表单重置。"
+  },
+  "description-list": {
+    "title": "描述列表",
+    "description": "使用 dl 展示名称与对应值，所有值从同一行开始；每项旁边可选放置控件。"
+  },
+  "dialog": {
+    "title": "对话框",
+    "description": "关闭按钮文案可翻译的模态对话框。"
+  },
+  "disclosure": {
+    "title": "展开区",
+    "description": "基于原生 details 展示问题与答案，无需客户端 JavaScript。"
+  },
+  "dropdown-menu": {
+    "title": "下拉菜单",
+    "description": "由触发器打开、用于展示操作或选项的菜单。"
+  },
+  "empty-state": {
+    "title": "空状态",
+    "description": "列表或页面没有内容时展示的状态：图标块、标题、说明文字与下一步操作，支持宽松或紧凑样式。"
+  },
+  "expandable-text": {
+    "title": "可展开文本",
+    "description": "将长文本限制在几行内；只有内容超出时才显示展开 / 收起按钮。"
+  },
+  "field": {
+    "title": "表单字段",
+    "description": "将标签、控件与辅助说明的 id 关联；错误消息会替代说明文字，也可用于带开关的设置行。"
+  },
+  "field-message": {
+    "title": "字段消息",
+    "description": "表单字段下方的一行提示：一个圆点与一句话，颜色随提示色调变化。"
+  },
+  "file-button": {
+    "title": "文件按钮",
+    "description": "点击按钮打开文件选择器并返回所选文件，也可通过所属表单提交文件。"
+  },
+  "form-reset": {
+    "title": "表单重置",
+    "description": "useFormReset 钩子：将保存在 React state 中的字段值恢复为默认值；如果页面取消了重置操作，则保持原值。"
+  },
+  "guarded-dialog": {
+    "title": "受保护的对话框",
+    "description": "保存过程中无法关闭的对话框；每次打开时，钩子都会为其表单创建独立状态。"
+  },
+  "info-hint": {
+    "title": "信息提示",
+    "description": "标题旁的小型 ⓘ 提示：悬停或聚焦时打开，点击时切换显示状态。"
+  },
+  "input": {
+    "title": "输入框",
+    "description": "单行文本输入框。"
+  },
+  "input-group": {
+    "title": "输入框组",
+    "description": "与固定后缀或低强调文本按钮共用同一边框的输入框。"
+  },
+  "input-otp": {
+    "title": "一次性密码输入框",
+    "description": "以多个方框呈现的一次性验证码字段；底层是一个真实输入框，可粘贴短信中的验证码。"
+  },
+  "item-list": {
+    "title": "条目列表",
+    "description": "带边框的简洁列表，行间有分隔线。每行可为链接、按钮或纯内容，并支持标题、描述、元数据与箭头。"
+  },
+  "kbd": {
+    "title": "键盘按键",
+    "description": "展示单个按键或按键组合；useModifierKey 可识别当前平台使用的修饰键。"
+  },
+  "json-ld": {
+    "title": "JSON-LD",
+    "description": "将页面结构化数据放入 script type=application/ld+json，并针对 script 元素进行转义。"
+  },
+  "label": {
+    "title": "标签",
+    "description": "表单标签。"
+  },
+  "language-picker": {
+    "title": "语言选择器",
+    "description": "不持有状态的语言按钮与菜单：页面传入当前语言并处理用户选择，或为每种语言提供独立页面。"
+  },
+  "link-row": {
+    "title": "链接行",
+    "description": "点击表格行的任意位置即可打开对应页面，同时保留真实链接以支持键盘操作和在新标签页打开。"
+  },
+  "native-select": {
+    "title": "原生选择器",
+    "description": "使用与 Input 相同样式的浏览器原生 select。"
+  },
+  "page-header": {
+    "title": "页面标题区",
+    "description": "产品页面顶部区域：包含 h1、描述、页面操作与返回方式，并可按需固定在顶部。"
+  },
+  "nav-tabs": {
+    "title": "导航标签页",
+    "description": "由链接构成的标签页与分段控件，适用于各自拥有独立地址的视图，并使用 aria-current 标记当前项。"
+  },
+  "pagination": {
+    "title": "分页",
+    "description": "列表或表格下方的页面链接，并标记当前页。"
+  },
+  "password-input": {
+    "title": "密码输入框",
+    "description": "边框内含显示 / 隐藏按钮的密码字段，并预留生成密码等操作的位置。"
+  },
+  "popover": {
+    "title": "弹出层",
+    "description": "锚定在触发器上的浮动面板。"
+  },
+  "progress": {
+    "title": "进度条",
+    "description": "使用提示色的细条，可显示 0 到 100 的确定进度，也可在未知时长时持续移动；用作使用量计量时还支持警告与危险色调。"
+  },
+  "qr-code": {
+    "title": "二维码",
+    "description": "在服务器上绘制为内联 SVG 的二维码，两种主题下都使用白底深色图案。"
+  },
+  "radio-group": {
+    "title": "单选组",
+    "description": "从少量选项中选择一个；安静的圆环内填充墨色圆点，并通过方向键移动选择。"
+  },
+  "resize-handle": {
+    "title": "调整大小手柄",
+    "description": "可聚焦的分隔条，通过拖动或键盘调整面板尺寸；usePointerDrag 可用于项目自定义的手柄。"
+  },
+  "scroll-area": {
+    "title": "滚动区域",
+    "description": "带有独立细滚动条、可通过键盘操作的滚动框；支持可选的边缘渐隐与单行条带模式。"
+  },
+  "search-input": {
+    "title": "搜索输入框",
+    "description": "带搜索图标的搜索框，自带清除按钮，并为快捷键提示预留空间。"
+  },
+  "select": {
+    "title": "选择器",
+    "description": "带弹出选项列表的自定义选择器。"
+  },
+  "selection-bar": {
+    "title": "批量操作栏",
+    "description": "位于列表上方、用于操作已勾选行的工具栏：包含全选复选框、数量、操作与清除按钮。"
+  },
+  "separator": {
+    "title": "分隔线",
+    "description": "用于分隔分组的细线，可水平或垂直放置；除非另有说明，否则仅作装饰。"
+  },
+  "sheet": {
+    "title": "抽屉面板",
+    "description": "附着于左侧或右侧边缘的抽屉面板；关闭按钮文案可翻译。"
+  },
+  "sidebar": {
+    "title": "侧边栏",
+    "description": "可折叠为图标栏的应用列，导航行支持计数或圆点；useSidebar 可用于项目自定义行。"
+  },
+  "skeleton": {
+    "title": "骨架屏",
+    "description": "加载时显示的占位内容。"
+  },
+  "skip-link": {
+    "title": "跳转链接",
+    "description": "页面上的第一个链接；默认隐藏在顶部，获得键盘焦点时显示。"
+  },
+  "slider": {
+    "title": "滑块",
+    "description": "沿轨道选择一个值或一个范围。"
+  },
+  "sonner": {
+    "title": "Toast 通知",
+    "description": "基于 sonner 的 Toast 通知，会跟随页面主题，不依赖主题库。"
+  },
+  "spinner": {
+    "title": "加载指示器",
+    "description": "使用当前文字颜色旋转的小圆环。"
+  },
+  "stat": {
+    "title": "统计数据",
+    "description": "页面中的核心数字：以卡片或连成一块的形式展示名称、数值、提示和变化。"
+  },
+  "status-label": {
+    "title": "状态标签",
+    "description": "用彩色圆点和一个词表示状态。"
+  },
+  "stepper": {
+    "title": "步骤条",
+    "description": "展示固定流程中的进度，例如结账或新手引导。"
+  },
+  "switch": {
+    "title": "开关",
+    "description": "可受控或非受控的开 / 关切换；提供 name 时会像复选框一样提交，表单重置时恢复默认值。"
+  },
+  "table": {
+    "title": "表格",
+    "description": "支持纯色与边框变体、固定列和基于链接的可排序表头。table-row.ts 提供行操作样式类与行点击辅助函数，可在服务器组件中使用。"
+  },
+  "tabs": {
+    "title": "标签页",
+    "description": "在同一位置切换同一主题的不同视图，并用提示色标记当前标签。"
+  },
+  "tag": {
+    "title": "标签",
+    "description": "表示已选值的标签，带有具名的移除按钮，并提供容纳这些标签的列表。"
+  },
+  "textarea": {
+    "title": "多行输入框",
+    "description": "多行文本输入框。"
+  },
+  "theme-picker": {
+    "title": "主题选择器",
+    "description": "由页眉按钮打开、且不持有状态的系统 / 浅色 / 深色菜单；页面传入已保存的偏好并处理用户选择。"
+  },
+  "theme-script": {
+    "title": "主题脚本",
+    "description": "ThemeScript 是内联在 head 中的脚本，会在首次绘制前应用已保存或系统主题，并将偏好保存在浏览器中；useThemePreference 为 ThemePicker 提供该偏好。"
+  },
+  "timeline": {
+    "title": "时间线",
+    "description": "沿轨道按顺序展示事件，每项由带色调的圆点或图标标记，并包含标题、时间与消息。"
+  },
+  "toc": {
+    "title": "目录",
+    "description": "文档各分区的链接；页面滚动时，通过 aria-current=location 标记正在阅读的分区。"
+  },
+  "toggle": {
+    "title": "切换按钮",
+    "description": "按下后保持选中状态；开启时呈现选择项的柔和高亮。"
+  },
+  "toggle-group": {
+    "title": "切换按钮组",
+    "description": "组合在一起的切换按钮，可单选一个，也可同时选择多个。"
+  },
+  "toolbar": {
+    "title": "工具栏",
+    "description": "包含一组控件的行，仅有一个 Tab 停靠点；可用方向键在由分隔符拆分的组之间移动。"
+  },
+  "tooltip": {
+    "title": "工具提示",
+    "description": "悬停或聚焦时显示的简短提示。可单独使用；TooltipProvider 可在同一区域共享延迟时间。"
+  },
+  "turnstile": {
+    "title": "Turnstile",
+    "description": "用于表单的 Cloudflare Turnstile 验证组件与钩子：只加载一次脚本、适配页面主题、将令牌写入隐藏字段，并支持重置。"
+  },
+  "truncated-text": {
+    "title": "截断文本",
+    "description": "超出一行时用省略号截断；仅在确实发生截断时通过工具提示显示完整文本。"
+  },
+  "uptime-bar": {
+    "title": "运行时间条",
+    "description": "以一排条形展示服务历史，包含正常、降级、中断与空状态，并用对应颜色表示运行时间；无需脚本。"
+  },
+  "container": {
+    "title": "容器",
+    "description": "宽度为 1184px、带响应式两侧间距的页面列。"
+  },
+  "icon-tile": {
+    "title": "图标块",
+    "description": "用于放置图标的方形块。"
+  },
+  "pricing-card": {
+    "title": "定价卡片",
+    "description": "定价页面上的单个方案：包含名称、价格、周期、功能和行动号召；支持精选状态与可选折扣。"
+  },
+  "prose": {
+    "title": "长文排版",
+    "description": "为 MDX、Markdown 等长篇内容提供样式，也包括代码块与表格。"
+  },
+  "section-heading": {
+    "title": "分区标题",
+    "description": "眉题标签、分区标题与分区间距。"
+  },
+  "text-link": {
+    "title": "文字链接",
+    "description": "悬停时加深的低强调链接，也提供适用于句内的下划线样式。"
+  }
+}

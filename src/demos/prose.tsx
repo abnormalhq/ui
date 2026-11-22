@@ -1,47 +1,69 @@
 import { Prose } from "@/components/ui/prose";
 
-export default function ProseDemo() {
+export const defaultCopy = {
+  collect: "What we collect",
+  onlyNeeded: "Only what the service needs: your",
+  address: "address",
+  settingsAnd: ", your settings and the",
+  eachMessage: " of each message.",
+  accountDetails: "Account details",
+  billingHistory: "Billing history",
+  retention: "How long we keep it",
+  what: "What",
+  for: "For",
+  trash: "Mail in Trash",
+  thirtyDays: "30 days",
+  deliveryLogs: "Delivery logs",
+  ninetyDays: "90 days",
+  deletion: "Deleting an account removes its mail from every server within a day.",
+  contact: "How to reach us",
+  writeTo: "Write to",
+};
+
+export default function ProseDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <Prose className="w-full max-w-2xl">
-      <h2>What we collect</h2>
+      <h2>{copy.collect}</h2>
       <p>
-        Only what the service needs: your <strong>address</strong>, your settings and the <code>Message-ID</code> of
-        each message.
+        {copy.onlyNeeded} <strong>{copy.address}</strong>
+        {copy.settingsAnd} <code>Message-ID</code>
+        {copy.eachMessage}
       </p>
       <ul>
-        <li>Account details</li>
-        <li>Billing history</li>
+        <li>{copy.accountDetails}</li>
+        <li>{copy.billingHistory}</li>
       </ul>
-      <h2>How long we keep it</h2>
+      <h2>{copy.retention}</h2>
       <table>
         <thead>
           <tr>
-            <th>What</th>
-            <th>For</th>
+            <th>{copy.what}</th>
+            <th>{copy.for}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Mail in Trash</td>
-            <td>30 days</td>
+            <td>{copy.trash}</td>
+            <td>{copy.thirtyDays}</td>
           </tr>
           <tr>
-            <td>Delivery logs</td>
-            <td>90 days</td>
+            <td>{copy.deliveryLogs}</td>
+            <td>{copy.ninetyDays}</td>
           </tr>
         </tbody>
       </table>
       <blockquote>
-        <p>Deleting an account removes its mail from every server within a day.</p>
+        <p>{copy.deletion}</p>
       </blockquote>
       <pre>
         <code>{`curl https://api.example.com/v1/export \
   -H "Authorization: Bearer $TOKEN"`}</code>
       </pre>
       <hr />
-      <h2>How to reach us</h2>
+      <h2>{copy.contact}</h2>
       <p>
-        Write to <a href="mailto:hello@example.com">hello@example.com</a>.
+        {copy.writeTo} <a href="mailto:hello@example.com">hello@example.com</a>.
       </p>
     </Prose>
   );

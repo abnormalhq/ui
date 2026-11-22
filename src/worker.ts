@@ -13,24 +13,33 @@ const alternate = (path: string) => `<${path}>; rel="alternate"; type="text/mark
 /** Every page points at the llms.txt index, as the website's pages do. */
 const llms = `</llms.txt>; rel="describedby"; type="text/plain"`;
 
-const pages = new Map(
-  names.map((name) => [
-    `/components/${name}`,
-    {
-      markdown: `/md/components/${name}.md`,
-      link: [alternate(`/md/components/${name}.md`), llms].join(", "),
-    },
-  ]),
+const componentPage = (name: string) => ({
+  markdown: `/md/components/${name}.md`,
+  link: [alternate(`/md/components/${name}.md`), llms].join(", "),
+});
+
+const pages = new Map<string, { markdown: string; link: string }>(
+  names.flatMap((name) => {
+    const page = componentPage(name);
+    return [[`/components/${name}`, page] as const, [`/zh/components/${name}`, page] as const];
+  }),
 );
-pages.set("/design", {
+
+const designPage = {
   markdown: "/md/design.md",
   link: [alternate("/md/design.md"), llms].join(", "),
-});
-pages.set("/gallery", {
+};
+pages.set("/design", designPage);
+pages.set("/zh/design", designPage);
+
+const galleryPage = {
   markdown: "/md/gallery.md",
   link: [alternate("/md/gallery.md"), llms].join(", "),
-});
-pages.set("/", {
+};
+pages.set("/gallery", galleryPage);
+pages.set("/zh/gallery", galleryPage);
+
+const overviewPage = {
   markdown: "/md/index.md",
   link: [
     alternate("/md/index.md"),
@@ -38,7 +47,9 @@ pages.set("/", {
     `</r/registry.json>; rel="describedby"; type="application/json"`,
     ...names.map((name) => `</components/${name}>; rel="item"; type="text/html"`),
   ].join(", "),
-});
+};
+pages.set("/", overviewPage);
+pages.set("/zh", overviewPage);
 
 type MediaRange = { type: string; params: string[]; q: number };
 

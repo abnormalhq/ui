@@ -1,37 +1,55 @@
 import { Stat, StatDelta, StatGrid, StatHint } from "@/components/ui/stat";
 
-export default function StatDemo() {
+export const defaultCopy = {
+  sent: "Sent",
+  sentDelta: "+12% on last week",
+  bounced: "Bounced",
+  bouncedDelta: "−0.1 points",
+  complaints: "Complaints",
+  complaintDelta: "+2 on last week",
+  storage: "Storage",
+  notFetched: "Not fetched yet",
+  mailboxes: "Mailboxes",
+  mailboxesAdded: "12 added in the last 30 days",
+  domains: "Domains",
+  verified: "All verified",
+  aliases: "Aliases",
+  acrossDomains: "Across every domain",
+};
+
+export default function StatDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <div className="grid w-full gap-8">
       <StatGrid columns={4}>
-        <Stat label="Sent" value="12,480">
+        <Stat label={copy.sent} value="12,480">
           <StatDelta direction="up" tone="success">
-            +12% on last week
+            {copy.sentDelta}
           </StatDelta>
         </Stat>
-        <Stat label="Bounced" value="0.4%">
+        <Stat label={copy.bounced} value="0.4%">
           <StatDelta direction="down" tone="success">
-            −0.1 points
+            {copy.bouncedDelta}
           </StatDelta>
         </Stat>
-        <Stat label="Complaints" value="3">
+        <Stat label={copy.complaints} value="3">
           <StatDelta direction="up" tone="destructive">
-            +2 on last week
+            {copy.complaintDelta}
           </StatDelta>
         </Stat>
-        <Stat label="Storage" value="—" muted>
-          <StatHint>Not fetched yet</StatHint>
+        <Stat label={copy.storage} value="—" muted>
+          <StatHint>{copy.notFetched}</StatHint>
         </Stat>
       </StatGrid>
       <StatGrid variant="joined" columns={3}>
-        <Stat label="Mailboxes" value="248">
-          <StatHint>12 added in the last 30 days</StatHint>
+        <Stat label={copy.mailboxes} value="248">
+          <StatHint>{copy.mailboxesAdded}</StatHint>
         </Stat>
-        <Stat label="Domains" value="6">
-          <StatHint>All verified</StatHint>
+        <Stat label={copy.domains} value="6">
+          <StatHint>{copy.verified}</StatHint>
         </Stat>
-        <Stat label="Aliases" value="1,032">
-          <StatHint>Across every domain</StatHint>
+        <Stat label={copy.aliases} value="1,032">
+          <StatHint>{copy.acrossDomains}</StatHint>
         </Stat>
       </StatGrid>
     </div>

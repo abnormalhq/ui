@@ -2,17 +2,30 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
 import { SearchInput } from "@/components/ui/search-input";
+import type { Locale } from "@/site/i18n/locales";
+import { localeHref } from "@/site/i18n/locale-path";
 import { cn } from "@/lib/utils";
 
 export type NavGroup = { title: string; items: { name: string; title: string }[] };
 
-function NavLink({ href, label, onNavigate }: { href: string; label: string; onNavigate?: () => void }) {
-  const current = usePathname() === href;
+function NavLink({
+  href,
+  label,
+  locale,
+  onNavigate,
+}: {
+  href: string;
+  label: string;
+  locale: Locale;
+  onNavigate?: () => void;
+}) {
+  const current = usePathname() === localeHref(locale, href);
   return (
     <Link
-      href={href}
+      href={localeHref(locale, href)}
       aria-current={current ? "page" : undefined}
       onClick={onNavigate}
       className={cn(
@@ -29,7 +42,16 @@ function NavLink({ href, label, onNavigate }: { href: string; label: string; onN
 
 const shortTitle = (title: string) => title.replace(/^Abnormal /, "");
 
-export function SiteNav({ groups, onNavigate }: { groups: NavGroup[]; onNavigate?: () => void }) {
+export function SiteNav({
+  groups,
+  locale,
+  onNavigate,
+}: {
+  groups: NavGroup[];
+  locale: Locale;
+  onNavigate?: () => void;
+}) {
+  const t = useTranslations("Navigation");
   const [query, setQuery] = useState("");
   const resultsId = useId();
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
@@ -42,30 +64,30 @@ export function SiteNav({ groups, onNavigate }: { groups: NavGroup[]; onNavigate
   const count = shown.reduce((total, group) => total + group.items.length, 0);
 
   return (
-    <nav aria-label="Components" className="grid gap-6">
+    <nav aria-label={t("label")} className="grid gap-6">
       <div className="grid gap-2">
         <SearchInput
           size="sm"
-          aria-label="Search components"
+          aria-label={t("searchLabel")}
           aria-controls={resultsId}
-          placeholder="Search"
-          clearLabel="Clear"
+          placeholder={t("searchPlaceholder")}
+          clearLabel={t("clear")}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           inputClassName="text-sm"
         />
         {words.length > 0 && (
           <p role="status" className="px-2 text-xs text-muted-foreground">
-            {count === 0 ? "No matches" : `${count} ${count === 1 ? "match" : "matches"}`}
+            {t("results", { count })}
           </p>
         )}
       </div>
       <div id={resultsId} className="grid gap-6">
         {words.length === 0 && (
           <div className="grid gap-1">
-            <NavLink href="/" label="Overview" onNavigate={onNavigate} />
-            <NavLink href="/gallery" label="Gallery" onNavigate={onNavigate} />
-            <NavLink href="/design" label="Family style" onNavigate={onNavigate} />
+            <NavLink href="/" label={t("overview")} locale={locale} onNavigate={onNavigate} />
+            <NavLink href="/gallery" label={t("gallery")} locale={locale} onNavigate={onNavigate} />
+            <NavLink href="/design" label={t("familyStyle")} locale={locale} onNavigate={onNavigate} />
           </div>
         )}
         {shown.map((group) => (
@@ -76,6 +98,7 @@ export function SiteNav({ groups, onNavigate }: { groups: NavGroup[]; onNavigate
                 key={item.name}
                 href={`/components/${item.name}`}
                 label={shortTitle(item.title)}
+                locale={locale}
                 onNavigate={onNavigate}
               />
             ))}
