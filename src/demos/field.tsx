@@ -2,37 +2,47 @@ import { Field, FieldControl, FieldHint, FieldLabel, SwitchField } from "@/compo
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
 
-export default function FieldDemo() {
+export const defaultCopy = {
+  displayName: "Display name",
+  displayNameHint: "Shown to the people you write to.",
+  address: "Address",
+  addressError: "This address is already taken.",
+  addressHint: "Letters, numbers and dots.",
+  publicKey: "Keep the public key on the server",
+  publicKeyDescription: "So other people's mail apps can find it.",
+  language: "Language",
+  languageHint: "For the interface and the mail it sends.",
+  english: "English",
+  german: "Deutsch",
+};
+
+export default function FieldDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <div className="grid w-full max-w-sm gap-6">
       <Field>
-        <FieldLabel>Display name</FieldLabel>
+        <FieldLabel>{copy.displayName}</FieldLabel>
         <FieldControl>
           <Input name="name" defaultValue="Support" />
         </FieldControl>
-        <FieldHint>Shown to the people you write to.</FieldHint>
+        <FieldHint>{copy.displayNameHint}</FieldHint>
       </Field>
-      <Field error="This address is already taken.">
-        <FieldLabel>Address</FieldLabel>
+      <Field error={copy.addressError}>
+        <FieldLabel>{copy.address}</FieldLabel>
         <FieldControl>
           <Input name="address" defaultValue="hello@example.com" />
         </FieldControl>
-        <FieldHint>Letters, numbers and dots.</FieldHint>
+        <FieldHint>{copy.addressHint}</FieldHint>
       </Field>
       <div className="grid gap-2">
-        <SwitchField
-          name="store"
-          defaultChecked
-          label="Keep the public key on the server"
-          description="So other people's mail apps can find it."
-        />
+        <SwitchField name="store" defaultChecked label={copy.publicKey} description={copy.publicKeyDescription} />
         <Field orientation="row">
-          <FieldLabel>Language</FieldLabel>
-          <FieldHint>For the interface and the mail it sends.</FieldHint>
+          <FieldLabel>{copy.language}</FieldLabel>
+          <FieldHint>{copy.languageHint}</FieldHint>
           <FieldControl>
             <NativeSelect name="language" defaultValue="en" className="w-32">
-              <option value="en">English</option>
-              <option value="de">Deutsch</option>
+              <option value="en">{copy.english}</option>
+              <option value="de">{copy.german}</option>
             </NativeSelect>
           </FieldControl>
         </Field>

@@ -9,14 +9,22 @@ If something looks wrong, reply to this message and we will look at it the same 
 Thanks,
 The support team`;
 
-export default function ExpandableTextDemo() {
+export const defaultCopy = {
+  more: "Show more",
+  less: "Show less",
+  message,
+  shortNote: "A short note shows no button.",
+};
+
+export default function ExpandableTextDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <div className="grid w-full max-w-md gap-6 text-sm">
-      <ExpandableText lines={3} moreLabel="Show more" lessLabel="Show less">
-        {message}
+      <ExpandableText lines={3} moreLabel={copy.more} lessLabel={copy.less}>
+        {copy.message}
       </ExpandableText>
-      <ExpandableText moreLabel="Show more" lessLabel="Show less">
-        A short note shows no button.
+      <ExpandableText moreLabel={copy.more} lessLabel={copy.less}>
+        {copy.shortNote}
       </ExpandableText>
     </div>
   );

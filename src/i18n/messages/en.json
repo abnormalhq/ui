@@ -1,0 +1,192 @@
+{
+  "Metadata": {
+    "siteTitle": "Abnormal UI",
+    "titleTemplate": "%s · Abnormal UI",
+    "siteDescription": "The shared design system and shadcn registry behind the Abnormal family."
+  },
+  "PageMetadata": {
+    "designTitle": "Family style",
+    "designDescription": "Paper-like tool minimalism: the shared visual contract and composition examples for the Abnormal family.",
+    "galleryTitle": "Component gallery",
+    "galleryDescription": "Explore Abnormal UI component variants, copy their TSX and inspect the registry’s color and typography tokens."
+  },
+  "Common": {
+    "copy": "Copy",
+    "copyValue": "Copy {value}",
+    "copied": "Copied",
+    "copyFailed": "Copy failed"
+  },
+  "Catalog": {
+    "groups": {
+      "0": "Foundation",
+      "1": "Brand",
+      "2": "Controls",
+      "3": "Display",
+      "4": "Navigation",
+      "5": "Overlays",
+      "6": "Patterns",
+      "7": "Marketing"
+    },
+    "setup": {
+      "0": "Add the registry to components.json",
+      "1": "Install the theme",
+      "2": "Import it right after Tailwind",
+      "3": "Install components"
+    }
+  },
+  "Overview": {
+    "items": "{count, plural, one {# item} other {# items}}",
+    "description": "Design tokens, base components and brand pieces shared by the Abnormal family. Each one installs as source into the project.",
+    "browseGallery": "Browse the component gallery",
+    "familyHeading": "Paper, ink and purpose.",
+    "familyDescription": "A shared visual contract for the website, Mail, Doppel and Status: warm paper, ink structure and one restrained highlighter. Same family, different layouts.",
+    "exploreFamily": "Explore the family style and composition examples",
+    "getStarted": "Get started"
+  },
+  "Navigation": {
+    "label": "Components",
+    "searchLabel": "Search components",
+    "searchPlaceholder": "Search",
+    "clear": "Clear",
+    "results": "{count, plural, =0 {No matches} one {# match} other {# matches}}",
+    "overview": "Overview",
+    "gallery": "Gallery",
+    "familyStyle": "Family style"
+  },
+  "SiteHeader": {
+    "languageLabel": "Language",
+    "openNavigation": "Open navigation",
+    "closeNavigation": "Close navigation",
+    "overview": "UI overview",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeLabel": "Theme: {theme}"
+  },
+  "NotFound": {
+    "title": "Nothing here",
+    "description": "This page or registry item does not exist.",
+    "back": "Back to the overview"
+  },
+  "ItemPage": {
+    "preview": "Preview",
+    "designNotes": "Design notes",
+    "variants": "Variants",
+    "default": "filled: the default",
+    "install": "Install",
+    "bringsIn": "Brings in",
+    "usage": "Usage",
+    "source": "Source",
+    "sourceFile": "Source: {filename}"
+  },
+  "GalleryPage": {
+    "title": "Component <marker>gallery</marker>",
+    "description": "Try the variants, copy a working example, or inspect the tokens behind it.",
+    "sectionsLabel": "Gallery sections",
+    "registryCount": "Registry ({count})",
+    "colorTokens": "Color tokens",
+    "typography": "Typography",
+    "variants": "Component variants",
+    "featuredLabel": "Featured components",
+    "documentation": "{title} documentation",
+    "usageExample": "Usage example",
+    "browseItems": "Browse all {count} registry items",
+    "swatches": "Swatches and values follow the current theme. Copy a swatch’s CSS variable to use it."
+  },
+  "DesignPage": {
+    "eyebrow": "The Abnormal family",
+    "title": "Paper, ink, <marker>purpose</marker>.",
+    "description": "Paper-like tool minimalism. One shared vocabulary, not one compulsory layout. Let the website have character and the workspace stay quiet.",
+    "examplesNotice": "The existing palette and component defaults stay intact. These foundations guide product-specific adoption; the examples below use sample data, not product integrations.",
+    "sectionsLabel": "Style guide sections",
+    "principlesNav": "Principles",
+    "paletteNav": "Palette",
+    "typeNav": "Type",
+    "patternsNav": "Patterns",
+    "productsNav": "Products",
+    "adoptNav": "Adopt",
+    "principlesTitle": "A shared visual contract",
+    "paletteTitle": "Keep the palette. Clarify the job.",
+    "paletteDescription": "Swatches follow the current theme; hex values are the existing light-theme reference. Use semantic tokens, not these hex values in product code.",
+    "success": "Success",
+    "warning": "Warning / in progress",
+    "failure": "Failure",
+    "statusDescription": "Status uses words as well as color.",
+    "typeTitle": "Hierarchy before decoration",
+    "patternsTitle": "Compose around the task",
+    "patternsDescription": "These are executable component compositions, not replacement product screens. Use the theme switcher above to inspect both themes. No product routes or behavior are changed here.",
+    "readingHeading": "01 / Reading workspace",
+    "readingDescription": "A compact list beside a comfortable reader. Select a message to change the reader; saturated yellow marks location, muted yellow marks content selection.",
+    "listHeading": "02 / Operational list",
+    "listDescription": "A continuous paper surface, aligned columns and explicit state. Use an inspector only when the workflow needs it, not to imitate Mail.",
+    "statusHeading": "03 / Service health",
+    "healthComposition": "No compulsory ink shell. Health and history carry the hierarchy; semantic green, amber and red stay independent of brand yellow.",
+    "productsTitle": "Same family, different character",
+    "implementationTitle": "Make it hold up in use",
+    "adoptTitle": "Adopt without a forced redesign",
+    "adoptTheme": "Keep the existing <theme>theme</theme> and fonts. Reinstall item-list only where the new opt-in row styles are needed; its default spacing is unchanged.",
+    "adoptWorkspace": "Put <navigation>WorkspaceNavigation</navigation> and <pane>WorkspacePane</pane> beside each other. Pane padding is local; product navigation, pane widths and scrolling remain the product’s decision.",
+    "adoptSelection": "Use <density>density=\"compact\"</density> for list spacing and <selected>selected</selected> for the muted row highlight. Supply the matching aria-current or aria-pressed semantics in the product.",
+    "adoptValidation": "Validate real light / dark, narrow / wide and keyboard / touch flows before rolling out a product. This guide does not claim those integrations are done.",
+    "workspaceSource": "Workspace source & usage",
+    "listSource": "List source & usage",
+    "markdownGuide": "Markdown guide"
+  },
+  "Previews": {
+    "profiles": "Profiles",
+    "sampleWorkspace": "Sample workspace",
+    "browserProfiles": "Browser profiles",
+    "browserDescription": "Scan names, state and context on one continuous surface.",
+    "browserProfilesLabel": "Example browser profiles",
+    "profile": "Profile",
+    "state": "State",
+    "group": "Group",
+    "serviceStatus": "Service status",
+    "allOperational": "All systems operational",
+    "serviceUptime": "{service}: 30 example days, all operational",
+    "exampleDay": "Example day {day}: operational",
+    "illustrativeHistory": "Illustrative history, not live service health.",
+    "inbox": "Inbox",
+    "messagesCount": "{count, plural, one {# message} other {# messages}}",
+    "exampleMessages": "Example messages",
+    "from": "From {sender}",
+    "mail": "Mail",
+    "research": "Research",
+    "running": "Running",
+    "work": "Work",
+    "reading": "Reading",
+    "starting": "Starting",
+    "personal": "Personal",
+    "archive": "Archive",
+    "stopped": "Stopped",
+    "operational": "Operational",
+    "services": {
+      "mail": "Mail",
+      "doppel": "Doppel",
+      "website": "Website"
+    },
+    "messages": {
+      "plan": {
+        "sender": "Chen",
+        "subject": "Next week's plan",
+        "preview": "Keep the important things in focus.",
+        "time": "10:07",
+        "body": "The plan is ready. Let's start with the most important work and leave room for the details. The notes are attached to our next review; there is no need for another dashboard."
+      },
+      "journal": {
+        "sender": "Design journal",
+        "subject": "A quieter workspace",
+        "preview": "Good tools leave room for the content.",
+        "time": "09:23",
+        "body": "A useful interface does not have to compete for attention. Keep navigation clear, let the reading surface breathe, and bring tools forward only when they help the task at hand."
+      },
+      "book": {
+        "sender": "Lin",
+        "subject": "Reading group notes",
+        "preview": "A short note before we meet.",
+        "time": "Yesterday",
+        "body": "Here are the notes from our last reading group. We will discuss the next chapter together. Thanks for making time to read, think and share."
+      }
+    }
+  }
+}

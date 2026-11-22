@@ -11,23 +11,34 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function DialogDemo() {
+export const defaultCopy = {
+  trigger: "Rename mailbox",
+  close: "Close",
+  title: "Rename mailbox",
+  description: "People who write to the old name get a bounce.",
+  name: "Name",
+  cancel: "Cancel",
+  save: "Save",
+};
+
+export default function DialogDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Rename mailbox</Button>
+        <Button variant="outline">{copy.trigger}</Button>
       </DialogTrigger>
-      <DialogContent closeLabel="Close">
+      <DialogContent closeLabel={copy.close}>
         <DialogHeader>
-          <DialogTitle>Rename mailbox</DialogTitle>
-          <DialogDescription>People who write to the old name get a bounce.</DialogDescription>
+          <DialogTitle>{copy.title}</DialogTitle>
+          <DialogDescription>{copy.description}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-2">
-          <Label htmlFor="dialog-name">Name</Label>
+          <Label htmlFor="dialog-name">{copy.name}</Label>
           <Input id="dialog-name" defaultValue="hello" />
         </div>
-        <DialogFooter showCloseButton closeLabel="Cancel">
-          <Button>Save</Button>
+        <DialogFooter showCloseButton closeLabel={copy.cancel}>
+          <Button>{copy.save}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -1,33 +1,44 @@
 import { readFile } from "node:fs/promises";
-import type { Metadata } from "next";
 import Link from "next/link";
+import { getMessages, getTranslations } from "next-intl/server";
+import type { ComponentType } from "react";
 import { CopyButton } from "@/components/ui/copy-button";
 import { Disclosure, DisclosureContent, DisclosureTrigger } from "@/components/ui/disclosure";
 import { Marker } from "@/components/ui/marker";
 import { Eyebrow, SectionTitle } from "@/components/ui/section-heading";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { Locale } from "@/site/i18n/locales";
+import { localeHref } from "@/site/i18n/locale-path";
 import { catalog, getItem, items } from "@/site/catalog";
 import { CodeBlock } from "@/site/components/code-block";
 import BadgeDemo from "@/site/demos/badge";
 import ButtonDemo from "@/site/demos/button";
 import SwitchDemo from "@/site/demos/switch";
 import { featured, galleryTokens } from "@/site/gallery";
+import { registryCopy } from "@/site/registry-copy";
 
-export const metadata: Metadata = {
-  title: "Component gallery",
-  description:
-    "Explore Abnormal UI component variants, copy their TSX and inspect the registry’s color and typography tokens.",
+type DemoProps = { copy?: Record<string, string>; locale?: string };
+const demos: Record<string, ComponentType<DemoProps>> = {
+  button: ButtonDemo as unknown as ComponentType<DemoProps>,
+  badge: BadgeDemo as unknown as ComponentType<DemoProps>,
+  switch: SwitchDemo as unknown as ComponentType<DemoProps>,
 };
-
-const demos = { button: ButtonDemo, badge: BadgeDemo, switch: SwitchDemo };
 const families = [
   { name: "Bricolage Grotesque", utility: "font-heading", sample: "Aa" },
   { name: "Inter", utility: "font-sans", sample: "Ag" },
   { name: "JetBrains Mono", utility: "font-mono", sample: "01" },
 ];
 
-function CopyToken({ value }: { value: string }) {
-  return <CopyButton text={value} label={`Copy ${value}`} copiedLabel="Copied" failedLabel="Copy failed" />;
+async function CopyToken({ value }: { value: string }) {
+  const t = await getTranslations("Common");
+  return (
+    <CopyButton
+      text={value}
+      label={t("copyValue", { value })}
+      copiedLabel={t("copied")}
+      failedLabel={t("copyFailed")}
+    />
+  );
 }
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
@@ -41,13 +52,18 @@ function Section({ id, title, children }: { id: string; title: string; children:
   );
 }
 
-export default async function GalleryPage() {
+export default async function GalleryPage({ locale }: { locale: Locale }) {
+  const t = await getTranslations({ locale, namespace: "GalleryPage" });
+  const catalogT = await getTranslations({ locale, namespace: "Catalog" });
+  const messages = locale === "zh-CN" ? await getMessages({ locale }) : undefined;
+  const demoCopies = messages?.Demos as Record<string, Record<string, string>> | undefined;
   const { colors, sizes } = await galleryTokens();
   const examples = await Promise.all(
     featured.map(async (name) => ({
       name,
-      title: getItem(name)!.title.replace(/^Abnormal /, ""),
-      Demo: demos[name],
+      title: registryCopy(locale, getItem(name)!).title.replace(/^Abnormal /, ""),
+      Demo: demos[name]!,
+      copy: demoCopies?.[name],
       source: await readFile(`src/demos/${name}.tsx`, "utf8"),
     })),
   );
@@ -58,19 +74,15 @@ export default async function GalleryPage() {
         <div>
           <Eyebrow>Abnormal UI</Eyebrow>
           <SectionTitle asChild className="mt-3 md:text-display lg:text-display-lg">
-            <h1>
-              Component <Marker>gallery</Marker>
-            </h1>
+            <h1>{t.rich("title", { marker: (chunks) => <Marker>{chunks}</Marker> })}</h1>
           </SectionTitle>
-          <p className="mt-3 max-w-md text-lg text-muted-foreground">
-            Try the variants, copy a working example, or inspect the tokens behind it.
-          </p>
+          <p className="mt-3 max-w-md text-lg text-muted-foreground">{t("description")}</p>
         </div>
-        <nav aria-label="Gallery sections" className="flex flex-wrap gap-x-4 gap-y-2 text-sm sm:grid sm:gap-2">
+        <nav aria-label={t("sectionsLabel")} className="flex flex-wrap gap-x-4 gap-y-2 text-sm sm:grid sm:gap-2">
           {[
-            [`Registry (${items.length})`, "#registry"],
-            ["Color tokens", "#colors"],
-            ["Typography", "#typography"],
+            [t("registryCount", { count: items.length }), "#registry"],
+            [t("colorTokens"), "#colors"],
+            [t("typography"), "#typography"],
           ].map(([label, href]) => (
             <Link
               key={href}
@@ -83,29 +95,29 @@ export default async function GalleryPage() {
         </nav>
       </header>
 
-      <Section id="variants" title="Component variants">
+      <Section id="variants" title={t("variants")}>
         <Tabs defaultValue="button" className="gap-0 overflow-hidden rounded-panel border border-border">
-          <TabsList aria-label="Featured components" variant="pill" className="bg-surface p-2">
+          <TabsList aria-label={t("featuredLabel")} variant="pill" className="bg-surface p-2">
             {examples.map(({ name, title }) => (
               <TabsTrigger key={name} value={name}>
                 {title}
               </TabsTrigger>
             ))}
           </TabsList>
-          {examples.map(({ name, title, Demo, source }) => (
+          {examples.map(({ name, title, Demo, source, copy }) => (
             <TabsContent key={name} value={name}>
               <div className="flex min-h-48 items-center justify-center border-y border-border p-5 sm:p-8 [background-image:radial-gradient(var(--border)_1px,transparent_1px)] [background-size:14px_14px]">
-                <Demo />
+                <Demo copy={copy} locale={locale === "zh-CN" ? "zh-CN" : "en-GB"} />
               </div>
               <div className="flex flex-wrap items-center justify-between gap-2 px-4 pt-3">
                 <code className="font-mono text-xs text-muted-foreground">@abnormal/{name}</code>
-                <Link href={`/components/${name}`} className="text-sm underline underline-offset-4">
-                  {title} documentation
+                <Link href={localeHref(locale, "/components/" + name)} className="text-sm underline underline-offset-4">
+                  {t("documentation", { title })}
                 </Link>
               </div>
               <Disclosure className="border-0 px-4">
                 <DisclosureTrigger className="min-h-11 justify-between py-1 font-medium">
-                  Usage example
+                  {t("usageExample")}
                 </DisclosureTrigger>
                 <DisclosureContent className="mt-1">
                   <CodeBlock code={source} lang="tsx" />
@@ -116,16 +128,20 @@ export default async function GalleryPage() {
         </Tabs>
         <Disclosure id="registry" className="scroll-mt-20 border-t border-border">
           <DisclosureTrigger className="min-h-12 justify-between py-2 font-medium">
-            Browse all {items.length} registry items
+            {t("browseItems", { count: items.length })}
           </DisclosureTrigger>
           <DisclosureContent className="mt-3 grid gap-5">
-            {catalog.map(({ title, items: members }) => (
+            {catalog.map(({ title, items: members }, index) => (
               <div key={title}>
-                <h3 className="mb-2 text-sm font-semibold text-foreground">{title}</h3>
+                <h3 className="mb-2 text-sm font-semibold text-foreground">{catalogT(`groups.${index}`)}</h3>
                 <div className="flex flex-wrap gap-x-4 gap-y-2">
-                  {members.map(({ name, title: itemTitle }) => (
-                    <Link key={name} href={`/components/${name}`} className="text-sm underline underline-offset-4">
-                      {itemTitle.replace(/^Abnormal /, "")}
+                  {members.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={localeHref(locale, "/components/" + item.name)}
+                      className="text-sm underline underline-offset-4"
+                    >
+                      {registryCopy(locale, item).title.replace(/^Abnormal /, "")}
                     </Link>
                   ))}
                 </div>
@@ -135,10 +151,8 @@ export default async function GalleryPage() {
         </Disclosure>
       </Section>
 
-      <Section id="colors" title="Color tokens">
-        <p className="-mt-3 text-muted-foreground">
-          Swatches and values follow the current theme. Copy a swatch’s CSS variable to use it.
-        </p>
+      <Section id="colors" title={t("colorTokens")}>
+        <p className="-mt-3 text-muted-foreground">{t("swatches")}</p>
         <div className="grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-3 lg:grid-cols-4">
           {colors.map(({ name, reference, light, dark }) => (
             <div key={name} className="min-w-0">
@@ -158,7 +172,7 @@ export default async function GalleryPage() {
         </div>
       </Section>
 
-      <Section id="typography" title="Typography">
+      <Section id="typography" title={t("typography")}>
         <div className="grid overflow-hidden rounded-panel border border-border sm:grid-cols-3">
           {families.map(({ name, utility, sample }) => (
             <div

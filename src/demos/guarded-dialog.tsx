@@ -8,7 +8,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useOpenCount } from "@/components/ui/use-open-count";
 
-export default function GuardedDialogDemo() {
+export const defaultCopy = {
+  trigger: "Rename mailbox",
+  close: "Close",
+  title: "Rename mailbox",
+  description: "People who write to the old name get a bounce.",
+  name: "Name",
+  cancel: "Cancel",
+  save: "Save",
+};
+
+export default function GuardedDialogDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const opener = useRef<HTMLButtonElement>(null);
@@ -27,9 +38,15 @@ export default function GuardedDialogDemo() {
   return (
     <>
       <Button ref={opener} variant="outline" onClick={() => setOpen(true)}>
-        Rename mailbox
+        {copy.trigger}
       </Button>
-      <GuardedDialog open={open} onOpenChange={setOpen} pending={pending} returnFocusTo={opener} closeLabel="Close">
+      <GuardedDialog
+        open={open}
+        onOpenChange={setOpen}
+        pending={pending}
+        returnFocusTo={opener}
+        closeLabel={copy.close}
+      >
         <form
           key={openCount}
           className="contents"
@@ -39,19 +56,19 @@ export default function GuardedDialogDemo() {
           }}
         >
           <DialogHeader>
-            <DialogTitle>Rename mailbox</DialogTitle>
-            <DialogDescription>People who write to the old name get a bounce.</DialogDescription>
+            <DialogTitle>{copy.title}</DialogTitle>
+            <DialogDescription>{copy.description}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-2">
-            <Label htmlFor="guarded-name">Name</Label>
+            <Label htmlFor="guarded-name">{copy.name}</Label>
             <Input id="guarded-name" defaultValue="hello" disabled={pending} />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" disabled={pending} onClick={() => setOpen(false)}>
-              Cancel
+              {copy.cancel}
             </Button>
             <Button type="submit" loading={pending}>
-              Save
+              {copy.save}
             </Button>
           </DialogFooter>
         </form>

@@ -10,40 +10,54 @@ import {
   CommandShortcut,
 } from "@/components/ui/command";
 
-export default function CommandDemo() {
+export const defaultCopy = {
+  searchLabel: "Search commands",
+  searchPlaceholder: "Type a command",
+  mail: "Mail",
+  compose: "Compose",
+  archiveConversation: "Archive conversation",
+  workspace: "Workspace",
+  inviteMember: "Invite a member",
+  settings: "Settings",
+  darkTheme: "Dark theme",
+  noCommandMatches: "No command matches",
+};
+
+export default function CommandDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <Command className="max-w-md rounded-panel border border-border">
-      <CommandInput label="Search commands" placeholder="Type a command" />
+      <CommandInput label={copy.searchLabel} placeholder={copy.searchPlaceholder} />
       <CommandList>
-        <CommandGroup heading="Mail">
-          <CommandItem value="Compose" keywords={["new", "write"]}>
+        <CommandGroup heading={copy.mail}>
+          <CommandItem value="Compose" keywords={["new", "write", copy.compose]}>
             <MailPlusIcon aria-hidden="true" />
-            Compose
+            {copy.compose}
             <CommandShortcut>C</CommandShortcut>
           </CommandItem>
-          <CommandItem value="Archive conversation">
+          <CommandItem value="Archive conversation" keywords={[copy.archiveConversation]}>
             <ArchiveIcon aria-hidden="true" />
-            Archive conversation
+            {copy.archiveConversation}
             <CommandShortcut>E</CommandShortcut>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
-        <CommandGroup heading="Workspace">
-          <CommandItem value="Invite a member" keywords={["add", "user"]}>
+        <CommandGroup heading={copy.workspace}>
+          <CommandItem value="Invite a member" keywords={["add", "user", copy.inviteMember]}>
             <UserPlusIcon aria-hidden="true" />
-            Invite a member
+            {copy.inviteMember}
           </CommandItem>
-          <CommandItem value="Settings" keywords={["preferences"]}>
+          <CommandItem value="Settings" keywords={["preferences", copy.settings]}>
             <SettingsIcon aria-hidden="true" />
-            Settings
+            {copy.settings}
           </CommandItem>
-          <CommandItem value="Dark theme" disabled>
+          <CommandItem value="Dark theme" keywords={[copy.darkTheme]} disabled>
             <MoonIcon aria-hidden="true" />
-            Dark theme
+            {copy.darkTheme}
           </CommandItem>
         </CommandGroup>
       </CommandList>
-      <CommandEmpty>No command matches</CommandEmpty>
+      <CommandEmpty>{copy.noCommandMatches}</CommandEmpty>
     </Command>
   );
 }

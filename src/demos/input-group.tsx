@@ -3,7 +3,21 @@
 import { useState } from "react";
 import { InputGroup, InputGroupButton, InputGroupInput, InputGroupSuffix } from "@/components/ui/input-group";
 
-export default function InputGroupDemo() {
+export const defaultCopy = {
+  address: "Address",
+  name: "name",
+  password: "Password",
+  hide: "Hide",
+  show: "Show",
+  copied: "Copied",
+  copy: "Copy",
+  smallAddress: "Address, small",
+  largeAddress: "Address, large",
+  disabled: "Disabled",
+};
+
+export default function InputGroupDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   const [password, setPassword] = useState("correct horse");
   const [visible, setVisible] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -11,18 +25,18 @@ export default function InputGroupDemo() {
   return (
     <div className="grid w-full max-w-sm gap-4">
       <InputGroup>
-        <InputGroupInput aria-label="Address" placeholder="name" />
+        <InputGroupInput aria-label={copy.address} placeholder={copy.name} />
         <InputGroupSuffix>@example.com</InputGroupSuffix>
       </InputGroup>
       <InputGroup>
         <InputGroupInput
-          aria-label="Password"
+          aria-label={copy.password}
           type={visible ? "text" : "password"}
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
         <InputGroupButton aria-pressed={visible} onClick={() => setVisible(!visible)}>
-          {visible ? "Hide" : "Show"}
+          {visible ? copy.hide : copy.show}
         </InputGroupButton>
         <InputGroupButton
           onClick={async () => {
@@ -31,20 +45,20 @@ export default function InputGroupDemo() {
             setTimeout(() => setCopied(false), 1500);
           }}
         >
-          {copied ? "Copied" : "Copy"}
+          {copied ? copy.copied : copy.copy}
         </InputGroupButton>
       </InputGroup>
       <InputGroup size="sm">
-        <InputGroupInput aria-label="Address, small" placeholder="name" className="pl-2 text-sm" />
-        <InputGroupButton>Copy</InputGroupButton>
+        <InputGroupInput aria-label={copy.smallAddress} placeholder={copy.name} className="pl-2 text-sm" />
+        <InputGroupButton>{copy.copy}</InputGroupButton>
       </InputGroup>
       <InputGroup size="lg">
-        <InputGroupInput aria-label="Address, large" placeholder="name" />
+        <InputGroupInput aria-label={copy.largeAddress} placeholder={copy.name} />
         <InputGroupSuffix>@example.com</InputGroupSuffix>
       </InputGroup>
       <InputGroup>
-        <InputGroupInput aria-label="Disabled" disabled defaultValue="Disabled" />
-        <InputGroupButton disabled>Copy</InputGroupButton>
+        <InputGroupInput aria-label={copy.disabled} disabled defaultValue="Disabled" />
+        <InputGroupButton disabled>{copy.copy}</InputGroupButton>
       </InputGroup>
     </div>
   );

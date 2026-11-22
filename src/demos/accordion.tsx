@@ -1,18 +1,28 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
-const sections = [
-  { value: "forwarding", title: "Forwarding", body: "Mail to this address is also delivered to two other mailboxes." },
-  { value: "auto-reply", title: "Automatic reply", body: "Off. Turn it on to answer while you are away." },
-  { value: "filters", title: "Filters", body: "Three rules sort incoming mail into folders." },
-];
+export const defaultCopy = {
+  forwardingTitle: "Forwarding",
+  forwardingBody: "Mail to this address is also delivered to two other mailboxes.",
+  automaticReplyTitle: "Automatic reply",
+  automaticReplyBody: "Off. Turn it on to answer while you are away.",
+  filtersTitle: "Filters",
+  filtersBody: "Three rules sort incoming mail into folders.",
+};
 
-export default function AccordionDemo() {
+const sections = [
+  { value: "forwarding", title: "forwardingTitle", body: "forwardingBody" },
+  { value: "auto-reply", title: "automaticReplyTitle", body: "automaticReplyBody" },
+  { value: "filters", title: "filtersTitle", body: "filtersBody" },
+] as const;
+
+export default function AccordionDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <Accordion type="single" collapsible defaultValue="forwarding" className="w-full max-w-lg">
       {sections.map(({ value, title, body }) => (
         <AccordionItem key={value} value={value}>
-          <AccordionTrigger>{title}</AccordionTrigger>
-          <AccordionContent>{body}</AccordionContent>
+          <AccordionTrigger>{copy[title]}</AccordionTrigger>
+          <AccordionContent>{copy[body]}</AccordionContent>
         </AccordionItem>
       ))}
     </Accordion>

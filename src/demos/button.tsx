@@ -1,30 +1,47 @@
 import { ArrowRightIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function ButtonDemo() {
+export const defaultCopy = {
+  save: "Save",
+  cancel: "Cancel",
+  duplicate: "Duplicate",
+  skip: "Skip",
+  delete: "Delete",
+  learnMore: "Learn more",
+  extraSmall: "Extra small",
+  small: "Small",
+  continue: "Continue",
+  add: "Add",
+  disabled: "Disabled",
+  saving: "Saving",
+  adding: "Adding",
+};
+
+export default function ButtonDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <div className="grid justify-items-center gap-5">
       <div className="flex flex-wrap justify-center gap-2">
-        <Button>Save</Button>
-        <Button variant="outline">Cancel</Button>
-        <Button variant="secondary">Duplicate</Button>
-        <Button variant="ghost">Skip</Button>
-        <Button variant="destructive">Delete</Button>
-        <Button variant="link">Learn more</Button>
+        <Button>{copy.save}</Button>
+        <Button variant="outline">{copy.cancel}</Button>
+        <Button variant="secondary">{copy.duplicate}</Button>
+        <Button variant="ghost">{copy.skip}</Button>
+        <Button variant="destructive">{copy.delete}</Button>
+        <Button variant="link">{copy.learnMore}</Button>
       </div>
       <div className="flex flex-wrap items-center justify-center gap-2">
-        <Button size="xs">Extra small</Button>
-        <Button size="sm">Small</Button>
+        <Button size="xs">{copy.extraSmall}</Button>
+        <Button size="sm">{copy.small}</Button>
         <Button size="lg">
-          Continue
+          {copy.continue}
           <ArrowRightIcon />
         </Button>
-        <Button size="icon" variant="outline" aria-label="Add">
+        <Button size="icon" variant="outline" aria-label={copy.add}>
           <PlusIcon />
         </Button>
-        <Button disabled>Disabled</Button>
-        <Button loading>Saving</Button>
-        <Button size="icon" variant="outline" loading aria-label="Adding">
+        <Button disabled>{copy.disabled}</Button>
+        <Button loading>{copy.saving}</Button>
+        <Button size="icon" variant="outline" loading aria-label={copy.adding}>
           <PlusIcon />
         </Button>
       </div>

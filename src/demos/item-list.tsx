@@ -14,15 +14,30 @@ import { StatusLabel } from "@/components/ui/status-label";
 const tickets = [
   {
     id: "1042",
-    subject: "Cannot add a second domain",
-    updated: "Updated 2 hours ago",
-    status: "Open",
+    subject: "secondDomain",
+    updated: "updatedTwoHours",
+    status: "open",
     tone: "pending",
   },
-  { id: "1038", subject: "Invoice address", updated: "Updated yesterday", status: "Answered", tone: "success" },
+  { id: "1038", subject: "invoiceAddress", updated: "updatedYesterday", status: "answered", tone: "success" },
 ] as const;
 
-export default function ItemListDemo() {
+export const defaultCopy = {
+  secondDomain: "Cannot add a second domain",
+  updatedTwoHours: "Updated 2 hours ago",
+  open: "Open",
+  invoiceAddress: "Invoice address",
+  updatedYesterday: "Updated yesterday",
+  answered: "Answered",
+  thisDevice: "This device",
+  firefoxOnMac: "Firefox on macOS",
+  mailOnIphone: "Mail on iPhone",
+  lastSeen: "Last seen 3 days ago",
+  signOut: "Sign out",
+};
+
+export default function ItemListDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <div className="grid w-full max-w-md gap-8">
       <ItemList>
@@ -31,10 +46,10 @@ export default function ItemListDemo() {
             <ItemListRow asChild>
               <a href={`#ticket-${ticket.id}`}>
                 <ItemListContent>
-                  <ItemListTitle>{ticket.subject}</ItemListTitle>
-                  <ItemListDescription>{ticket.updated}</ItemListDescription>
+                  <ItemListTitle>{copy[ticket.subject]}</ItemListTitle>
+                  <ItemListDescription>{copy[ticket.updated]}</ItemListDescription>
                 </ItemListContent>
-                <StatusLabel tone={ticket.tone}>{ticket.status}</StatusLabel>
+                <StatusLabel tone={ticket.tone}>{copy[ticket.status]}</StatusLabel>
                 <ItemListChevron />
               </a>
             </ItemListRow>
@@ -45,20 +60,20 @@ export default function ItemListDemo() {
         <ItemListItem>
           <ItemListRow>
             <ItemListContent>
-              <ItemListTitle>Firefox on macOS</ItemListTitle>
-              <ItemListDescription>This device</ItemListDescription>
+              <ItemListTitle>{copy.firefoxOnMac}</ItemListTitle>
+              <ItemListDescription>{copy.thisDevice}</ItemListDescription>
             </ItemListContent>
           </ItemListRow>
         </ItemListItem>
         <ItemListItem>
           <ItemListRow>
             <ItemListContent>
-              <ItemListTitle>Mail on iPhone</ItemListTitle>
-              <ItemListDescription>Last seen 3 days ago</ItemListDescription>
+              <ItemListTitle>{copy.mailOnIphone}</ItemListTitle>
+              <ItemListDescription>{copy.lastSeen}</ItemListDescription>
             </ItemListContent>
             <ItemListMeta>
               <Button variant="outline" size="sm">
-                Sign out
+                {copy.signOut}
               </Button>
             </ItemListMeta>
           </ItemListRow>

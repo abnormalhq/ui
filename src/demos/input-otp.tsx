@@ -5,11 +5,18 @@ import { FieldMessage } from "@/components/ui/field-message";
 import { InputOTP } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 
-export default function InputOTPDemo() {
+export const defaultCopy = {
+  verificationCode: "Verification code",
+  entered: "Code entered",
+  enterCode: "Enter the six digits from your authenticator app",
+};
+
+export default function InputOTPDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   const [code, setCode] = useState("");
   return (
     <div className="grid gap-2">
-      <Label htmlFor="otp-code">Verification code</Label>
+      <Label htmlFor="otp-code">{copy.verificationCode}</Label>
       <InputOTP
         id="otp-code"
         name="code"
@@ -19,7 +26,7 @@ export default function InputOTPDemo() {
         aria-describedby="otp-hint"
       />
       <FieldMessage id="otp-hint" tone={code.length === 6 ? "ok" : "default"}>
-        {code.length === 6 ? "Code entered" : "Enter the six digits from your authenticator app"}
+        {code.length === 6 ? copy.entered : copy.enterCode}
       </FieldMessage>
     </div>
   );

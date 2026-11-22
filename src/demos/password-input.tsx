@@ -7,29 +7,40 @@ import { PasswordInput } from "@/components/ui/password-input";
 
 const generate = () => Array.from(crypto.getRandomValues(new Uint32Array(4)), (n) => n.toString(36)).join("-");
 
-export default function PasswordInputDemo() {
+export const defaultCopy = {
+  currentPassword: "Current password",
+  newPassword: "New password",
+  showPassword: "Show password",
+  hidePassword: "Hide password",
+  show: "Show",
+  hide: "Hide",
+  generate: "Generate",
+};
+
+export default function PasswordInputDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
   return (
     <div className="grid w-full max-w-sm gap-4">
       <div className="grid gap-2">
-        <Label htmlFor="password-input-current">Current password</Label>
+        <Label htmlFor="password-input-current">{copy.currentPassword}</Label>
         <PasswordInput
           id="password-input-current"
           autoComplete="current-password"
-          showLabel="Show password"
-          hideLabel="Hide password"
+          showLabel={copy.showPassword}
+          hideLabel={copy.hidePassword}
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="password-input-new">New password</Label>
+        <Label htmlFor="password-input-new">{copy.newPassword}</Label>
         <PasswordInput
           id="password-input-new"
           autoComplete="new-password"
           size="lg"
           toggle="text"
-          showLabel="Show"
-          hideLabel="Hide"
+          showLabel={copy.show}
+          hideLabel={copy.hide}
           visible={visible}
           onVisibleChange={setVisible}
           value={password}
@@ -41,7 +52,7 @@ export default function PasswordInputDemo() {
                 setVisible(true);
               }}
             >
-              Generate
+              {copy.generate}
             </InputGroupButton>
           }
         />

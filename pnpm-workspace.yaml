@@ -2,5 +2,7 @@ allowBuilds:
   # wrangler needs their install scripts to run workerd and esbuild locally
   esbuild: true
   workerd: true
+  "@parcel/watcher": true
+  "@swc/core": true
   sharp: false
   unrs-resolver: false

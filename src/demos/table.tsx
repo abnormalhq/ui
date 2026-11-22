@@ -10,20 +10,35 @@ const mailboxes = [
   { address: "old@example.com", owner: "Nobody", status: "Disabled", tone: "muted" },
 ] as const;
 
-function Mailboxes({ variant }: { variant: "default" | "plain" }) {
+export const defaultCopy = {
+  sortDescending: "Sort descending",
+  sortAscending: "Sort ascending",
+  address: "Address",
+  owner: "Owner",
+  status: "Status",
+  actions: "Actions",
+  enabled: "Enabled",
+  pending: "Pending",
+  disabled: "Disabled",
+  nobody: "Nobody",
+  moreFor: "More for {address}",
+};
+
+function Mailboxes({ variant, copy }: { variant: "default" | "plain"; copy: typeof defaultCopy }) {
+  const statusLabels = { Enabled: copy.enabled, Pending: copy.pending, Disabled: copy.disabled };
   return (
     <Table variant={variant}>
       <TableHeader>
         <TableRow>
-          <SortableHead direction="asc" href="?sort=-address" title="Sort descending">
-            Address
+          <SortableHead direction="asc" href="?sort=-address" title={copy.sortDescending}>
+            {copy.address}
           </SortableHead>
-          <SortableHead href="?sort=owner" title="Sort ascending">
-            Owner
+          <SortableHead href="?sort=owner" title={copy.sortAscending}>
+            {copy.owner}
           </SortableHead>
-          <TableHead>Status</TableHead>
+          <TableHead>{copy.status}</TableHead>
           <TableHead pinned>
-            <span className="sr-only">Actions</span>
+            <span className="sr-only">{copy.actions}</span>
           </TableHead>
         </TableRow>
       </TableHeader>
@@ -31,12 +46,17 @@ function Mailboxes({ variant }: { variant: "default" | "plain" }) {
         {mailboxes.map(({ address, owner, status, tone }) => (
           <TableRow key={address}>
             <TableCell className="font-medium">{address}</TableCell>
-            <TableCell>{owner}</TableCell>
+            <TableCell>{owner === "Nobody" ? copy.nobody : owner}</TableCell>
             <TableCell>
-              <StatusLabel tone={tone}>{status}</StatusLabel>
+              <StatusLabel tone={tone}>{statusLabels[status]}</StatusLabel>
             </TableCell>
             <TableCell pinned className="w-10">
-              <Button variant="ghost" size="icon-sm" className={rowActionClassName} aria-label={`More for ${address}`}>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className={rowActionClassName}
+                aria-label={copy.moreFor.replace("{address}", address)}
+              >
                 <MoreHorizontalIcon />
               </Button>
             </TableCell>
@@ -47,11 +67,12 @@ function Mailboxes({ variant }: { variant: "default" | "plain" }) {
   );
 }
 
-export default function TableDemo() {
+export default function TableDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <div className="grid w-full gap-8">
-      <Mailboxes variant="default" />
-      <Mailboxes variant="plain" />
+      <Mailboxes variant="default" copy={copy} />
+      <Mailboxes variant="plain" copy={copy} />
     </div>
   );
 }

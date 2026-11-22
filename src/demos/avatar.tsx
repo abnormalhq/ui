@@ -6,7 +6,13 @@ const picture = `data:image/svg+xml,${encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="#ffe14d"/><circle cx="20" cy="16" r="7" fill="#141412"/><path d="M6 40c0-9 6-14 14-14s14 5 14 14z" fill="#141412"/></svg>',
 )}`;
 
-export default function AvatarDemo() {
+export const defaultCopy = {
+  noPicture: "No picture",
+  sharedMailbox: "Ada, Lin and Maya can read this mailbox",
+};
+
+export default function AvatarDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <div className="grid justify-items-center gap-6">
       <div className="flex items-center gap-4">
@@ -25,7 +31,7 @@ export default function AvatarDemo() {
         <Avatar size="lg" square>
           <AvatarFallback>Ab</AvatarFallback>
         </Avatar>
-        <Avatar size="xl" role="img" aria-label="No picture">
+        <Avatar size="xl" role="img" aria-label={copy.noPicture}>
           <AvatarFallback>
             <UserIcon aria-hidden="true" />
           </AvatarFallback>
@@ -44,7 +50,7 @@ export default function AvatarDemo() {
             <AvatarFallback>MO</AvatarFallback>
           </Avatar>
         </AvatarGroup>
-        <span className="text-sm text-muted-foreground">Ada, Lin and Maya can read this mailbox</span>
+        <span className="text-sm text-muted-foreground">{copy.sharedMailbox}</span>
       </div>
     </div>
   );

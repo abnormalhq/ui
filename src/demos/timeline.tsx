@@ -8,48 +8,63 @@ import {
   TimelineTitle,
 } from "@/components/ui/timeline";
 
-export default function TimelineDemo() {
+export const defaultCopy = {
+  updates: "Updates",
+  completed: "Completed",
+  serversUpdated: "Every server is back on the new version.",
+  inProgress: "In progress",
+  deliveryDelay: "Mail may arrive a few minutes late.",
+  scheduled: "Scheduled",
+  scheduledTime: "10 Nov, 09:00",
+  delivery: "Delivery",
+  received: "Received",
+  sending: "Sending to gmail.com",
+  delivered: "Delivered",
+};
+
+export default function TimelineDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <div className="grid w-full max-w-md gap-10">
-      <Timeline aria-label="Updates">
+      <Timeline aria-label={copy.updates}>
         <TimelineItem tone="success">
           <TimelineHeader>
-            <TimelineTitle>Completed</TimelineTitle>
+            <TimelineTitle>{copy.completed}</TimelineTitle>
             <TimelineTime dateTime="2026-11-14T04:10:00Z">04:10</TimelineTime>
           </TimelineHeader>
-          <TimelineContent>Every server is back on the new version.</TimelineContent>
+          <TimelineContent>{copy.serversUpdated}</TimelineContent>
         </TimelineItem>
         <TimelineItem tone="pending">
           <TimelineHeader>
-            <TimelineTitle>In progress</TimelineTitle>
+            <TimelineTitle>{copy.inProgress}</TimelineTitle>
             <TimelineTime dateTime="2026-11-14T03:00:00Z">03:00</TimelineTime>
           </TimelineHeader>
-          <TimelineContent>Mail may arrive a few minutes late.</TimelineContent>
+          <TimelineContent>{copy.deliveryDelay}</TimelineContent>
         </TimelineItem>
         <TimelineItem>
           <TimelineHeader>
-            <TimelineTitle>Scheduled</TimelineTitle>
-            <TimelineTime dateTime="2026-11-10T09:00:00Z">10 Nov, 09:00</TimelineTime>
+            <TimelineTitle>{copy.scheduled}</TimelineTitle>
+            <TimelineTime dateTime="2026-11-10T09:00:00Z">{copy.scheduledTime}</TimelineTime>
           </TimelineHeader>
         </TimelineItem>
       </Timeline>
-      <Timeline aria-label="Delivery">
+      <Timeline aria-label={copy.delivery}>
         <TimelineItem icon={<MailIcon />}>
           <TimelineHeader>
-            <TimelineTitle>Received</TimelineTitle>
+            <TimelineTitle>{copy.received}</TimelineTitle>
             <TimelineTime dateTime="2026-11-14T08:01:12Z">08:01:12</TimelineTime>
           </TimelineHeader>
         </TimelineItem>
         <TimelineItem icon={<SendIcon />} tone="current">
           <TimelineHeader>
-            <TimelineTitle>Sending to gmail.com</TimelineTitle>
+            <TimelineTitle>{copy.sending}</TimelineTitle>
             <TimelineTime dateTime="2026-11-14T08:01:13Z">08:01:13</TimelineTime>
           </TimelineHeader>
           <TimelineContent>250 2.0.0 OK</TimelineContent>
         </TimelineItem>
         <TimelineItem icon={<CheckIcon />} tone="success">
           <TimelineHeader>
-            <TimelineTitle>Delivered</TimelineTitle>
+            <TimelineTitle>{copy.delivered}</TimelineTitle>
             <TimelineTime dateTime="2026-11-14T08:01:14Z">08:01:14</TimelineTime>
           </TimelineHeader>
         </TimelineItem>
