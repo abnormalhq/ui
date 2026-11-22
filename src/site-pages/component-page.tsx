@@ -17,7 +17,7 @@ import { designNotes, variantsOf } from "@/site/notes";
 import { localizedDesignNotes } from "@/site/i18n/design-notes";
 import { registryCopy } from "@/site/registry-copy";
 
-type DemoProps = { copy?: Record<string, string>; locale?: string };
+type DemoProps = { copy?: Record<string, string>; locale?: string; hrefPrefix?: string };
 
 export async function componentMetadata(locale: Locale, name: string): Promise<Metadata> {
   const item = getItem(name);
@@ -90,7 +90,11 @@ export default async function ComponentPage({ name, locale }: { name: string; lo
       <Section title={t("preview")}>
         {/* Full width on phones: the gutter is the page's, so a table or a card gets the whole screen. */}
         <div className="-mx-4 flex min-h-48 items-center justify-center overflow-x-auto border-y border-border p-4 sm:mx-0 sm:rounded-panel sm:border-x sm:p-5 md:p-10">
-          <Demo copy={demoCopy} locale={locale === "zh-CN" ? "zh-CN" : "en-GB"} />
+          <Demo
+            copy={demoCopy}
+            locale={locale === "zh-CN" ? "zh-CN" : "en-GB"}
+            hrefPrefix={locale === "zh-CN" ? "/zh" : ""}
+          />
         </div>
       </Section>
 

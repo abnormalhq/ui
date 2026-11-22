@@ -64,6 +64,18 @@ test("static pages render their locale, page metadata and translated copy", () =
   assert.match(notFound, /中文首页/);
 });
 
+test("exported LinkRow pages keep row links in the current locale", () => {
+  const english = readFileSync("out/components/link-row.html", "utf8");
+  const chinese = readFileSync("out/zh/components/link-row.html", "utf8");
+  for (const [name, path] of [
+    ["Button", "/components/button"],
+    ["Table", "/components/table"],
+  ]) {
+    assert.ok(english.includes(`<a href="${path}">${name}</a>`), `English ${path}`);
+    assert.ok(chinese.includes(`<a href="/zh${path}">${name}</a>`), `Chinese ${path}`);
+  }
+});
+
 test("locale links preserve app paths without prefixing reference and fragment URLs", () => {
   const englishDesign = readFileSync("out/design.html", "utf8");
   const chineseDesign = readFileSync("out/zh/design.html", "utf8");

@@ -30,6 +30,7 @@ import EmptyStateDemo, { defaultCopy as emptyStateCopy } from "@/site/demos/empt
 import ExpandableTextDemo, { defaultCopy as expandableTextCopy } from "@/site/demos/expandable-text";
 import FieldDemo, { defaultCopy as fieldCopy } from "@/site/demos/field";
 import FieldMessageDemo, { defaultCopy as fieldMessageCopy } from "@/site/demos/field-message";
+import LinkRowDemo from "@/site/demos/link-row";
 import SonnerDemo, { defaultCopy as sonnerCopy } from "@/site/demos/sonner";
 import TableDemo, { defaultCopy as tableCopy } from "@/site/demos/table";
 import BadgeDemo, { defaultCopy as badgeCopy } from "@/site/demos/badge";
@@ -106,6 +107,24 @@ test("language switch declares target locales and preserves query/hash for auxil
   assert.match(source, /locationParts\.search, locationParts\.hash/);
   assert.match(source, /onPointerDown=/);
   assert.match(source, /onFocus=/);
+});
+
+test("LinkRow demo keeps English defaults and prefixes both row and nested link destinations", async () => {
+  const source = readFileSync("src/demos/link-row.tsx", "utf8");
+  assert.match(source, /<LinkRow key={href} href={destination}>/);
+  assert.match(source, /<a href={destination}>/);
+
+  const english = await render(<LinkRowDemo />);
+  const chinese = await render(<LinkRowDemo hrefPrefix="/zh" />);
+  const destinations = (container: HTMLElement) =>
+    [...container.querySelectorAll<HTMLAnchorElement>("tbody a")].map((link) => link.getAttribute("href"));
+  try {
+    assert.deepEqual(destinations(english.container), ["/components/button", "/components/table"]);
+    assert.deepEqual(destinations(chinese.container), ["/zh/components/button", "/zh/components/table"]);
+  } finally {
+    await english.unmount();
+    await chinese.unmount();
+  }
 });
 
 test("every localized demo copy key matches and is used by its standalone demo", async () => {

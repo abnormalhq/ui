@@ -8,7 +8,13 @@ const items = [
 
 export const defaultCopy = { item: "Item", group: "Group", controls: "Controls", display: "Display" };
 
-export default function LinkRowDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+export default function LinkRowDemo({
+  copy: overrides = {},
+  hrefPrefix = "",
+}: {
+  copy?: Partial<typeof defaultCopy>;
+  hrefPrefix?: string;
+} = {}) {
   const copy = { ...defaultCopy, ...overrides };
   return (
     <Table variant="plain">
@@ -19,15 +25,18 @@ export default function LinkRowDemo({ copy: overrides = {} }: { copy?: Partial<t
         </TableRow>
       </TableHeader>
       <TableBody>
-        {items.map(({ name, href, group }) => (
-          <LinkRow key={href} href={href}>
-            <TableCell className="font-medium">
-              {/* The real link: keyboard, screen readers and a middle click use it. */}
-              <a href={href}>{name}</a>
-            </TableCell>
-            <TableCell className="text-muted-foreground">{copy[group]}</TableCell>
-          </LinkRow>
-        ))}
+        {items.map(({ name, href, group }) => {
+          const destination = hrefPrefix + href;
+          return (
+            <LinkRow key={href} href={destination}>
+              <TableCell className="font-medium">
+                {/* The real link: keyboard, screen readers and a middle click use it. */}
+                <a href={destination}>{name}</a>
+              </TableCell>
+              <TableCell className="text-muted-foreground">{copy[group]}</TableCell>
+            </LinkRow>
+          );
+        })}
       </TableBody>
     </Table>
   );
