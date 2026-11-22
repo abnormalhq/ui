@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
+import { galleryTokensFromCss } from "../src/gallery.ts";
 import worker from "../src/worker.ts";
 
 const registry: { items: { name: string; title: string; files: { path: string }[] }[] } = JSON.parse(
@@ -109,6 +110,56 @@ test("the gallery exports live examples and the active registry's token values",
   assert.match(markdown, /`text-display-lg` — 56px \/ 1.2/);
   const response = await request("/gallery", "text/markdown");
   assert.equal(response.asked, "/md/gallery.md");
+});
+
+test("gallery CSS extraction parses top-level declarations independent of formatting", () => {
+  const css = `
+    /* braces } and semicolons ; in comments do not end a rule */
+    :root {
+      --paper: "warm; paper";
+      --surface: var(--paper);
+    }
+    :root[data-theme="dark"] { --surface: #141412; }
+    .ink { --surface: #bad; }
+    @media (prefers-color-scheme: dark) {
+      :root { --surface: #bad; }
+      @theme inline { --color-hidden: var(--surface); }
+    }
+    @theme inline {
+      /* a comment with { } ; */
+      --color-surface: var(--surface);
+      --text-body--line-height: 1.5;
+      --text-body: 14px;
+      --text-compact: "12px; compact";
+      --text-compact--line-height: 1.25;
+      @supports (display: grid) { --text-nested: 10px; }
+    }
+  `;
+
+  assert.deepEqual(galleryTokensFromCss(css), {
+    colors: [
+      {
+        name: "surface",
+        reference: "var(--surface)",
+        light: '"warm; paper"',
+        dark: "#141412",
+      },
+    ],
+    sizes: [
+      { name: "text-body", size: "14px", leading: "1.5" },
+      { name: "text-compact", size: '"12px; compact"', leading: "1.25" },
+    ],
+  });
+});
+
+test("gallery CSS extraction reports alias cycles", () => {
+  assert.throws(
+    () =>
+      galleryTokensFromCss(
+        ":root { --one: var(--two); --two: var(--one); } @theme inline { --color-cycle: var(--one); }",
+      ),
+    /Unresolved gallery color: --one/,
+  );
 });
 
 for (const [accept, served] of [

@@ -1,3 +1,5 @@
+import ts from "typescript";
+
 /**
  * The design notes of an item: the block comments at the top level of its source. They hold the reasoning behind
  * each component ("quiet urgency", why hover is opaque, why a sheet does not focus its first button), which the
@@ -22,70 +24,15 @@ export function designNotes(code: string): string[] {
 /** One variant prop of a cva() call: its name, its options, and the one chosen when the prop is left out. */
 export type VariantGroup = { name: string; options: string[]; defaultOption?: string };
 
-/** Reads the object literal that starts at `start` (the index of its `{`) and returns its text and end index. */
-function block(code: string, start: number) {
-  let depth = 0;
-  for (let index = start; index < code.length; index++) {
-    const skipped = index > start ? skipStringOrComment(code, index) : index;
-    if (skipped > index) {
-      index = skipped - 1;
-      continue;
-    }
-    const char = code[index];
-    if (char === "{") depth++;
-    else if (char === "}" && --depth === 0) return { text: code.slice(start + 1, index), end: index };
-  }
-  return { text: code.slice(start + 1), end: code.length };
+function propertyKey(name: ts.PropertyName): string | undefined {
+  if (ts.isIdentifier(name) || ts.isStringLiteral(name)) return name.text;
+  if (ts.isNumericLiteral(name)) return String(Number(name.text.replaceAll("_", "")));
+  return undefined;
 }
 
-/** The index just past the string or comment that starts at `index`, or `index` when none does. */
-function skipStringOrComment(text: string, index: number) {
-  const char = text[index];
-  if (char === '"' || char === "'" || char === "`") {
-    for (let end = index + 1; end < text.length; end++) {
-      if (text[end] === "\\") end++;
-      else if (text[end] === char) return end + 1;
-    }
-    return text.length;
-  }
-  if (text.startsWith("//", index)) return text.indexOf("\n", index) + 1 || text.length;
-  if (text.startsWith("/*", index)) return text.indexOf("*/", index) + 2 || text.length;
-  return index;
-}
-
-/** The keys of an object literal at depth one, with the text of each object value; strings and comments are skipped. */
-function entries(text: string) {
-  const found: { key: string; value: string }[] = [];
-  let depth = 0;
-  let index = 0;
-  while (index < text.length) {
-    const skipped = skipStringOrComment(text, index);
-    if (skipped > index) {
-      index = skipped;
-      continue;
-    }
-    if (depth === 0) {
-      const key = text.slice(index).match(/^\s*"?([A-Za-z0-9_-]+)"?:\s*/);
-      if (key) {
-        const start = index + key[0].length;
-        if (text[start] === "{") {
-          const value = block(text, start);
-          found.push({ key: key[1]!, value: value.text });
-          index = value.end + 1;
-        } else {
-          // A string, array or other value: the next round skips it as a string or counts its brackets.
-          found.push({ key: key[1]!, value: "" });
-          index = start;
-        }
-        continue;
-      }
-    }
-    const char = text[index];
-    if (char === "{" || char === "[") depth++;
-    else if (char === "}" || char === "]") depth--;
-    index++;
-  }
-  return found;
+function literalString(node: ts.Expression): string | undefined {
+  if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) return node.text;
+  return undefined;
 }
 
 /**
@@ -94,27 +41,65 @@ function entries(text: string) {
  */
 export function variantsOf(code: string): VariantGroup[] {
   const groups = new Map<string, VariantGroup>();
-  for (const call of code.matchAll(/\bcva\(/g)) {
-    const variants = code.indexOf("variants:", call.index);
-    if (variants === -1) break;
-    const config = block(code, code.indexOf("{", variants));
-    const defaults = code.indexOf("defaultVariants:", config.end);
-    const chosen = new Map(
-      defaults === -1
-        ? []
-        : [...block(code, code.indexOf("{", defaults)).text.matchAll(/([A-Za-z0-9_-]+):\s*"([^"]+)"/g)].map(
-            ([, name, option]) => [name!, option!],
-          ),
-    );
-    for (const { key, value } of entries(config.text)) {
-      const options = entries(value).map(({ key: option }) => option);
-      if (options.length === 0) continue;
-      const group = groups.get(key) ?? { name: key, options: [] };
-      for (const option of options) if (!group.options.includes(option)) group.options.push(option);
-      const chosenOption = chosen.get(key);
-      if (chosenOption) group.defaultOption = chosenOption;
-      groups.set(key, group);
+
+  const source = ts.createSourceFile("variants.tsx", code, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+
+  function readCall(call: ts.CallExpression) {
+    const config = call.arguments[1];
+    if (!config || !ts.isObjectLiteralExpression(config)) return;
+
+    const defaults = new Map<string, string>();
+    for (const property of config.properties) {
+      if (
+        !ts.isPropertyAssignment(property) ||
+        propertyKey(property.name) !== "defaultVariants" ||
+        !ts.isObjectLiteralExpression(property.initializer)
+      ) {
+        continue;
+      }
+      for (const variant of property.initializer.properties) {
+        if (!ts.isPropertyAssignment(variant)) continue;
+        const name = propertyKey(variant.name);
+        const value = literalString(variant.initializer);
+        if (name !== undefined && value !== undefined) defaults.set(name, value);
+      }
+    }
+
+    for (const property of config.properties) {
+      if (
+        !ts.isPropertyAssignment(property) ||
+        propertyKey(property.name) !== "variants" ||
+        !ts.isObjectLiteralExpression(property.initializer)
+      ) {
+        continue;
+      }
+      for (const variant of property.initializer.properties) {
+        if (!ts.isPropertyAssignment(variant) || !ts.isObjectLiteralExpression(variant.initializer)) continue;
+        const name = propertyKey(variant.name);
+        if (name === undefined) continue;
+        const options = variant.initializer.properties
+          .flatMap((option) => (ts.isPropertyAssignment(option) ? [propertyKey(option.name)] : []))
+          .filter((option): option is string => option !== undefined);
+        if (options.length === 0) continue;
+
+        const group = groups.get(name) ?? { name, options: [] };
+        for (const option of options) {
+          if (!group.options.includes(option)) group.options.push(option);
+        }
+        const chosenOption = defaults.get(name);
+        if (chosenOption !== undefined) group.defaultOption = chosenOption;
+        groups.set(name, group);
+      }
     }
   }
+
+  function visit(node: ts.Node) {
+    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === "cva") {
+      readCall(node);
+    }
+    ts.forEachChild(node, visit);
+  }
+
+  visit(source);
   return [...groups.values()];
 }

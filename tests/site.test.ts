@@ -97,3 +97,46 @@ test("the item pages read the design notes and the cva variants out of the sourc
   assert.match(html, /A uniform 32px height/);
   assert.match(readFileSync("out/md/components/button.md", "utf8"), /## Variants\n\n- `variant`: `default`, `outline`/);
 });
+
+test("variantsOf reads only static property assignments from each bare cva call", async () => {
+  const { variantsOf } = await import("../src/notes.ts");
+  const code = String.raw`
+    const misleading = "cva('string', { variants: { fake: { value: {} } } })";
+    // cva("comment", { variants: { fake: { value: {} } } });
+    cva("first", {
+      metadata: { variants: { ignored: { value: {} } } },
+      variants: {
+        tone: { quiet: "quiet", ...shared, [dynamicName]: "dynamic" },
+        "scale-key": { "quoted\"option": nested({ values: { ignored: {} } }), 2: "two" },
+        nested: { included: nested({ variants: { ignored: { value: {} } } }) },
+        computedOnly: { [dynamicName]: "dynamic" },
+        spreadOnly: { ...dynamicOptions },
+      },
+      defaultVariants: { tone: "quiet", "scale-key": "quoted\"option" },
+    });
+    cva("default only", { defaultVariants: { mood: "leaked" } });
+    cva("second", {
+      variants: { tone: { loud: "loud" }, size: { small: () => "small" }, mood: { calm: "calm" } },
+      defaultVariants: { tone: "loud" },
+    });
+    cva("dynamic config", config);
+    component.cva("member", { variants: { fake: { value: {} } } });
+    cva("third", {
+      variants: { tone: { first: {}, second: {} } },
+      defaultVariants: { tone: "first", tone: "second" },
+    });
+  `;
+
+  assert.deepEqual(variantsOf(code), [
+    { name: "tone", options: ["quiet", "loud", "first", "second"], defaultOption: "second" },
+    { name: "scale-key", options: ['quoted"option', "2"], defaultOption: 'quoted"option' },
+    { name: "nested", options: ["included"] },
+    { name: "size", options: ["small"] },
+    { name: "mood", options: ["calm"] },
+  ]);
+  assert.deepEqual(variantsOf('cva("empty", {})'), []);
+  assert.deepEqual(
+    variantsOf('cva("dynamic options", { variants: { computed: { [key]: "value" }, spread: { ...options } } })'),
+    [],
+  );
+});
