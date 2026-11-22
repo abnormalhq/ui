@@ -18,6 +18,9 @@ export default function OverviewPage() {
           Design tokens, base components and brand pieces shared by the Abnormal family. Each one installs as source
           into the project.
         </p>
+        <Link href="/gallery" className="mt-4 inline-block rounded-control font-medium underline underline-offset-4">
+          Browse the component gallery
+        </Link>
       </header>
 
       <section aria-labelledby="family-style" className="grid gap-3 border-y border-border py-6">

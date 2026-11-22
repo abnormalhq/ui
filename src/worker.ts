@@ -26,6 +26,10 @@ pages.set("/design", {
   markdown: "/md/design.md",
   link: [alternate("/md/design.md"), llms].join(", "),
 });
+pages.set("/gallery", {
+  markdown: "/md/gallery.md",
+  link: [alternate("/md/gallery.md"), llms].join(", "),
+});
 pages.set("/", {
   markdown: "/md/index.md",
   link: [

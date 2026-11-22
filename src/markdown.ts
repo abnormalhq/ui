@@ -15,6 +15,7 @@ export function overviewMarkdown() {
     "# Abnormal UI",
     `Design tokens, base components and brand pieces shared by the Abnormal family, as a shadcn registry of ${items.length} items. Each one installs as source into the project.`,
     `[Family style](${siteUrl}/md/design.md): the visual contract, palette, typography, density, product character and adoption rules. Rendered composition examples: ${siteUrl}/design.`,
+    `[Component gallery](${siteUrl}/md/gallery.md) with live examples at ${siteUrl}/gallery.`,
     `The machine-readable index is [registry.json](${siteUrl}/r/registry.json), and each item is at \`${siteUrl}/r/{name}.json\`.`,
     "## Get started",
     ...setupSteps.map(({ title, code, lang }, index) => `${index + 1}. ${title}\n\n${codeBlock(code, lang)}`),
@@ -35,6 +36,7 @@ export function llmsTxt() {
     `> The shadcn registry behind the Abnormal family: design tokens, base components and brand pieces, ${items.length} items installed as source into each project.`,
     `Add the registry to \`components.json\` as \`"@abnormal": "${siteUrl}/r/{name}.json"\`, then install an item with \`${installCommand("button")}\`. The machine-readable index is [registry.json](${siteUrl}/r/registry.json); the overview with the setup steps is [index.md](${siteUrl}/md/index.md).`,
     "## Design direction",
+    `- [Component gallery](${siteUrl}/md/gallery.md): working examples, color values and the type scale.`,
     `- [Family style](${siteUrl}/md/design.md): paper-like tool minimalism, shared rules and product-specific character.`,
     ...catalog.flatMap((group) => [
       `## ${group.title}`,

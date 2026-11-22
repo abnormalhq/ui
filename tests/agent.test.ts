@@ -17,16 +17,16 @@ test("robots.txt allows crawling, declares content signals and points at the sit
   assert.match(robots, new RegExp(`^Sitemap: ${site}/sitemap.xml$`, "m"));
 });
 
-test("the sitemap lists the overview, family guide and every component page", () => {
+test("the sitemap lists the overview, family guide, gallery and every component page", () => {
   const urls = [...readFileSync("out/sitemap.xml", "utf8").matchAll(/<loc>(.+?)<\/loc>/g)].map((match) => match[1]);
   assert.deepEqual(
     urls.toSorted(),
-    [site, `${site}/design`, ...names.map((name) => `${site}/components/${name}`)].toSorted(),
+    [site, `${site}/design`, `${site}/gallery`, ...names.map((name) => `${site}/components/${name}`)].toSorted(),
   );
 });
 
 test("the pages in the sitemap can be indexed", () => {
-  for (const file of ["index", "design", ...names.map((name) => `components/${name}`)]) {
+  for (const file of ["index", "design", "gallery", ...names.map((name) => `components/${name}`)]) {
     assert.doesNotMatch(readFileSync(`out/${file}.html`, "utf8"), /<meta name="robots"/, file);
   }
 });
@@ -96,6 +96,20 @@ test("the family guide has a discoverable Markdown alternate with the shared ado
 });
 
 const browser = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+
+test("the gallery exports live examples and the active registry's token values", async () => {
+  const html = readFileSync("out/gallery.html", "utf8");
+  const markdown = readFileSync("out/md/gallery.md", "utf8");
+  assert.match(html, /data-slot="button"/);
+  for (const name of names) assert.ok(html.includes(`href="/components/${name}"`), name);
+  // Background follows a semantic alias. Highlight inherits its light value in dark mode.
+  for (const row of ["| `var(--background)` | #f7f7f4 | #141412 |", "| `var(--highlight)` | #ffe14d | #ffe14d |"]) {
+    assert.ok(markdown.includes(row), row);
+  }
+  assert.match(markdown, /`text-display-lg` — 56px \/ 1.2/);
+  const response = await request("/gallery", "text/markdown");
+  assert.equal(response.asked, "/md/gallery.md");
+});
 
 for (const [accept, served] of [
   ["text/markdown", "/md/index.md"],
