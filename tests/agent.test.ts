@@ -14,7 +14,7 @@ test("robots.txt allows crawling, declares content signals and points at the sit
   assert.match(robots, /^User-agent: \*$/m);
   assert.match(robots, /^Allow: \/$/m);
   assert.match(robots, /^Content-Signal: search=yes, ai-input=yes, ai-train=no$/m);
-  assert.match(robots, new RegExp(`^Sitemap: ${site}/sitemap.xml$`, "m"));
+  assert.ok(robots.split(/\r?\n/).includes(`Sitemap: ${site}/sitemap.xml`));
 });
 
 test("the sitemap lists the overview, family guide, gallery and every component page", () => {
@@ -25,8 +25,8 @@ test("the sitemap lists the overview, family guide, gallery and every component 
     [...paths.map((path) => `${site}${path}`), ...paths.map((path) => `${site}/zh${path}`)].toSorted(),
   );
   const sitemap = readFileSync("out/sitemap.xml", "utf8");
-  assert.match(sitemap, new RegExp(`hreflang="zh-CN" href="${site}/zh/design"`));
-  assert.match(sitemap, new RegExp(`hreflang="en" href="${site}/design"`));
+  assert.ok(sitemap.includes(`hreflang="zh-CN" href="${site}/zh/design"`));
+  assert.ok(sitemap.includes(`hreflang="en" href="${site}/design"`));
 });
 
 test("the pages in the sitemap can be indexed", () => {
