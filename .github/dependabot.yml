@@ -26,7 +26,7 @@ updates:
         dependency-type: development
         update-types: [minor, patch]
     ignore:
-      # typescript-eslint does not support TS 7 yet, so typescript stays on 6.x (it is the @typescript/typescript6 alias in package.json).
+      # Keep the typescript API alias on TypeScript 6: Next and the test loader use compatibility APIs, including transpileModule.
       - dependency-name: typescript
         update-types: [version-update:semver-major]
 

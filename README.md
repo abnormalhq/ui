@@ -131,8 +131,18 @@ When editing the theme, keep two things in step, both also tested: the dark valu
 
 ## Develop
 
+Development pins Node.js 26.13.1 in `.node-version` and pnpm 12.21.0 in `packageManager`. `engines.node` remains the declared compatibility floor (`>=22.22.1`), not the development pin. `tests/toolchain.test.ts` validates dependency engine declarations; this rollout was exercised on Node 26.13.1.
+
+Node 26 does not bundle Corepack. Install stable Corepack 0.36.0 into the selected Node installation, then use it to install the manager declared by `packageManager`.
+
 ```bash
-pnpm install
+nvm install 26.13.1
+nvm use 26.13.1
+npm install --global corepack@0.36.0
+corepack enable
+corepack install
+pnpm --version # 12.21.0
+pnpm install --frozen-lockfile
 ```
 
 ```bash
@@ -141,9 +151,9 @@ pnpm check
 
 `pnpm check` runs ESLint, the type check and the tests. ESLint uses the rules the projects run on their installed copies (`eslint-config-next` core-web-vitals and TypeScript, so react-hooks and jsx-a11y), so a problem in an item fails here before a project reinstalls it. Commits run lint-staged (ESLint and Prettier on the staged files) and commitlint, as in the website and mail, and Dependabot proposes dependency updates weekly.
 
-Type checking uses TypeScript 7's `tsc`, like the projects: `@typescript/native` points at TypeScript 7, and `typescript` at the `@typescript/typescript6` compatibility package that Next.js and typescript-eslint load ([the dual-package setup Microsoft recommends](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6-0)). Keep both aliases when upgrading, so items are checked by the same compiler here and in every project. `tsconfig.json` sets `useDefineForClassFields` to `true` explicitly, as the projects do: tsc and the tests already give class fields define semantics for ES2022, but Next.js's SWC reads only an explicit value and compiles them as assignments otherwise.
+GitHub's [supported-ecosystem documentation](https://docs.github.com/en/code-security/reference/supply-chain-security/supported-ecosystems-and-repositories) warns that pnpm 12's default two-document lockfile prevents dependency-graph alerts and security updates (version PRs still work). The [pnpm lockfile documentation](https://pnpm.io/lockfile) describes `pmOnFail: ignore` as the one-document option. In `pnpm-workspace.yaml` it keeps this lockfile to one document. It disables pnpm's manager self-bootstrap, so Corepack selects the manifest pin locally and `pnpm/action-setup` reads the same pin in CI.
 
-Development uses the Node.js in `.node-version`. `engines.node` in `package.json` is the lowest release the toolchain supports (22.22.1, which lint-staged needs; `node --test` on `.ts` needs 22.18), and `tests/toolchain.test.ts` fails when a direct dependency starts to need more.
+Type checking uses TypeScript 7.0.2's `tsc`, like the projects: `@typescript/native` points at TypeScript 7, while `typescript` aliases `@typescript/typescript6` 6.0.2, the latest TypeScript 6 API compatibility package loaded by Next.js and typescript-eslint ([Microsoft's dual-package guidance](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6-0)). The test loader calls `transpileModule`, so keep this alias on TypeScript 6; Dependabot allows its patch/minor updates but ignores major updates. Keep both aliases when upgrading, so items are checked by the same compiler here and in every project. `tsconfig.json` sets `useDefineForClassFields` to `true` explicitly, as the projects do: tsc and the tests already give class fields define semantics for ES2022, but Next.js's SWC reads only an explicit value and compiles them as assignments otherwise.
 
 `pnpm test` builds the registry and the site, then runs `node --test` with `tests/support/register.ts`, which resolves the `@/` aliases and compiles `.tsx` the way a project would. Besides the static checks, `tests/server-render.test.tsx` renders items with no DOM, as a Server Component page would, and `tests/components*.test.tsx` mount the stateful ones in happy-dom, click them and press their keys (`components-layout` for tabs, accordions and the like, `components-pickers` for the fields that choose a value). `tests/types.check.tsx` is only type-checked: it pins props that must stay required, such as `closeLabel`, a landmark's `label`, a calendar's `locale` and the `thumbLabels` of a range slider.
 
