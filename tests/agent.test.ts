@@ -155,11 +155,53 @@ test("a component page serves its own Markdown when asked for it", async () => {
   assert.ok(link.includes(`</llms.txt>; rel="describedby"; type="text/plain"`));
 });
 
+test("Chinese pages keep their HTML paths and negotiate to the canonical English Markdown", async () => {
+  const pages = [
+    ["/zh", "/md/index.md"],
+    ["/zh/design", "/md/design.md"],
+    ["/zh/gallery", "/md/gallery.md"],
+    ...names.map((name) => [`/zh/components/${name}`, `/md/components/${name}.md`] as const),
+  ] as const;
+
+  for (const [path, markdownPath] of pages) {
+    const englishPath = path === "/zh" ? "/" : path.slice("/zh".length);
+    const [english, chineseHtml, chineseMarkdown] = await Promise.all([
+      request(englishPath),
+      request(path, browser),
+      request(path, "text/markdown"),
+    ]);
+    const canonicalLink = english.response.headers.get("Link");
+
+    assert.equal(chineseHtml.asked, path, path);
+    assert.equal(chineseMarkdown.asked, markdownPath, path);
+    assert.equal(chineseHtml.response.headers.get("Link"), canonicalLink, path);
+    assert.equal(chineseMarkdown.response.headers.get("Link"), canonicalLink, path);
+    assert.equal(chineseHtml.response.headers.get("Vary"), "Accept-Encoding, Accept", path);
+    assert.equal(chineseMarkdown.response.headers.get("Vary"), "Accept-Encoding, Accept", path);
+  }
+});
+
 test("paths that aren't pages pass through untouched, whatever they accept", async () => {
-  for (const path of ["/components/nope", "/components/button.txt", "/components/button/"]) {
+  for (const path of [
+    "/components/nope",
+    "/components/button.txt",
+    "/components/button/",
+    "/zh/components/nope",
+    "/zh/components/button.txt",
+    "/zh/md/index.md",
+    "/source/button.tsx",
+    "/r/registry.json",
+  ]) {
     const { asked, response } = await request(path, "text/markdown");
     assert.equal(asked, path);
     assert.equal(response.headers.get("Link"), null, path);
+  }
+});
+
+test("Wrangler sends Chinese HTML pages to the Worker and component flight files to assets", () => {
+  const workerFirst = readFileSync("wrangler.jsonc", "utf8").match(/"run_worker_first":\s*\[([\s\S]*?)\]/)?.[1] ?? "";
+  for (const pattern of ['"/zh"', '"/zh/design"', '"/zh/gallery"', '"/zh/components/*"', '"!/zh/components/*.txt"']) {
+    assert.ok(workerFirst.includes(pattern), pattern);
   }
 });
 
