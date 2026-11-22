@@ -8,25 +8,34 @@ import {
   EmptyStateTitle,
 } from "@/components/ui/empty-state";
 
-export default function EmptyStateDemo() {
+export const defaultCopy = {
+  title: "No mailboxes yet",
+  description: "Create the first one, or import a list of addresses from a file.",
+  newMailbox: "New mailbox",
+  import: "Import",
+  noRecentLogs: "No log entries in the last 24 hours.",
+};
+
+export default function EmptyStateDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <div className="grid w-full max-w-xl gap-6">
       <EmptyState>
         <EmptyStateIcon>
           <InboxIcon />
         </EmptyStateIcon>
-        <EmptyStateTitle>No mailboxes yet</EmptyStateTitle>
-        <EmptyStateDescription>Create the first one, or import a list of addresses from a file.</EmptyStateDescription>
+        <EmptyStateTitle>{copy.title}</EmptyStateTitle>
+        <EmptyStateDescription>{copy.description}</EmptyStateDescription>
         <EmptyStateActions>
           <Button>
             <PlusIcon />
-            New mailbox
+            {copy.newMailbox}
           </Button>
-          <Button variant="outline">Import</Button>
+          <Button variant="outline">{copy.import}</Button>
         </EmptyStateActions>
       </EmptyState>
       <EmptyState variant="compact">
-        <EmptyStateDescription>No log entries in the last 24 hours.</EmptyStateDescription>
+        <EmptyStateDescription>{copy.noRecentLogs}</EmptyStateDescription>
       </EmptyState>
     </div>
   );

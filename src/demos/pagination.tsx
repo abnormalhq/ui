@@ -11,34 +11,47 @@ import {
 
 const current = 2;
 
-export default function PaginationDemo() {
+export const defaultCopy = {
+  label: "Pagination",
+  previous: "Previous",
+  morePages: "More pages",
+  pageLabel: "Page {page}",
+  next: "Next",
+};
+
+export default function PaginationDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
-    <Pagination label="Pagination">
+    <Pagination label={copy.label}>
       <PaginationList>
         <PaginationItem>
           <PaginationPrevious href="#page-1">
             <ChevronLeftIcon />
-            Previous
+            {copy.previous}
           </PaginationPrevious>
         </PaginationItem>
         {[1, 2, 3].map((page) => (
           <PaginationItem key={page}>
-            <PaginationLink href={`#page-${page}`} current={page === current} aria-label={`Page ${page}`}>
+            <PaginationLink
+              href={`#page-${page}`}
+              current={page === current}
+              aria-label={copy.pageLabel.replace("{page}", String(page))}
+            >
               {page}
             </PaginationLink>
           </PaginationItem>
         ))}
         <PaginationItem>
-          <PaginationEllipsis label="More pages" />
+          <PaginationEllipsis label={copy.morePages} />
         </PaginationItem>
         <PaginationItem>
-          <PaginationLink href="#page-12" aria-label="Page 12">
+          <PaginationLink href="#page-12" aria-label={copy.pageLabel.replace("{page}", "12")}>
             12
           </PaginationLink>
         </PaginationItem>
         <PaginationItem>
           <PaginationNext href="#page-3">
-            Next
+            {copy.next}
             <ChevronRightIcon />
           </PaginationNext>
         </PaginationItem>

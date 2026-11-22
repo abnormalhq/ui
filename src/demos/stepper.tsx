@@ -8,20 +8,33 @@ import {
 } from "@/components/ui/stepper";
 
 const steps = [
-  { title: "Domain", description: "example.com", status: "complete" },
-  { title: "DNS records", description: "Two of four found", status: "current" },
-  { title: "Mailboxes", description: "Invite your team", status: "upcoming" },
+  { title: "domain", description: "example.com", status: "complete" },
+  { title: "dnsRecords", description: "twoOfFour", status: "current" },
+  { title: "mailboxes", description: "inviteTeam", status: "upcoming" },
 ] as const;
 
-function Steps({ orientation }: { orientation: "horizontal" | "vertical" }) {
+export const defaultCopy = {
+  domain: "Domain",
+  dnsRecords: "DNS records",
+  mailboxes: "Mailboxes",
+  exampleDomain: "example.com",
+  twoOfFour: "Two of four found",
+  inviteTeam: "Invite your team",
+  completed: "Completed",
+  setUpDomain: "Set up your domain",
+};
+
+function Steps({ orientation, copy }: { orientation: "horizontal" | "vertical"; copy: typeof defaultCopy }) {
   return (
-    <Stepper orientation={orientation} aria-label="Set up your domain">
+    <Stepper orientation={orientation} aria-label={copy.setUpDomain}>
       {steps.map(({ title, description, status }, index) => (
-        <StepperItem key={title} status={status} statusLabel={status === "complete" ? "Completed" : undefined}>
+        <StepperItem key={title} status={status} statusLabel={status === "complete" ? copy.completed : undefined}>
           <StepperIndicator>{index + 1}</StepperIndicator>
           <StepperContent>
-            <StepperTitle>{title}</StepperTitle>
-            <StepperDescription>{description}</StepperDescription>
+            <StepperTitle>{copy[title]}</StepperTitle>
+            <StepperDescription>
+              {description === "example.com" ? copy.exampleDomain : copy[description]}
+            </StepperDescription>
           </StepperContent>
         </StepperItem>
       ))}
@@ -29,11 +42,12 @@ function Steps({ orientation }: { orientation: "horizontal" | "vertical" }) {
   );
 }
 
-export default function StepperDemo() {
+export default function StepperDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <div className="grid w-full max-w-xl gap-10">
-      <Steps orientation="horizontal" />
-      <Steps orientation="vertical" />
+      <Steps orientation="horizontal" copy={copy} />
+      <Steps orientation="vertical" copy={copy} />
     </div>
   );
 }

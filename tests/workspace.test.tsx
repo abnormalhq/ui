@@ -1,10 +1,14 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { renderToStaticMarkup } from "react-dom/server";
+import { NextIntlClientProvider } from "next-intl";
 import { ItemListRow } from "@/components/ui/item-list";
 import { Workspace, WorkspaceNavigation, WorkspacePane } from "@/components/ui/workspace";
 import { ReadingPreview } from "@/site/components/reading-preview";
 import { click, render } from "./support/render.tsx";
+
+const englishMessages = JSON.parse(readFileSync("src/i18n/messages/en.json", "utf8"));
 
 test("paper panes are siblings of the ink scope, including when supplying semantic elements", () => {
   const html = renderToStaticMarkup(
@@ -45,7 +49,11 @@ test("a selected compact list row keeps the child's element and state semantics"
 });
 
 test("reading selection updates the controlled pane and keeps exactly one pressed message", async () => {
-  const view = await render(<ReadingPreview />);
+  const view = await render(
+    <NextIntlClientProvider locale="en" timeZone="UTC" messages={{ Previews: englishMessages.Previews }}>
+      <ReadingPreview />
+    </NextIntlClientProvider>,
+  );
   try {
     const rows = [...view.container.querySelectorAll<HTMLButtonElement>("[data-slot='item-list-row']")];
     const reader = document.getElementById(rows[0]!.getAttribute("aria-controls")!);

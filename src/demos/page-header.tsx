@@ -11,37 +11,48 @@ import {
   PageHeaderTitle,
 } from "@/components/ui/page-header";
 
-export default function PageHeaderDemo() {
+export const defaultCopy = {
+  mailboxes: "Mailboxes",
+  aboutMailboxes: "About mailboxes",
+  mailboxDescription: "Every address that receives mail on your domains.",
+  export: "Export",
+  newMailbox: "New mailbox",
+  resetPassword: "Reset password",
+  createdUsage: "Created on 4 November, 2.1 GB of 10 GB used.",
+};
+
+export default function PageHeaderDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <div className="grid w-full gap-8">
       <PageHeader>
         <PageHeaderRow>
           <PageHeaderHeading>
             <PageHeaderTitle asChild>
-              <h2>Mailboxes</h2>
+              <h2>{copy.mailboxes}</h2>
             </PageHeaderTitle>
-            <InfoHint label="About mailboxes">Every address that receives mail on your domains.</InfoHint>
+            <InfoHint label={copy.aboutMailboxes}>{copy.mailboxDescription}</InfoHint>
           </PageHeaderHeading>
           <PageHeaderActions>
-            <Button variant="outline">Export</Button>
+            <Button variant="outline">{copy.export}</Button>
             <Button>
               <PlusIcon />
-              New mailbox
+              {copy.newMailbox}
             </Button>
           </PageHeaderActions>
         </PageHeaderRow>
       </PageHeader>
       <PageHeader>
-        <PageHeaderBack href="#">Mailboxes</PageHeaderBack>
+        <PageHeaderBack href="#">{copy.mailboxes}</PageHeaderBack>
         <PageHeaderRow>
           <PageHeaderTitle asChild>
             <h2>hello@example.com</h2>
           </PageHeaderTitle>
           <PageHeaderActions>
-            <Button variant="outline">Reset password</Button>
+            <Button variant="outline">{copy.resetPassword}</Button>
           </PageHeaderActions>
         </PageHeaderRow>
-        <PageHeaderDescription>Created on 4 November, 2.1 GB of 10 GB used.</PageHeaderDescription>
+        <PageHeaderDescription>{copy.createdUsage}</PageHeaderDescription>
       </PageHeader>
     </div>
   );

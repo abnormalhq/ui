@@ -2,20 +2,25 @@ import { TextLink } from "@/components/ui/text-link";
 import { fillTemplate, type Template } from "@/lib/template";
 
 /* In a project the template comes from each language's copy; the slots it may use are in its type. */
-const notice: Template<"terms" | "privacy"> = "Requests are covered by the {terms} and the {privacy}.";
+export const defaultCopy = {
+  notice: "Requests are covered by the {terms} and the {privacy}.",
+  terms: "Terms",
+  privacy: "Privacy Policy",
+};
 
-export default function TemplateDemo() {
+export default function TemplateDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <p className="text-sm">
-      {fillTemplate(notice, {
+      {fillTemplate(copy.notice as Template<"terms" | "privacy">, {
         terms: (
           <TextLink key="terms" href="#">
-            Terms
+            {copy.terms}
           </TextLink>
         ),
         privacy: (
           <TextLink key="privacy" href="#">
-            Privacy Policy
+            {copy.privacy}
           </TextLink>
         ),
       })}

@@ -1,7 +1,9 @@
+import { getTranslations } from "next-intl/server";
 import { CopyButton } from "@/components/ui/copy-button";
 import { type CodeLang, highlight } from "@/site/highlight";
 
 export async function CodeBlock({ code, lang }: { code: string; lang: CodeLang }) {
+  const t = await getTranslations("Common");
   return (
     <div className="relative min-w-0 rounded-control border border-border bg-surface">
       {/* Long lines scroll sideways, and a scrolling region has to take focus so the keyboard can scroll it too. */}
@@ -10,9 +12,9 @@ export async function CodeBlock({ code, lang }: { code: string; lang: CodeLang }
       </pre>
       {/* No text prop: the button copies the <code> above when pressed, so the source is not sent to the browser a second time. */}
       <CopyButton
-        label="Copy"
-        copiedLabel="Copied"
-        failedLabel="Copy failed"
+        label={t("copy")}
+        copiedLabel={t("copied")}
+        failedLabel={t("copyFailed")}
         className="absolute top-2 right-2 bg-surface"
       />
     </div>

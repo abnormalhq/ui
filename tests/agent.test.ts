@@ -19,14 +19,21 @@ test("robots.txt allows crawling, declares content signals and points at the sit
 
 test("the sitemap lists the overview, family guide, gallery and every component page", () => {
   const urls = [...readFileSync("out/sitemap.xml", "utf8").matchAll(/<loc>(.+?)<\/loc>/g)].map((match) => match[1]);
+  const paths = ["", "/design", "/gallery", ...names.map((name) => `/components/${name}`)];
   assert.deepEqual(
     urls.toSorted(),
-    [site, `${site}/design`, `${site}/gallery`, ...names.map((name) => `${site}/components/${name}`)].toSorted(),
+    [...paths.map((path) => `${site}${path}`), ...paths.map((path) => `${site}/zh${path}`)].toSorted(),
   );
+  const sitemap = readFileSync("out/sitemap.xml", "utf8");
+  assert.match(sitemap, new RegExp(`hreflang="zh-CN" href="${site}/zh/design"`));
+  assert.match(sitemap, new RegExp(`hreflang="en" href="${site}/design"`));
 });
 
 test("the pages in the sitemap can be indexed", () => {
   for (const file of ["index", "design", "gallery", ...names.map((name) => `components/${name}`)]) {
+    assert.doesNotMatch(readFileSync(`out/${file}.html`, "utf8"), /<meta name="robots"/, file);
+  }
+  for (const file of ["zh", "zh/design", "zh/gallery", ...names.map((name) => `zh/components/${name}`)]) {
     assert.doesNotMatch(readFileSync(`out/${file}.html`, "utf8"), /<meta name="robots"/, file);
   }
 });

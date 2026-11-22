@@ -36,7 +36,15 @@ const resolveAlias = (specifier: string) => {
 registerHooks({
   resolve(specifier, context, nextResolve) {
     const url = resolveAlias(specifier);
-    return url ? { url, shortCircuit: true } : nextResolve(specifier, context);
+    if (url) return { url, shortCircuit: true };
+    if (specifier.startsWith("next/") && !/\.[cm]?js$/.test(specifier)) {
+      try {
+        return nextResolve(specifier + ".js", context);
+      } catch {
+        return nextResolve(specifier, context);
+      }
+    }
+    return nextResolve(specifier, context);
   },
   load(url, context, nextLoad) {
     if (!url.startsWith(root.href) || !url.endsWith(".tsx") || url.includes("/node_modules/")) {

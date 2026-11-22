@@ -1,0 +1,1116 @@
+{
+  "Metadata": {
+    "siteTitle": "Abnormal UI",
+    "titleTemplate": "%s · Abnormal UI",
+    "siteDescription": "Abnormal 家族共用的设计系统与 shadcn 注册表。"
+  },
+  "PageMetadata": {
+    "designTitle": "家族风格",
+    "designDescription": "纸感工具极简风格：Abnormal 家族共用的视觉规范与组合示例。",
+    "galleryTitle": "组件画廊",
+    "galleryDescription": "探索 Abnormal UI 组件变体，复制可用的 TSX 示例，并查看注册表中的颜色与字体排版令牌。"
+  },
+  "Common": {
+    "copy": "复制",
+    "copyValue": "复制 {value}",
+    "copied": "已复制",
+    "copyFailed": "复制失败"
+  },
+  "Catalog": {
+    "groups": {
+      "0": "基础",
+      "1": "品牌",
+      "2": "控件",
+      "3": "展示",
+      "4": "导航",
+      "5": "浮层",
+      "6": "模式",
+      "7": "营销"
+    },
+    "setup": {
+      "0": "将注册表添加到 components.json",
+      "1": "安装主题",
+      "2": "紧接 Tailwind 导入主题",
+      "3": "安装组件"
+    }
+  },
+  "Overview": {
+    "items": "{count} 个条目",
+    "description": "Abnormal 家族共用的设计令牌、基础组件与品牌元素。每个条目都会以源代码形式安装到项目中。",
+    "browseGallery": "浏览组件画廊",
+    "familyHeading": "纸张、墨色与明确用途。",
+    "familyDescription": "为网站、Mail、Doppel 和 Status 共用的视觉规范：温暖的纸色、墨色结构，以及克制的荧光黄。同属一个家族，各有不同布局。",
+    "exploreFamily": "探索家族风格与组合示例",
+    "getStarted": "开始使用"
+  },
+  "Navigation": {
+    "label": "组件",
+    "searchLabel": "搜索组件",
+    "searchPlaceholder": "搜索",
+    "clear": "清除",
+    "results": "{count, plural, =0 {没有匹配项} other {找到 # 个匹配项}}",
+    "overview": "概览",
+    "gallery": "画廊",
+    "familyStyle": "家族风格"
+  },
+  "SiteHeader": {
+    "languageLabel": "语言",
+    "openNavigation": "打开导航",
+    "closeNavigation": "关闭导航",
+    "overview": "UI 概览",
+    "themeSystem": "跟随系统",
+    "themeLight": "浅色",
+    "themeDark": "深色",
+    "themeLabel": "主题：{theme}"
+  },
+  "NotFound": {
+    "title": "这里什么也没有",
+    "description": "此页面或组件条目不存在。",
+    "back": "返回概览"
+  },
+  "ItemPage": {
+    "preview": "预览",
+    "designNotes": "设计说明",
+    "variants": "变体",
+    "default": "filled：默认值",
+    "install": "安装",
+    "bringsIn": "同时引入",
+    "usage": "用法",
+    "source": "源代码",
+    "sourceFile": "源文件：{filename}"
+  },
+  "Demos": {
+    "button": {
+      "save": "保存",
+      "cancel": "取消",
+      "duplicate": "复制",
+      "skip": "跳过",
+      "delete": "删除",
+      "learnMore": "了解更多",
+      "extraSmall": "特小",
+      "small": "小",
+      "continue": "继续",
+      "add": "添加",
+      "disabled": "已禁用",
+      "saving": "正在保存",
+      "adding": "正在添加"
+    },
+    "dialog": {
+      "trigger": "重命名邮箱",
+      "close": "关闭",
+      "title": "重命名邮箱",
+      "description": "向旧地址发送邮件的人会收到退信。",
+      "name": "名称",
+      "cancel": "取消",
+      "save": "保存"
+    },
+    "calendar": {
+      "previous": "上个月",
+      "next": "下个月",
+      "month": "月份",
+      "year": "年份"
+    },
+    "date-picker": {
+      "label": "续费日期",
+      "placeholder": "选择日期",
+      "calendarLabel": "选择续费日期",
+      "previous": "上个月",
+      "next": "下个月"
+    },
+    "date-range-picker": {
+      "label": "日期范围",
+      "placeholder": "选择日期范围",
+      "calendarLabel": "选择日期范围",
+      "previous": "上个月",
+      "next": "下个月",
+      "month": "月份",
+      "year": "年份"
+    },
+    "date-time-picker": {
+      "label": "维护开始时间",
+      "placeholder": "选择日期",
+      "calendarLabel": "选择开始日期",
+      "previous": "上个月",
+      "next": "下个月",
+      "time": "开始时间",
+      "timeZone": "时间采用 Europe/London 时区。"
+    },
+    "table": {
+      "sortDescending": "按降序排序",
+      "sortAscending": "按升序排序",
+      "address": "地址",
+      "owner": "负责人",
+      "status": "状态",
+      "actions": "操作",
+      "enabled": "已启用",
+      "pending": "待处理",
+      "disabled": "已禁用",
+      "moreFor": "更多操作：{address}",
+      "nobody": "无人"
+    },
+    "confirm-dialog": {
+      "title": "确定要删除此邮箱吗？",
+      "description": "邮箱中的邮件将被永久删除，且无法恢复。",
+      "confirm": "删除",
+      "cancel": "取消",
+      "trigger": "删除邮箱",
+      "deleted": "已删除"
+    },
+    "sonner": {
+      "draftSaved": "草稿已保存",
+      "default": "默认",
+      "messageSent": "消息已发送",
+      "success": "成功",
+      "couldNotSend": "无法发送",
+      "error": "错误",
+      "notifications": "通知",
+      "closeToast": "关闭通知"
+    },
+    "badge": {
+      "default": "默认",
+      "outline": "描边",
+      "success": "成功",
+      "destructive": "危险",
+      "new": "新",
+      "small": "小",
+      "unreadFolders": "文件夹，含未读邮件"
+    },
+    "switch": {
+      "notifications": "邮件通知",
+      "weeklyDigest": "每周摘要",
+      "reset": "重置",
+      "textMessages": "短信"
+    },
+    "accordion": {
+      "forwardingTitle": "转发",
+      "forwardingBody": "发送到此地址的邮件也会投递到另外两个邮箱。",
+      "automaticReplyTitle": "自动回复",
+      "automaticReplyBody": "当前已关闭。开启后，您离开时它会自动回复。",
+      "filtersTitle": "筛选规则",
+      "filtersBody": "三条规则会将收到的邮件分类到文件夹。"
+    },
+    "alert-dialog": {
+      "trigger": "删除邮箱",
+      "title": "确定要删除此邮箱吗？",
+      "description": "邮箱中的邮件将被永久删除，且无法恢复。",
+      "cancel": "取消",
+      "confirm": "删除"
+    },
+    "alert": {
+      "maintenanceTitle": "星期日维护",
+      "maintenanceDescription": "邮件发送将在 02:00 UTC 暂停十分钟。",
+      "verifiedTitle": "域名已验证",
+      "verifiedDescription": "此域名的邮件现已开始投递。",
+      "paymentFailedTitle": "付款失败",
+      "paymentFailedDescription": "请更新银行卡，以继续使用此订阅。"
+    },
+    "avatar": {
+      "noPicture": "没有头像图片",
+      "sharedMailbox": "Ada、Lin 和 Maya 都可以读取此邮箱。"
+    },
+    "banner": {
+      "operational": "所有系统运行正常",
+      "checkedAgo": "2 分钟前检查",
+      "autoReply": "自动回复已开启，将持续到 11 月 20 日。",
+      "manage": "管理",
+      "maintenance": "维护",
+      "databaseUpgrade": "数据库升级",
+      "maintenanceWindow": "星期日 03:00 – 05:00 UTC",
+      "offline": "您当前处于离线状态。发出的邮件会暂存，待您重新联网后发送。",
+      "dismiss": "关闭通知"
+    },
+    "breadcrumb": {
+      "label": "面包屑导航",
+      "admin": "管理",
+      "moreLevels": "更多层级",
+      "domains": "域名"
+    },
+    "card": {
+      "storage": "存储空间",
+      "sharedByMailboxes": "所有邮箱共享。",
+      "manage": "管理",
+      "storageUsage": "已使用 12 GB，共 50 GB",
+      "upgrade": "升级",
+      "team": "Team",
+      "featuredDescription": "适用于主打方案的特色样式。",
+      "teamLimit": "最多 25 人"
+    },
+    "checkbox": {
+      "unchecked": "未选中",
+      "checked": "已选中",
+      "indeterminate": "不确定",
+      "disabled": "已禁用"
+    },
+    "collapsible": {
+      "mailServer": "邮件服务器",
+      "advanced": "高级选项",
+      "port": "端口"
+    },
+    "combobox": {
+      "region": "区域",
+      "chooseRegion": "选择区域",
+      "searchRegions": "搜索区域",
+      "cityOrCountry": "城市或国家/地区",
+      "noRegionMatches": "没有匹配的区域",
+      "frankfurt": "法兰克福",
+      "dublin": "都柏林",
+      "virginia": "弗吉尼亚",
+      "oregon": "俄勒冈",
+      "singapore": "新加坡",
+      "tokyo": "东京",
+      "saoPaulo": "圣保罗"
+    },
+    "command": {
+      "searchLabel": "搜索命令",
+      "searchPlaceholder": "输入命令",
+      "mail": "邮件",
+      "compose": "撰写",
+      "archiveConversation": "归档对话",
+      "workspace": "工作区",
+      "inviteMember": "邀请成员",
+      "settings": "设置",
+      "darkTheme": "深色主题",
+      "noCommandMatches": "没有匹配的命令"
+    },
+    "context-menu": {
+      "rightClick": "在此处单击鼠标右键",
+      "message": "消息",
+      "reply": "回复",
+      "forward": "转发",
+      "delete": "删除"
+    },
+    "copy-button": {
+      "copyAddress": "复制地址",
+      "copied": "已复制",
+      "copyFailed": "复制失败",
+      "copyInviteLink": "复制邀请链接",
+      "copyLink": "复制链接"
+    },
+    "description-list": {
+      "status": "状态",
+      "connected": "已连接",
+      "mailHost": "邮件主机",
+      "apiKey": "API 密钥",
+      "copyApiKey": "复制 API 密钥",
+      "copied": "已复制",
+      "copyFailed": "复制失败",
+      "order": "订单",
+      "plan": "套餐",
+      "teamPlan": "Team 套餐，5 个邮箱",
+      "total": "合计"
+    },
+    "disclosure": {
+      "changePlans": "之后可以更改套餐吗？",
+      "changePlansAnswer": "可以。更改会从下一个计费周期开始生效。",
+      "mailStorage": "我的邮件存储在哪里？",
+      "mailStorageAnswer": "邮件存储在您注册时所选区域的邮件服务器上。"
+    },
+    "dropdown-menu": {
+      "options": "选项",
+      "archive": "归档",
+      "unreadOnly": "仅未读",
+      "sortBy": "排序方式",
+      "newest": "最新优先",
+      "oldest": "最早优先",
+      "delete": "删除"
+    },
+    "empty-state": {
+      "title": "还没有邮箱",
+      "description": "创建第一个邮箱，或从文件导入地址列表。",
+      "newMailbox": "新建邮箱",
+      "import": "导入",
+      "noRecentLogs": "过去 24 小时内没有日志条目。"
+    },
+    "expandable-text": {
+      "more": "展开更多",
+      "less": "收起",
+      "message": "您好，\n\n邮箱迁移已于昨夜完成。所有邮件、文件夹和筛选规则均已迁移；旧服务器还会继续响应一周，以兼容仍指向旧服务器的设备。\n\n如果发现任何问题，请直接回复此邮件，我们会在当天处理。\n\n谢谢，\n支持团队",
+      "shortNote": "简短说明无需展开按钮。"
+    },
+    "field": {
+      "displayName": "显示名称",
+      "displayNameHint": "您发送邮件时，收件人会看到此名称。",
+      "address": "邮箱地址",
+      "addressError": "此邮箱地址已被使用。",
+      "addressHint": "仅可使用字母、数字和句点。",
+      "publicKey": "将公钥保存在服务器上",
+      "publicKeyDescription": "这样，其他人的邮件应用就能找到它。",
+      "language": "语言",
+      "languageHint": "用于界面和发出的邮件。",
+      "english": "英语",
+      "german": "德语"
+    },
+    "field-message": {
+      "lettersAndNumbers": "只能使用字母和数字。",
+      "checkingAddress": "正在检查此地址。",
+      "addressFree": "此地址可用。",
+      "addressTaken": "此邮箱地址已被使用。"
+    },
+    "brand-mark": {
+      "openWebmail": "打开网页版邮箱"
+    },
+    "code-block": {
+      "copy": "复制",
+      "copied": "已复制",
+      "copyFailed": "复制失败",
+      "terminal": "终端",
+      "requestBody": "请求正文"
+    },
+    "container": {
+      "description": "宽度最多为 1184px，窄屏下两侧留白会收紧"
+    },
+    "file-button": {
+      "uploadAvatar": "上传头像",
+      "chooseCsv": "选择 CSV 文件",
+      "noFile": "未选择文件"
+    },
+    "fonts": {
+      "headings": "Bricolage Grotesque 用于标题",
+      "interface": "Inter 用于界面中的所有文字。",
+      "codeAndAddresses": "JetBrains Mono 用于代码和地址"
+    },
+    "form-reset": {
+      "removeSeat": "移除席位",
+      "addSeat": "添加席位",
+      "seats": "席位",
+      "weeklyDigest": "每周摘要",
+      "reset": "重置",
+      "lockPlan": "锁定套餐：取消重置"
+    },
+    "guarded-dialog": {
+      "trigger": "重命名邮箱",
+      "close": "关闭",
+      "title": "重命名邮箱",
+      "description": "向旧地址发送邮件的人会收到退信。",
+      "name": "名称",
+      "cancel": "取消",
+      "save": "保存"
+    },
+    "info-hint": {
+      "quota": "配额",
+      "aboutQuotas": "关于配额",
+      "description": "邮件（包括附件）会计入其所在邮箱的配额。"
+    },
+    "input-group": {
+      "address": "地址",
+      "name": "名称",
+      "password": "密码",
+      "hide": "隐藏",
+      "show": "显示",
+      "copied": "已复制",
+      "copy": "复制",
+      "smallAddress": "小号地址",
+      "largeAddress": "大号地址",
+      "disabled": "已禁用"
+    },
+    "input-otp": {
+      "verificationCode": "验证码",
+      "entered": "已输入验证码",
+      "enterCode": "输入身份验证器应用中的六位数字"
+    },
+    "input": {
+      "email": "邮箱",
+      "invalid": "无效",
+      "disabled": "已禁用",
+      "small": "小号",
+      "default": "默认",
+      "large": "大号",
+      "smallPlaceholder": "小号，28px",
+      "defaultPlaceholder": "默认，32px",
+      "largePlaceholder": "大号，40px"
+    },
+    "item-list": {
+      "secondDomain": "无法添加第二个域名",
+      "updatedTwoHours": "2 小时前更新",
+      "open": "待处理",
+      "invoiceAddress": "账单地址",
+      "updatedYesterday": "昨天更新",
+      "answered": "已回复",
+      "thisDevice": "此设备",
+      "firefoxOnMac": "macOS 上的 Firefox",
+      "mailOnIphone": "iPhone 上的 Mail",
+      "lastSeen": "上次出现于 3 天前",
+      "signOut": "退出登录"
+    },
+    "kbd": {
+      "search": "搜索",
+      "commandPalette": "命令面板",
+      "archive": "归档",
+      "inbox": "前往收件箱",
+      "navigate": "导航",
+      "open": "打开",
+      "close": "关闭"
+    },
+    "label": {
+      "fullName": "全名"
+    },
+    "language-picker": {
+      "followBrowser": "跟随浏览器",
+      "english": "English",
+      "chinese": "中文",
+      "languageLabel": "语言：{value}",
+      "language": "语言"
+    },
+    "link-row": {
+      "item": "项目",
+      "group": "分组",
+      "controls": "控件",
+      "display": "展示"
+    },
+    "marker": {
+      "mailboxIs": "您的邮箱已",
+      "live": "上线",
+      "activeMailboxes": "个邮箱待激活",
+      "openInInkShell": "个邮箱在墨色外壳中打开"
+    },
+    "native-select": {
+      "plan": "套餐",
+      "planSmall": "套餐（小号）",
+      "planLarge": "套餐（大号）",
+      "starter": "入门版",
+      "team": "团队版",
+      "business": "商业版"
+    },
+    "nav-tabs": {
+      "settingsSections": "设置分区",
+      "general": "通用",
+      "domains": "域名",
+      "members": "成员",
+      "billing": "账单",
+      "aiFeatures": "AI 功能",
+      "security": "安全",
+      "auditLog": "审计日志",
+      "period": "周期",
+      "sevenDays": "7 天",
+      "thirtyDays": "30 天",
+      "ninetyDays": "90 天"
+    },
+    "page-header": {
+      "mailboxes": "邮箱",
+      "aboutMailboxes": "关于邮箱",
+      "mailboxDescription": "您域名上所有可接收邮件的地址。",
+      "export": "导出",
+      "newMailbox": "新建邮箱",
+      "resetPassword": "重置密码",
+      "createdUsage": "创建于 11 月 4 日，已使用 2.1 / 10 GB。"
+    },
+    "pagination": {
+      "label": "分页",
+      "previous": "上一页",
+      "morePages": "更多页",
+      "pageLabel": "第 {page} 页",
+      "next": "下一页"
+    },
+    "password-input": {
+      "currentPassword": "当前密码",
+      "newPassword": "新密码",
+      "showPassword": "显示密码",
+      "hidePassword": "隐藏密码",
+      "show": "显示",
+      "hide": "隐藏",
+      "generate": "生成"
+    },
+    "popover": {
+      "filter": "筛选",
+      "sender": "发件人"
+    },
+    "pricing-card": {
+      "starter": "入门版",
+      "starterDescription": "适合个人和一个域名。",
+      "period": "每个邮箱 / 月",
+      "chooseStarter": "选择入门版",
+      "tenGb": "每个邮箱 10 GB",
+      "oneDomain": "一个自定义域名",
+      "mostPopular": "最受欢迎",
+      "team": "团队版",
+      "teamDescription": "适合共享邮件的公司。",
+      "discount": "优惠 25%",
+      "originalPrice": "原价",
+      "chooseTeam": "选择团队版",
+      "fiftyGb": "每个邮箱 50 GB",
+      "unlimitedDomains": "不限域名",
+      "sharedMailboxes": "共享邮箱和别名"
+    },
+    "progress": {
+      "storage": "存储",
+      "twelveOfFifty": "12 / 50 GB",
+      "eightOfTen": "8.6 / 10 GB",
+      "nineOfTen": "9.9 / 10 GB",
+      "importing": "正在导入…"
+    },
+    "prose": {
+      "collect": "我们收集的信息",
+      "onlyNeeded": "服务仅需要以下信息：",
+      "address": "邮箱地址",
+      "settingsAnd": "、您的设置，以及每封邮件的",
+      "eachMessage": "。",
+      "accountDetails": "账户详情",
+      "billingHistory": "账单记录",
+      "retention": "数据保留时长",
+      "what": "内容",
+      "for": "保留时间",
+      "trash": "垃圾箱中的邮件",
+      "thirtyDays": "30 天",
+      "deliveryLogs": "投递日志",
+      "ninetyDays": "90 天",
+      "deletion": "删除账户后，其邮件会在一天内从所有服务器中移除。",
+      "contact": "联系我们",
+      "writeTo": "请发送邮件至"
+    },
+    "qr-code": {
+      "walletAddress": "钱包地址的二维码"
+    },
+    "radio-group": {
+      "billingPeriod": "账单周期",
+      "monthly": "按月",
+      "cancelAnyTime": "随时取消",
+      "yearly": "按年",
+      "twoMonthsFree": "免费两个月",
+      "lifetime": "终身"
+    },
+    "resize-handle": {
+      "list": "邮件列表",
+      "defaultWidth": "默认宽度",
+      "resizeLabel": "调整邮件列表大小",
+      "instructions": "拖动分隔线，或聚焦后使用方向键。"
+    },
+    "scroll-area": {
+      "folders": "文件夹",
+      "inbox": "收件箱",
+      "drafts": "草稿",
+      "sent": "已发送",
+      "archive": "归档",
+      "spam": "垃圾邮件",
+      "trash": "垃圾箱",
+      "invoices": "发票",
+      "receipts": "收据",
+      "travel": "旅行",
+      "newsletters": "简报",
+      "hiring": "招聘",
+      "legal": "法务",
+      "suppliers": "供应商",
+      "press": "媒体",
+      "filters": "筛选器",
+      "all": "全部",
+      "unread": "未读",
+      "flagged": "已标记",
+      "attachments": "附件",
+      "fromPeople": "来自联系人"
+    },
+    "search-input": {
+      "searchDomains": "搜索域名",
+      "searchMailboxes": "搜索邮箱",
+      "clear": "清除",
+      "small": "小号",
+      "large": "大号",
+      "smallPlaceholder": "小号，28px",
+      "largePlaceholder": "大号，40px",
+      "disabled": "已禁用"
+    },
+    "section-heading": {
+      "pricing": "定价",
+      "title": "按发送量付费"
+    },
+    "select": {
+      "plan": "套餐",
+      "choosePlan": "选择套餐",
+      "plans": "套餐",
+      "starter": "入门版",
+      "team": "团队版",
+      "business": "商业版"
+    },
+    "selection-bar": {
+      "invoice": "十一月账单",
+      "digest": "每周摘要",
+      "welcome": "欢迎加入团队",
+      "serverRestarted": "服务器已重启",
+      "selectedMessages": "已选邮件",
+      "selectAll": "全选",
+      "selectedCount": "已选择 {count} 项",
+      "clearSelection": "清除选择",
+      "markAsRead": "标记为已读",
+      "archive": "归档",
+      "delete": "删除"
+    },
+    "separator": {
+      "storage": "存储",
+      "shared": "由所有邮箱共享。",
+      "inbox": "收件箱",
+      "sent": "已发送",
+      "archive": "归档"
+    },
+    "sheet": {
+      "openDetails": "打开详情",
+      "close": "关闭",
+      "createdOn": "创建于 11 月 4 日",
+      "owner": "所有者",
+      "support": "支持团队",
+      "quota": "配额",
+      "cancel": "取消",
+      "save": "保存"
+    },
+    "sidebar": {
+      "system": "系统",
+      "light": "浅色",
+      "dark": "深色",
+      "themeLabel": "主题：{theme}",
+      "theme": "主题",
+      "main": "主导航",
+      "inbox": "收件箱",
+      "unread": "12 封未读",
+      "sent": "已发送",
+      "archive": "归档",
+      "members": "成员",
+      "settings": "设置",
+      "expand": "展开侧边栏",
+      "collapse": "折叠侧边栏",
+      "pageFor": "当前页面：{section}。"
+    },
+    "skip-link": {
+      "instructions": "按 Tab 键显示链接，再按 Enter 跳转到内容。",
+      "skip": "跳到内容",
+      "content": "页面内容。"
+    },
+    "slider": {
+      "mailboxQuota": "邮箱配额",
+      "attachmentSize": "附件大小",
+      "to": "至",
+      "smallestAttachment": "最小附件",
+      "largestAttachment": "最大附件"
+    },
+    "spinner": {
+      "saving": "正在保存"
+    },
+    "stat": {
+      "sent": "已发送",
+      "sentDelta": "较上周增加 12%",
+      "bounced": "退信",
+      "bouncedDelta": "减少 0.1 个百分点",
+      "complaints": "投诉",
+      "complaintDelta": "较上周增加 2",
+      "storage": "存储",
+      "notFetched": "尚未获取",
+      "mailboxes": "邮箱",
+      "mailboxesAdded": "过去 30 天新增 12 个",
+      "domains": "域名",
+      "verified": "均已验证",
+      "aliases": "别名",
+      "acrossDomains": "覆盖所有域名"
+    },
+    "status-label": {
+      "enabled": "已启用",
+      "pending": "待处理",
+      "disabled": "已禁用",
+      "failed": "失败"
+    },
+    "stepper": {
+      "domain": "域名",
+      "dnsRecords": "DNS 记录",
+      "mailboxes": "邮箱",
+      "exampleDomain": "example.com",
+      "twoOfFour": "已找到 4 条中的 2 条",
+      "inviteTeam": "邀请团队成员",
+      "completed": "已完成",
+      "setUpDomain": "设置您的域名"
+    },
+    "tabs": {
+      "domainSettings": "域名设置",
+      "general": "通用",
+      "dnsRecords": "DNS 记录",
+      "members": "成员",
+      "billing": "账单",
+      "domainVerified": "域名已验证并可接收邮件。",
+      "recordsPublished": "已发布 4 条记录，均无需处理。",
+      "peopleHaveMailboxes": "此域名下有 12 位用户拥有邮箱。",
+      "mailboxSettings": "邮箱设置",
+      "profile": "个人资料",
+      "vacationReply": "休假自动回复",
+      "storage": "存储",
+      "namePicture": "他人看到的名称和头像。",
+      "noReply": "未安排自动回复。",
+      "storageUsed": "已使用 2.1 / 10 GB。"
+    },
+    "tag": {
+      "domainsChosen": "已选择 {count} 个域名",
+      "removeDomain": "移除 {domain}",
+      "tags": "标签",
+      "readOnly": "只读"
+    },
+    "template": {
+      "notice": "请求受{terms}和{privacy}约束。",
+      "terms": "服务条款",
+      "privacy": "隐私政策"
+    },
+    "text-link": {
+      "readGuide": "阅读指南",
+      "remembered": "想起来了吗？",
+      "signIn": "返回登录"
+    },
+    "textarea": {
+      "message": "消息",
+      "writeMessage": "撰写消息"
+    },
+    "theme-picker": {
+      "system": "系统",
+      "light": "浅色",
+      "dark": "深色",
+      "themeLabel": "主题：{theme}"
+    },
+    "theme-script": {
+      "system": "系统",
+      "light": "浅色",
+      "dark": "深色",
+      "themeLabel": "主题：{theme}",
+      "theme": "主题",
+      "notKnownYet": "尚未知晓"
+    },
+    "theme": {
+      "pageSurface": "页面：暖纸色，或深色模式下的墨色本身。",
+      "codeChipsFills": "代码、标签与低调的填充区域。",
+      "menusDialogsSheets": "菜单、对话框与抽屉。",
+      "navigationColumn": "导航栏。",
+      "hoveredRows": "悬停行保持不透明，使固定列遮住其下方滚动内容。",
+      "popoverRows": "弹出层中的悬停行。",
+      "buttonsInputs": "按钮和输入框：半透明墨色，可用于任何表面。",
+      "hairlines": "元素之间的细分隔线。",
+      "inputBorders": "输入框边框与滚动条。",
+      "primaryAction": "主要操作：浅色模式用墨色，深色模式用纸色。",
+      "chromaticBrand": "唯一的彩色品牌：表示当前、已选或新建状态。",
+      "selectedRows": "已选行与选中的选项。",
+      "dotsProgress": "点、进度与编号：浅色模式用墨色，深色模式用黄色。",
+      "focusOutline": "键盘焦点轮廓。",
+      "enabledSent": "已启用、已发送、已连接。",
+      "errors": "错误与不可撤销的操作。",
+      "pendingProgress": "待处理与进行中。",
+      "secondaryText": "次要文本，在页面上的对比度为 6.9:1。",
+      "chipRadius": "4px：徽标",
+      "controlRadius": "6px：按钮和输入框",
+      "markRadius": "8px：菜单和弹出层",
+      "panelRadius": "12px：卡片和抽屉",
+      "dialogRadius": "12px：对话框",
+      "panelShadow": "面板不使用阴影，层次由边框体现。",
+      "popoverShadow": "浮动表面。",
+      "surfaces": "表面",
+      "accents": "强调色",
+      "status": "状态",
+      "inkShell": "墨色外壳",
+      "inkShellPrefix": "导航栏或内容框架在两种主题下都使用品牌墨色：将 ",
+      "inkShellSuffix": " 应用于其上，内部元素便会采用深色值。内容区是旁边的一张纸，不应放在外壳内部。",
+      "current": "当前",
+      "anotherPage": "另一页面",
+      "primary": "主要操作",
+      "pageOnPaper": "纸面上的页面",
+      "charts": "图表",
+      "chartDescription": "顺序固定；最后两种颜色的对比度低于 3:1，因此图表始终需要图例。",
+      "radii": "圆角",
+      "shadows": "阴影",
+      "type": "字体",
+      "headingFont": "Bricolage Grotesque 用于标题",
+      "interfaceFont": "Inter 用于界面中的所有文字，并为中文配置了后备字体。",
+      "codeFont": "JetBrains Mono 用于代码和地址",
+      "pangram": "敏捷的棕色狐狸",
+      "motion": "动效",
+      "motionStart": "进入和退出动画使用 ",
+      "motionMiddle": "，因此不会覆盖居中对话框的 ",
+      "motionEnd": "。减少动态效果时，只有加载指示器会继续旋转。"
+    },
+    "timeline": {
+      "updates": "更新",
+      "completed": "已完成",
+      "serversUpdated": "所有服务器都已恢复到新版本。",
+      "inProgress": "进行中",
+      "deliveryDelay": "邮件可能会延迟几分钟到达。",
+      "scheduled": "已安排",
+      "scheduledTime": "11 月 10 日，09:00",
+      "delivery": "投递",
+      "received": "已接收",
+      "sending": "正在发送至 gmail.com",
+      "delivered": "已送达"
+    },
+    "toc": {
+      "setup": "设置域名",
+      "publishRecords": "发布记录",
+      "verify": "验证",
+      "createMailboxes": "创建邮箱",
+      "onThisPage": "本页目录",
+      "description": "每个标题都是旁边目录中的一个定位目标。"
+    },
+    "toggle-group": {
+      "view": "视图",
+      "day": "日",
+      "week": "周",
+      "month": "月",
+      "alignment": "对齐方式",
+      "alignLeft": "左对齐",
+      "alignCenter": "居中对齐",
+      "alignRight": "右对齐"
+    },
+    "toggle": {
+      "bold": "粗体",
+      "pinned": "已置顶",
+      "unreadOnly": "仅未读",
+      "disabled": "已禁用"
+    },
+    "toolbar": {
+      "formatting": "格式",
+      "insertImage": "插入图片",
+      "textStyle": "文字样式",
+      "bold": "粗体",
+      "italic": "斜体",
+      "underline": "下划线",
+      "lists": "列表",
+      "bulletedList": "项目符号列表",
+      "numberedList": "编号列表",
+      "link": "链接"
+    },
+    "tooltip": {
+      "hover": "悬停查看",
+      "archived": "归档 30 天后删除",
+      "inbox": "收件箱",
+      "unread": "12 封未读",
+      "spam": "垃圾邮件",
+      "emptied": "每 30 天清空"
+    },
+    "truncated-text": {
+      "quarterlyReport": "回复：季度报告，包含各地区的数据和会议记录",
+      "shortSubject": "简短主题",
+      "longerNote": "这是一则较长的备注，最多显示两行，截断后可在工具提示中查看完整内容。"
+    },
+    "turnstile": {
+      "widgetLanguage": "zh-cn",
+      "email": "邮箱",
+      "emailPlaceholder": "name@example.com",
+      "subscribe": "订阅",
+      "sentOne": "已发送 {count} 次",
+      "sentMany": "已发送 {count} 次",
+      "check": "检查状态：{status}",
+      "off": "未启用",
+      "pending": "检查中",
+      "ready": "已就绪",
+      "failed": "失败"
+    },
+    "uptime-bar": {
+      "noData": "第 {day} 天：无数据",
+      "checksPassed": "第 {day} 天：{up}/{total} 项检查通过",
+      "mailDelivery": "邮件投递",
+      "uptime": "过去 30 天的运行状态",
+      "thirtyDaysAgo": "30 天前",
+      "today": "今天"
+    },
+    "workspace": {
+      "workspace": "工作区",
+      "currentView": "当前视图",
+      "inkNavigation": "两种主题下均使用墨色导航",
+      "compactList": "紧凑列表",
+      "denseInfo": "信息密集，文字仍清晰易读。",
+      "readingPane": "阅读面板",
+      "roomToRead": "宽敞的阅读区域",
+      "paperPane": "纸色面板跟随页面主题，位于墨色导航旁边，而非嵌套在其中。",
+      "padding": "面板内边距由面板控制；页面负责宽度和滚动。"
+    }
+  },
+  "GalleryPage": {
+    "title": "组件<marker>画廊</marker>",
+    "description": "试用不同变体、复制可运行的示例，或查看组件背后的设计令牌。",
+    "sectionsLabel": "画廊分区",
+    "registryCount": "注册表（{count}）",
+    "colorTokens": "颜色令牌",
+    "typography": "字体排版",
+    "variants": "组件变体",
+    "featuredLabel": "精选组件",
+    "documentation": "{title}文档",
+    "usageExample": "用法示例",
+    "browseItems": "浏览全部 {count} 个注册表条目",
+    "swatches": "色板与取值会随当前主题变化。复制色板的 CSS 变量即可使用。"
+  },
+  "DesignPage": {
+    "eyebrow": "Abnormal 家族",
+    "title": "纸张、墨色与<marker>明确用途</marker>。",
+    "description": "纸感工具极简风格。共用一套视觉语言，而非强制使用一种布局。让网站保留个性，让工作区保持安静。",
+    "examplesNotice": "保留现有色板与组件默认值。这些基础规范用于指导各产品按需采用；下方示例使用样例数据，并非产品集成。",
+    "sectionsLabel": "风格指南分区",
+    "principlesNav": "原则",
+    "paletteNav": "色板",
+    "typeNav": "字体",
+    "patternsNav": "组合",
+    "productsNav": "产品",
+    "adoptNav": "采用",
+    "principlesTitle": "共用的视觉规范",
+    "paletteTitle": "保留色板，明确用途。",
+    "paletteDescription": "色板随当前主题变化；十六进制值是现有浅色主题的参考。产品代码应使用语义令牌，而不是这些十六进制值。",
+    "success": "成功",
+    "warning": "警告 / 进行中",
+    "failure": "失败",
+    "statusDescription": "状态同时用文字与颜色表达。",
+    "typeTitle": "先建立层级，再做装饰",
+    "patternsTitle": "围绕任务组合组件",
+    "patternsDescription": "这些是可运行的组件组合示例，不是替代产品界面的屏幕。可使用上方主题切换器查看两种主题。此处不会更改产品路由或行为。",
+    "readingHeading": "01 / 阅读工作区",
+    "readingDescription": "紧凑列表旁边是舒适的阅读面板。选择消息即可切换阅读内容；饱和的黄色标记当前位置，柔和的黄色标记所选内容。",
+    "listHeading": "02 / 操作列表",
+    "listDescription": "连续的纸色表面、对齐的列与明确状态。只有在工作流程需要时才使用检查器，不要为了模仿 Mail 而添加。",
+    "statusHeading": "03 / 服务健康状态",
+    "healthComposition": "不强制使用墨色外壳。健康状态与历史记录决定信息层级；语义绿色、琥珀色与红色各自表达含义，不受品牌黄色影响。",
+    "productsTitle": "同一家族，不同个性",
+    "implementationTitle": "确保实际使用时依然可靠",
+    "adoptTitle": "按需采用，无需强制重新设计",
+    "adoptTheme": "保留现有<theme>主题</theme>与字体。仅在需要新的可选行样式时重新安装 item-list；其默认间距保持不变。",
+    "adoptWorkspace": "将<navigation>WorkspaceNavigation</navigation>和<pane>WorkspacePane</pane>并列放置。面板内边距由组件自身决定；产品自行决定导航、面板宽度与滚动方式。",
+    "adoptSelection": "使用<density>density=\"compact\"</density>设置列表间距，并用<selected>selected</selected>呈现柔和的行高亮。产品应提供相应的 aria-current 或 aria-pressed 语义。",
+    "adoptValidation": "上线前，请在明暗主题、窄宽屏幕以及键盘和触控流程中验证真实使用场景。本指南不代表这些集成已经完成。",
+    "workspaceSource": "Workspace 源码与用法",
+    "listSource": "List 源码与用法",
+    "markdownGuide": "Markdown 指南"
+  },
+  "DesignData": {
+    "principles": [
+      {
+        "title": "纸色、墨色与一抹荧光",
+        "text": "保留温暖的纸色与墨色。饱和的黄色标记当前位置或新内容；柔和的黄色标记选中的内容行。主要操作保持墨色落在纸色上，或纸色落在墨色上。"
+      },
+      {
+        "title": "每项任务对应一个表面",
+        "text": "导航在两种主题下都可以保持墨色。将纸色面板放在墨色区域旁边，而不是嵌套其中。列表、阅读区或检查器之间用留白或细线区分，不要为每个分区都加凸起卡片。"
+      },
+      {
+        "title": "密度由任务决定",
+        "text": "列表和操作元数据使用紧凑间距；阅读与决策场景使用舒适间距。优先调整内边距，而非字号。不要用全局密度规则缩小所有控件或触控目标。"
+      },
+      {
+        "title": "状态不是品牌装饰",
+        "text": "成功始终使用绿色，警告使用琥珀色，失败使用红色，并始终配有文字或图标。品牌黄色不能代替服务健康状态、未读内容、键盘焦点或危险操作的提示。"
+      }
+    ],
+    "paletteRoles": {
+      "background": "纸色：页面与工作表面，随页面主题变化。",
+      "foreground": "墨色：文字与主要操作，随页面主题变化。",
+      "ink": "框架始终为墨色；比深色页面再深一阶。",
+      "highlight": "当前位置导航或新提示；始终搭配 highlight-foreground 文字。",
+      "highlight-muted": "用于选中内容，而非另一个主要操作；搭配 foreground 文字。",
+      "border": "使用安静的细线，避免反复堆叠卡片与阴影。"
+    },
+    "typography": [
+      {
+        "title": "正文",
+        "description": "日常文案；长篇阅读使用 text-md 和 leading-prose。"
+      },
+      {
+        "title": "辅助文字",
+        "description": "用于次要元数据；仅在简短计数或时间戳中使用 11px 的 text-2xs。"
+      },
+      {
+        "title": "产品标题",
+        "description": "Bricolage Grotesque 搭配现有系统的 CJK 字体回退。"
+      },
+      {
+        "title": "营销展示",
+        "description": "用于网站的编辑式强调，不要让每个应用面板都使用超大标题。"
+      },
+      {
+        "title": "数据",
+        "description": "代码与标识符使用 JetBrains Mono；相近数值应对齐显示。"
+      }
+    ],
+    "products": [
+      {
+        "title": "网站",
+        "tone": "鲜明、编辑式",
+        "description": "保持现有的产品主张与定位。使用清晰标题、一处重点标记和明确的产品层级；不要把每个区块都做成仪表盘。"
+      },
+      {
+        "title": "Mail",
+        "tone": "安静的阅读工作区",
+        "description": "墨色导航与纸色列表 / 阅读面板。选中状态用柔和颜色，邮件正文留出充足空间，只在需要时显示上下文工具。"
+      },
+      {
+        "title": "Doppel",
+        "tone": "紧凑的操作工作区",
+        "description": "沿用相同的外壳语言，但使用便于扫描的列表、稳定的状态列和可选检查器。不要为了匹配布局而照搬邮件阅读器。"
+      },
+      {
+        "title": "Status",
+        "tone": "先建立信任，再做装饰",
+        "description": "纸色页面不必强制配墨色侧栏。健康状态、历史记录与事件优先；绿色 / 琥珀色 / 红色保留各自含义。"
+      }
+    ],
+    "implementationRules": [
+      {
+        "title": "浅色与深色",
+        "description": "使用语义令牌、ThemeScript 和现有主题偏好。不要在应用面板中硬编码浅色纸面填充。只有导航使用永久的墨色作用域。"
+      },
+      {
+        "title": "圆角与层次",
+        "description": "保留现有的 4px chip、6px control、8px popover 和 12px panel 圆角。阴影用于悬浮层，而不是每个工作表面。"
+      },
+      {
+        "title": "窄屏",
+        "description": "根据产品流程堆叠或替换面板。Workspace 默认堆叠且不隐藏内容；产品负责移动端导航、返回行为和独立滚动。不要把桌面截图缩小来适配屏幕。"
+      },
+      {
+        "title": "输入与焦点",
+        "description": "保留名称、标签、键盘操作与可见焦点。紧凑行是桌面信息密度选项，不是缩小移动端触控目标的许可。"
+      },
+      {
+        "title": "动效",
+        "description": "状态变化使用现有的短过渡令牌。尊重减少动态效果的偏好，阅读或状态视图中避免装饰性运动。"
+      }
+    ]
+  },
+  "Previews": {
+    "profiles": "配置文件",
+    "sampleWorkspace": "示例工作区",
+    "browserProfiles": "浏览器配置文件",
+    "browserDescription": "在连续的界面中浏览名称、状态与上下文。",
+    "browserProfilesLabel": "浏览器配置文件示例",
+    "profile": "配置文件",
+    "state": "状态",
+    "group": "分组",
+    "serviceStatus": "服务状态",
+    "allOperational": "所有系统运行正常",
+    "serviceUptime": "{service}：示例 30 天，均正常运行",
+    "exampleDay": "示例第 {day} 天：运行正常",
+    "illustrativeHistory": "此处为示意历史记录，并非实时服务状态。",
+    "inbox": "收件箱",
+    "messagesCount": "{count} 条消息",
+    "exampleMessages": "示例消息",
+    "from": "发件人：{sender}",
+    "mail": "邮件",
+    "research": "研究",
+    "running": "运行中",
+    "work": "工作",
+    "reading": "阅读",
+    "starting": "启动中",
+    "personal": "个人",
+    "archive": "归档",
+    "stopped": "已停止",
+    "operational": "运行正常",
+    "services": {
+      "mail": "Mail",
+      "doppel": "Doppel",
+      "website": "网站"
+    },
+    "messages": {
+      "plan": {
+        "sender": "Chen",
+        "subject": "下周计划",
+        "preview": "聚焦重要事项。",
+        "time": "10:07",
+        "body": "计划已经准备好。先从最重要的工作开始，同时为细节留出空间。相关笔记已附在下次评审中，无需再做一个仪表盘。"
+      },
+      "journal": {
+        "sender": "设计日志",
+        "subject": "更安静的工作区",
+        "preview": "好工具会为内容留出空间。",
+        "time": "09:23",
+        "body": "界面不必争夺注意力。保持导航清晰，让阅读区域舒展开来，只在工具能帮助完成当前任务时才将其显示出来。"
+      },
+      "book": {
+        "sender": "Lin",
+        "subject": "读书会笔记",
+        "preview": "会面前的一则简短留言。",
+        "time": "昨天",
+        "body": "这是上次读书会的笔记。我们会一起讨论下一章。感谢你抽出时间阅读、思考并分享。"
+      }
+    }
+  }
+}

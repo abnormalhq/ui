@@ -7,23 +7,43 @@ import {
 } from "@/components/ui/description-list";
 import { StatusLabel } from "@/components/ui/status-label";
 
-export default function DescriptionListDemo() {
+export const defaultCopy = {
+  status: "Status",
+  connected: "Connected",
+  mailHost: "Mail host",
+  apiKey: "API key",
+  copyApiKey: "Copy API key",
+  copied: "Copied",
+  copyFailed: "Copy failed",
+  order: "Order",
+  plan: "Plan",
+  teamPlan: "Team, 5 mailboxes",
+  total: "Total",
+};
+
+export default function DescriptionListDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <div className="grid w-full max-w-md gap-8">
       <DescriptionList variant="panel">
-        <DescriptionItem label="Status">
+        <DescriptionItem label={copy.status}>
           <StatusLabel tone="success" variant="dot" className="text-sm text-foreground">
-            Connected
+            {copy.connected}
           </StatusLabel>
         </DescriptionItem>
-        <DescriptionItem label="Mail host">
+        <DescriptionItem label={copy.mailHost}>
           <span className="font-mono">mail.example.com</span>
         </DescriptionItem>
         <DescriptionItem>
-          <DescriptionTerm>API key</DescriptionTerm>
+          <DescriptionTerm>{copy.apiKey}</DescriptionTerm>
           <DescriptionDetails
             action={
-              <CopyButton text="sk_live_8f3k2c9d" label="Copy API key" copiedLabel="Copied" failedLabel="Copy failed" />
+              <CopyButton
+                text="sk_live_8f3k2c9d"
+                label={copy.copyApiKey}
+                copiedLabel={copy.copied}
+                failedLabel={copy.copyFailed}
+              />
             }
           >
             <span className="font-mono">sk_live_8f3k2c9d</span>
@@ -31,9 +51,9 @@ export default function DescriptionListDemo() {
         </DescriptionItem>
       </DescriptionList>
       <DescriptionList variant="spread">
-        <DescriptionItem label="Order">A-20931</DescriptionItem>
-        <DescriptionItem label="Plan">Team, 5 mailboxes</DescriptionItem>
-        <DescriptionItem label="Total">$45.00</DescriptionItem>
+        <DescriptionItem label={copy.order}>A-20931</DescriptionItem>
+        <DescriptionItem label={copy.plan}>{copy.teamPlan}</DescriptionItem>
+        <DescriptionItem label={copy.total}>$45.00</DescriptionItem>
       </DescriptionList>
     </div>
   );

@@ -1,6 +1,9 @@
 import { BrandArrow, BrandMark, BrandName } from "@/components/ui/brand-mark";
 
-export default function BrandMarkDemo() {
+export const defaultCopy = { openWebmail: "Open webmail" };
+
+export default function BrandMarkDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <div className="flex flex-col items-center gap-6">
       <div className="flex items-center gap-3">
@@ -11,7 +14,7 @@ export default function BrandMarkDemo() {
         href="#"
         className="inline-flex items-center gap-1.5 font-medium underline decoration-border underline-offset-4"
       >
-        Open webmail
+        {copy.openWebmail}
         <BrandArrow />
       </a>
     </div>

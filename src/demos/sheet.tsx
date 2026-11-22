@@ -13,28 +13,40 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-export default function SheetDemo() {
+export const defaultCopy = {
+  openDetails: "Open details",
+  close: "Close",
+  createdOn: "Created on 4 November",
+  owner: "Owner",
+  support: "Support",
+  quota: "Quota",
+  cancel: "Cancel",
+  save: "Save",
+};
+
+export default function SheetDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline">Open details</Button>
+        <Button variant="outline">{copy.openDetails}</Button>
       </SheetTrigger>
-      <SheetContent closeLabel="Close">
+      <SheetContent closeLabel={copy.close}>
         <SheetHeader>
           <SheetTitle>hello@example.com</SheetTitle>
-          <SheetDescription>Created on 4 November</SheetDescription>
+          <SheetDescription>{copy.createdOn}</SheetDescription>
         </SheetHeader>
         <SheetBody>
           <SheetFields>
-            <SheetField label="Owner">Support</SheetField>
-            <SheetField label="Quota">5 GB</SheetField>
+            <SheetField label={copy.owner}>{copy.support}</SheetField>
+            <SheetField label={copy.quota}>5 GB</SheetField>
           </SheetFields>
         </SheetBody>
         <SheetFooter>
           <SheetClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline">{copy.cancel}</Button>
           </SheetClose>
-          <Button>Save</Button>
+          <Button>{copy.save}</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>

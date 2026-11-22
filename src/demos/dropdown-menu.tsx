@@ -15,32 +15,43 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export default function DropdownMenuDemo() {
+export const defaultCopy = {
+  options: "Options",
+  archive: "Archive",
+  unreadOnly: "Unread only",
+  sortBy: "Sort by",
+  newest: "Newest",
+  oldest: "Oldest",
+  delete: "Delete",
+};
+
+export default function DropdownMenuDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
+  const copy = { ...defaultCopy, ...overrides };
   const [unread, setUnread] = useState(true);
   const [sort, setSort] = useState("newest");
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Options</Button>
+        <Button variant="outline">{copy.options}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-52">
         <DropdownMenuItem>
-          Archive
+          {copy.archive}
           <DropdownMenuShortcut>E</DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuCheckboxItem checked={unread} onCheckedChange={setUnread}>
-          Unread only
+          {copy.unreadOnly}
         </DropdownMenuCheckboxItem>
         <DropdownMenuSeparator />
-        <DropdownMenuLabel>Sort by</DropdownMenuLabel>
+        <DropdownMenuLabel>{copy.sortBy}</DropdownMenuLabel>
         <DropdownMenuRadioGroup value={sort} onValueChange={setSort}>
-          <DropdownMenuRadioItem value="newest">Newest</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="oldest">Oldest</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="newest">{copy.newest}</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="oldest">{copy.oldest}</DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+        <DropdownMenuItem variant="destructive">{copy.delete}</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
