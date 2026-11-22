@@ -39,6 +39,8 @@ pnpm dlx shadcn@latest add @abnormal/button @abnormal/dialog
 
 ## What's in it
 
+The [component gallery](https://ui.abnormalhq.com/gallery) groups live variants and their copyable TSX with light and dark color swatches, font families and the type scale. Its registry index links to the demo and source for every item.
+
 | Group      | Items                                                                                                                                                                                                                                                                                                                                                                                         |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Foundation | `theme`, `fonts`, `utils`, `template`, `workspace`                                                                                                                                                                                                                                                                                                                                            |
