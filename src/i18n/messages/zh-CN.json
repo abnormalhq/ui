@@ -983,6 +983,18 @@
       "searchDescription": "一次搜遍所有文件夹，命中处高亮。",
       "codeTitle": "两步验证",
       "codeDescription": "在密码之外再加一道验证码。"
+    },
+    "clip-track": {
+      "shots": "镜头",
+      "window": "推近窗边",
+      "glass": "玻璃杯特写",
+      "hand": "手入画",
+      "empty": "空镜收尾",
+      "done": "已完成",
+      "making": "生成中",
+      "draft": "草稿",
+      "failed": "失败",
+      "seconds": " 秒"
     }
   },
   "GalleryPage": {

@@ -65,6 +65,7 @@ export const groups = [
       "status-bar",
       "table",
       "timeline",
+      "clip-track",
       "truncated-text",
       "uptime-bar",
     ],
