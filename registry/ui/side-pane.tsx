@@ -183,9 +183,9 @@ function SidePaneToggle({
 /**
  * What the pane holds, scrolling on its own below the header. Folded, it stays in the page but hidden, so what is in
  * it (a search typed, a page of choices loaded) is still there when the pane opens again. Its `id` is the pane's own,
- * the one the toggle's aria-controls names.
+ * the one the toggle's aria-controls names, and it is hidden exactly while the pane is folded.
  */
-function SidePaneContent({ className, ...props }: Omit<React.ComponentProps<"div">, "id">) {
+function SidePaneContent({ className, ...props }: Omit<React.ComponentProps<"div">, "id" | "hidden">) {
   const { collapsed, contentId } = useSidePane();
   return (
     <div
