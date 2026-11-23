@@ -7,6 +7,7 @@ import { test } from "node:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { encode } from "uqr";
 import { Badge, BadgeCount, BadgeDot } from "@/components/ui/badge";
+import { Bento, BentoDescription, BentoTile, BentoTitle, BentoVisual } from "@/components/ui/bento";
 import { Banner, BannerClose, BannerDot, BannerText } from "@/components/ui/banner";
 import { CodeBlock } from "@/components/ui/code-block";
 import { DescriptionDetails, DescriptionItem, DescriptionList } from "@/components/ui/description-list";
@@ -328,4 +329,30 @@ test("PricingPrice renders the card's price on its own, and the card renders it 
   );
   assert.match(card, /text-display-sm/);
   assert.doesNotMatch(renderToStaticMarkup(<PricingCard name="Team" price="$9" />), /pricing-card-icon/);
+});
+
+test("a Bento renders on the server as a list of tiles, a wide tile spanning two columns from sm", () => {
+  const html = renderToStaticMarkup(
+    <Bento asChild>
+      <ul>
+        <BentoTile asChild wide>
+          <li>
+            <BentoTitle>Undo</BentoTitle>
+            <BentoDescription>Take it back.</BentoDescription>
+            <BentoVisual aria-hidden="true">Sent</BentoVisual>
+          </li>
+        </BentoTile>
+        <BentoTile>
+          <BentoTitle asChild>
+            <h4>Search</h4>
+          </BentoTitle>
+        </BentoTile>
+      </ul>
+    </Bento>,
+  );
+  assert.match(html, /^<ul data-slot="bento" class="[^"]*sm:grid-cols-2[^"]*lg:grid-cols-3/);
+  assert.match(html, /<li data-slot="bento-tile" data-wide="true" class="[^"]*sm:col-span-2/);
+  assert.match(html, /<h3 data-slot="bento-title"[^>]*>Undo<\/h3>/);
+  assert.match(html, /<div data-slot="bento-visual" class="mt-auto min-w-0" aria-hidden="true">Sent<\/div>/);
+  assert.match(html, /<article data-slot="bento-tile" class="(?![^"]*col-span)[^"]*"><h4 data-slot="bento-title"/);
 });

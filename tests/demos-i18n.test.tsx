@@ -350,6 +350,7 @@ test("translated demos show Chinese button, dialog, calendar, table, confirm and
 
 test("remaining demos render Chinese copy and stateful labels stay localized", async () => {
   const names = [
+    "bento",
     "brand-mark",
     "code-block",
     "file-button",

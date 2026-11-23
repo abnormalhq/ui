@@ -1390,6 +1390,20 @@
       ]
     },
     {
+      "name": "bento",
+      "type": "registry:ui",
+      "title": "Bento",
+      "description": "A wall of feature tiles for a landing page: tiles with a title, a sentence and a visual at the foot, some spanning two columns.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/marketing/bento.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": ["radix-ui"]
+    },
+    {
       "name": "prose",
       "type": "registry:ui",
       "title": "Prose",
