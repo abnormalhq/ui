@@ -970,6 +970,20 @@
       ]
     },
     {
+      "name": "side-pane",
+      "type": "registry:ui",
+      "title": "Side Pane",
+      "description": "A pane beside a list that folds to a narrow rail and opens again: facets on one side, the current row's details on the other, remembered in a cookie.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/side-pane.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "skeleton",
       "type": "registry:ui",
       "title": "Skeleton",
@@ -1259,6 +1273,20 @@
       "files": [
         {
           "path": "registry/ui/toolbar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "list-toolbar",
+      "type": "registry:ui",
+      "title": "List Toolbar",
+      "description": "The row over a list: the search, the filters and the actions on the whole list, in the same places on every list, and the chips of the conditions in force.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/list-toolbar.tsx",
           "type": "registry:ui"
         }
       ]

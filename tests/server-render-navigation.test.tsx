@@ -18,6 +18,13 @@ import {
   FacetRow,
 } from "@/components/ui/facet-list";
 import { FileButton } from "@/components/ui/file-button";
+import {
+  ListToolbar,
+  ListToolbarActions,
+  ListToolbarChips,
+  ListToolbarGroup,
+  ListToolbarSearch,
+} from "@/components/ui/list-toolbar";
 import { JsonLd, serializeJsonLd } from "@/components/ui/json-ld";
 import { LanguageOptions, LanguagePicker } from "@/components/ui/language-picker";
 import { NavTab, NavTabs } from "@/components/ui/nav-tabs";
@@ -222,4 +229,36 @@ test("A StatusBar is a footer with its entries, a spacer and key caps, and no sc
   assert.equal(html.match(/<kbd data-slot="kbd"/g)?.length, 2);
   assert.match(html, /<\/kbd><\/span>Move<\/span>/);
   assert.doesNotMatch(html, /<script/);
+});
+
+test("a ListToolbar lays out the search, the filters and the actions, and can be the page's form", () => {
+  const html = renderToStaticMarkup(
+    <ListToolbar asChild>
+      <form role="search">
+        <ListToolbarSearch>
+          <input type="search" aria-label="Search" />
+        </ListToolbarSearch>
+        <ListToolbarGroup>
+          <button type="button">Status</button>
+        </ListToolbarGroup>
+        <ListToolbarActions>
+          <button type="button">Export</button>
+        </ListToolbarActions>
+      </form>
+    </ListToolbar>,
+  );
+  assert.match(html, /^<form role="search" data-slot="list-toolbar" class="[^"]*flex-wrap/);
+  assert.match(html, /data-slot="list-toolbar-search" class="[^"]*sm:w-64/);
+  assert.match(html, /data-slot="list-toolbar-actions" class="[^"]*ms-auto/);
+  const search = renderToStaticMarkup(
+    <ListToolbarSearch asChild>
+      <label>
+        <span className="sr-only">Search</span>
+        <input type="search" />
+      </label>
+    </ListToolbarSearch>,
+  );
+  assert.match(search, /^<label data-slot="list-toolbar-search" class="[^"]*sm:w-64/);
+  const chips = renderToStaticMarkup(<ListToolbarChips>Status: Open</ListToolbarChips>);
+  assert.match(chips, /^<div data-slot="list-toolbar-chips"/);
 });

@@ -938,6 +938,37 @@
       "support": "客服共享收件箱",
       "alerts": "运维告警",
       "sales": "华东销售"
+    },
+    "side-pane": {
+      "filters": "筛选",
+      "hideFilters": "隐藏筛选",
+      "showFilters": "显示筛选",
+      "details": "详情",
+      "hideDetails": "隐藏详情",
+      "showDetails": "显示详情",
+      "all": "全部",
+      "open": "待处理",
+      "answered": "已回复",
+      "closed": "已关闭",
+      "list": "面板折叠后，空间让给列表。",
+      "subject": "主题",
+      "subjectValue": "手机上无法登录",
+      "mailbox": "邮箱",
+      "updated": "更新时间",
+      "updatedValue": "5 分钟前"
+    },
+    "list-toolbar": {
+      "search": "搜索工单",
+      "clearSearch": "清除搜索",
+      "status": "状态",
+      "allStatuses": "全部状态",
+      "open": "待处理",
+      "closed": "已关闭",
+      "export": "导出",
+      "add": "新建工单",
+      "statusChip": "状态：{value}",
+      "removeChip": "移除状态条件",
+      "clearAll": "清除筛选"
     }
   },
   "GalleryPage": {
