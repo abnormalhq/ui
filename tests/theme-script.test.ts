@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
-import { themeScript } from "../registry/ui/theme-script.tsx";
+import { createThemeScript, themeScript } from "../registry/ui/theme-script.tsx";
 
 type Preference = "system" | "light" | "dark";
 type ThemeEvent = {
@@ -26,12 +26,14 @@ function initializeTheme({
   failRead = false,
   failWrite = false,
   denyStorageAccess = false,
+  source = script,
 }: {
   dark?: boolean;
   stored?: string;
   failRead?: boolean;
   failWrite?: boolean;
   denyStorageAccess?: boolean;
+  source?: string;
 } = {}) {
   const values = new Map<string, string>();
   if (stored !== undefined) values.set(storageKey, stored);
@@ -111,7 +113,7 @@ function initializeTheme({
     },
   };
 
-  runInNewContext(script, context, { filename: "theme-script.js" });
+  runInNewContext(source, context, { filename: "theme-script.js" });
   assert.ok(window.abnormalTheme, "initialization exposes the theme API");
   const api = window.abnormalTheme;
 
@@ -185,6 +187,34 @@ test("changing a preference saves explicit choices, clears system, and emits upd
     assert.ok(state.dispatched.length > eventCount);
     assert.equal(state.dispatched.at(-1)?.type, "abnormal:themechange");
   }
+});
+
+test("a dark default paints dark until a choice is made, and stores only choices other than dark", () => {
+  const source = createThemeScript("dark");
+  for (const dark of [false, true]) {
+    const state = initializeTheme({ dark, source });
+    assertTheme(state, "dark", "dark");
+    assert.equal(state.values.has(storageKey), false);
+  }
+  const state = initializeTheme({ dark: false, source });
+  state.api.setPreference("system");
+  assertTheme(state, "system", "light");
+  assert.equal(state.values.get(storageKey), "system");
+  state.changeSystem(true);
+  assertTheme(state, "system", "dark");
+  state.api.setPreference("light");
+  assert.equal(state.values.get(storageKey), "light");
+  state.api.setPreference("dark");
+  assertTheme(state, "dark", "dark");
+  assert.equal(state.values.has(storageKey), false);
+  // A saved choice still wins over the default, and an unknown value falls back to it.
+  assertTheme(initializeTheme({ dark: true, stored: "light", source }), "light", "light");
+  assertTheme(initializeTheme({ dark: false, stored: "system", source }), "system", "light");
+  assertTheme(initializeTheme({ dark: false, stored: "auto", source }), "dark", "dark");
+});
+
+test("the default script is the system default", () => {
+  assert.equal(themeScript, createThemeScript("system"));
 });
 
 test("invalid stored preferences fall back to the current system theme", () => {

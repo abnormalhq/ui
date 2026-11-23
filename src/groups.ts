@@ -115,5 +115,8 @@ export const groups = [
       "json-ld",
     ],
   },
-  { title: "Marketing", items: ["container", "section-heading", "text-link", "icon-tile", "prose", "pricing-card"] },
+  {
+    title: "Marketing",
+    items: ["container", "section-heading", "text-link", "icon-tile", "prose", "pricing-card", "bento"],
+  },
 ];

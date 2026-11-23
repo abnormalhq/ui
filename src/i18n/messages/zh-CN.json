@@ -82,6 +82,7 @@
   "Demos": {
     "button": {
       "save": "保存",
+      "buy": "购买邮箱",
       "cancel": "取消",
       "duplicate": "复制",
       "skip": "跳过",
@@ -608,6 +609,9 @@
       "disabled": "已禁用"
     },
     "section-heading": {
+      "help": "帮助中心",
+      "pageTitle": "找到你要的答案",
+      "lead": "关于设置、使用和管理邮箱的分步说明。",
       "pricing": "定价",
       "title": "按发送量付费"
     },
@@ -969,6 +973,16 @@
       "statusChip": "状态：{value}",
       "removeChip": "移除状态条件",
       "clearAll": "清除筛选"
+    },
+    "bento": {
+      "undoTitle": "撤回与定时发送",
+      "undoDescription": "发出后几秒内还能撤回，也可以定在明早再发。",
+      "sent": "已发送",
+      "undo": "撤回",
+      "searchTitle": "快速搜索",
+      "searchDescription": "一次搜遍所有文件夹，命中处高亮。",
+      "codeTitle": "两步验证",
+      "codeDescription": "在密码之外再加一道验证码。"
     }
   },
   "GalleryPage": {
