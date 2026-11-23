@@ -154,7 +154,8 @@ function TabsTrigger({
         // Like Radix, the first candidate that takes the focus wins, so a tab that is hidden is passed over.
         for (const candidate of candidates) {
           candidate.focus({ preventScroll: true });
-          if (candidate.ownerDocument.activeElement === candidate) {
+          // Asked of the tab's own root: inside a shadow root the document reports the host instead.
+          if ((candidate.getRootNode() as Document | ShadowRoot).activeElement === candidate) {
             revealInRow(candidate);
             return;
           }
