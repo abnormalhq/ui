@@ -82,8 +82,11 @@ function useListNavigation({
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.defaultPrevented || event.isComposing || event.metaKey || event.ctrlKey || event.altKey) return;
       const target = event.target instanceof Element ? event.target : null;
-      // isContentEditable also covers an element that inherits editing from an ancestor (and "plaintext-only").
-      if (target?.closest(OWNED_BY_TARGET) || (target instanceof HTMLElement && target.isContentEditable)) return;
+      // isContentEditable also covers an element that inherits editing from an ancestor (and "plaintext-only"); an SVG
+      // element has no such property, so its nearest HTML ancestor answers for it.
+      let html = target;
+      while (html && !(html instanceof HTMLElement)) html = html.parentElement;
+      if (target?.closest(OWNED_BY_TARGET) || (html instanceof HTMLElement && html.isContentEditable)) return;
       const current = latest.current;
       const map = { ...defaultKeys, ...current.keys };
       const key = event.key;

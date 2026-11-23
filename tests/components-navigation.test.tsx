@@ -721,8 +721,9 @@ function NavigableList({
         <button type="button">In a native dialog</button>
       </dialog>
       <div contentEditable="plaintext-only" suppressContentEditableWarning aria-label="Plain editor" />
-      <div contentEditable suppressContentEditableWarning>
+      <div contentEditable="true" suppressContentEditableWarning>
         <p aria-label="Inherited editor">text</p>
+        <svg aria-label="Editor drawing" />
       </div>
     </div>
   );
@@ -764,6 +765,7 @@ test("useListNavigation leaves keys to fields, dialogs, buttons and modifiers, a
   assert.equal(await press(named("In a native dialog"), "j"), false);
   assert.equal(await press(document.querySelector('[aria-label="Plain editor"]')!, "j"), false);
   assert.equal(await press(document.querySelector('[aria-label="Inherited editor"]')!, "k"), false);
+  assert.equal(await press(document.querySelector('[aria-label="Editor drawing"]')!, "/"), false);
   assert.equal(await press(document.body, "j", { metaKey: true }), false);
   assert.equal(await press(document.body, "j", { isComposing: true }), false);
   assert.equal(current(), "-1");
