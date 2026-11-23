@@ -503,9 +503,24 @@ test("the type scale is variable-based, and the compact density tightens spacing
     { base: process.cwd(), loadStylesheet: async () => ({ path: "", base: "", content: "" }) },
   );
   const built = layered.build(["text-md/[1.9]"]);
+  // The innermost open @layer block at the rule, following every brace, so a rule after a layer closes reads as unlayered.
   const layerOf = (needle: string) => {
-    const before = built.slice(0, built.indexOf(needle));
-    return [...before.matchAll(/@layer ([a-z]+) \{/g)].at(-1)?.[1];
+    const at = built.indexOf(needle);
+    assert.ok(at >= 0, needle);
+    const open: string[] = [];
+    let start = 0;
+    for (const match of built.slice(0, at).matchAll(/[{}]/g)) {
+      if (match[0] === "{") {
+        open.push(built.slice(start, match.index).trim());
+      } else {
+        open.pop();
+      }
+      start = match.index + 1;
+    }
+    return open
+      .map((header) => header.match(/@layer ([a-z]+)$/)?.[1])
+      .filter(Boolean)
+      .at(-1);
   };
   assert.match(built, /@layer theme, base, components, utilities;/);
   assert.equal(layerOf('[data-ui-density="compact"]:not(:root) {'), "base");
