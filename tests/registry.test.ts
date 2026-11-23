@@ -480,7 +480,9 @@ test("the type scale is variable-based, and the compact density tightens spacing
   const button = readFileSync("registry/ui/button.tsx", "utf8");
   assert.match(button, /xs: "h-6 min-h-\[24px\]/);
   assert.match(button, /"icon-xs": "size-6 min-h-\[24px\] min-w-\[24px\]/);
-  assert.match(readFileSync("registry/ui/search-input.tsx", "utf8"), /clear: "size-6 min-h-\[24px\] min-w-\[24px\]/);
+  const searchInput = readFileSync("registry/ui/search-input.tsx", "utf8");
+  assert.match(searchInput, /clear: "size-5 min-h-\[24px\] min-w-\[24px\]/);
+  assert.match(searchInput, /clear: "size-6 min-h-\[24px\] min-w-\[24px\]/);
   assert.match(readFileSync("registry/ui/info-hint.tsx", "utf8"), /size-6 min-h-\[24px\] min-w-\[24px\]/);
   // Table and ItemList write data-density on their own element; the page's density must not match it.
   assert.doesNotMatch(theme, /\[data-density/);

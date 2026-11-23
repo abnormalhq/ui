@@ -10,7 +10,7 @@ export const principles = [
   },
   {
     title: "Density belongs to the task",
-    text: 'Use compact spacing for lists and operational metadata, comfortable spacing for reading and decisions. A product people work in for hours opts into data-ui-density="compact" on <html>: it tightens spacing first and steps interface type down about a pixel, and only for a mouse or trackpad, so touch targets keep their size. Message bodies and long-form copy keep their reading size.',
+    text: 'Use compact spacing for lists and operational metadata, comfortable spacing for reading and decisions. A product people work in for hours opts into data-ui-density="compact" on the root html element: it tightens spacing first and steps interface type down about a pixel, and only for a mouse or trackpad, so touch targets keep their size. Message bodies and long-form copy keep their reading size.',
   },
   {
     title: "Status is not branding",
