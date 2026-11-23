@@ -241,6 +241,28 @@ test("a tab moved to by key or click is scrolled into view in its row, not the p
   assert.equal(pageScroll.mock.callCount(), 0);
 });
 
+test("a tab outside the window, in a row the page was scrolled past, is brought back the least distance", async () => {
+  await mount(tabs());
+  const scrolls: { tab: string | null; options: unknown }[] = [];
+  for (const item of document.querySelectorAll<HTMLElement>('[role="tab"]')) {
+    item.scrollIntoView = (options) => scrolls.push({ tab: item.textContent, options });
+  }
+  // In the window, as a tab in a stuck row always is: the page stays put.
+  mock.method(tab("DNS"), "getBoundingClientRect", () => ({ top: 60, bottom: 92, left: 0, right: 0 }) as DOMRect);
+  await act(async () => tab("General").focus());
+  await press(tab("General"), "ArrowRight");
+  assert.deepEqual(scrolls, []);
+  // Above the window: the page brings it back.
+  mock.method(
+    tab("Members"),
+    "getBoundingClientRect",
+    () => ({ top: -200, bottom: -168, left: 0, right: 0 }) as DOMRect,
+  );
+  await press(tab("DNS"), "ArrowRight");
+  assert.equal(focused(), "Members");
+  assert.deepEqual(scrolls, [{ tab: "Members", options: { block: "nearest", inline: "nearest" } }]);
+});
+
 test("manual Tabs move focus with the arrows and open on a click only", async () => {
   await mount(tabs({ activationMode: "manual" }));
   await act(async () => tab("General").focus());

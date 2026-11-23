@@ -83,12 +83,14 @@ const KEY_TO_INTENT: Record<string, "prev" | "next" | "first" | "last"> = {
 };
 
 /**
- * Scrolls the nearest row that scrolls sideways (the list itself, or a scroll area around it) just far enough to show the
- * whole tab. Only sideways, and never the page: focusing with preventScroll leaves this to us.
+ * Shows the whole tab after a focus with preventScroll: the nearest row that scrolls sideways (the list itself, or a scroll
+ * area around it) moves just far enough, and the page only when the tab is outside the window. A tab in a stuck row is
+ * always inside it, so there the page stays put; a row scrolled off the screen is brought back the least distance.
  */
 function revealInRow(tab: HTMLElement) {
-  const page = tab.ownerDocument.scrollingElement;
-  for (let row = tab.parentElement; row && row !== page && row !== tab.ownerDocument.body; row = row.parentElement) {
+  const { ownerDocument } = tab;
+  const page = ownerDocument.scrollingElement;
+  for (let row = tab.parentElement; row && row !== page && row !== ownerDocument.body; row = row.parentElement) {
     if (row.scrollWidth <= row.clientWidth) continue;
     const overflow = getComputedStyle(row).overflowX;
     if (overflow !== "auto" && overflow !== "scroll") continue;
@@ -96,8 +98,11 @@ function revealInRow(tab: HTMLElement) {
     const rowBox = row.getBoundingClientRect();
     if (tabBox.left < rowBox.left) row.scrollLeft -= rowBox.left - tabBox.left;
     else if (tabBox.right > rowBox.right) row.scrollLeft += tabBox.right - rowBox.right;
-    return;
+    break;
   }
+  const { top, bottom } = tab.getBoundingClientRect();
+  const windowHeight = ownerDocument.defaultView?.innerHeight ?? 0;
+  if (top < 0 || bottom > windowHeight) tab.scrollIntoView?.({ block: "nearest", inline: "nearest" });
 }
 
 function TabsTrigger({
