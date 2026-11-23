@@ -446,6 +446,46 @@ test("dark: utilities follow the same rule as the dark tokens", async () => {
   assert.ok(media.lastIndexOf("@media (prefers-color-scheme: dark)") > media.lastIndexOf("}"), css);
 });
 
+test("the type scale is variable-based, and the compact density tightens spacing and interface type only", async () => {
+  const compiler = await compile(`${theme}\n@tailwind utilities;`, {
+    base: process.cwd(),
+    loadStylesheet: async () => ({ path: "", base: "", content: "" }),
+  });
+  const css = compiler.build(["text-sm", "text-display"]);
+  // A density can only change sizes the utilities read as variables.
+  assert.match(
+    css,
+    /\.text-sm \{\s*font-size: var\(--text-sm\);\s*line-height: var\(--tw-leading, var\(--text-sm--line-height\)\);/,
+  );
+  assert.match(css, /\.text-display \{\s*font-size: var\(--text-display\);/);
+  const block = (selector: string) => theme.match(new RegExp(`\\n {2}${selector} \\{([\\s\\S]*?)\\n {2}\\}`))![1]!;
+  const compact = Object.fromEntries(
+    [...block('\\[data-ui-density="compact"\\]').matchAll(/(--[a-z0-9-]+): ([^;]+);/g)].map(([, name, value]) => [
+      name!,
+      value!,
+    ]),
+  );
+  assert.equal(compact["--spacing"], "3.5px");
+  assert.equal(compact["--text-base"], "13px");
+  assert.equal(compact["--leading-body"], "1.45");
+  // 2xs is the floor for meta text and the display scale is for marketing lines: neither shrinks.
+  assert.ok(!Object.keys(compact).some((name) => name.startsWith("--text-2xs") || name.startsWith("--text-display")));
+  // Every interface size it changes is smaller than the default it replaces.
+  for (const [name, value] of Object.entries(compact)) {
+    if (!/^--text-[a-z0-9]+$/.test(name)) continue;
+    const base = theme.match(new RegExp(`\\n  ${name}: (\\d+)px;`))![1]!;
+    assert.ok(Number.parseFloat(value) < Number(base), `${name} ${value} is not below ${base}px`);
+  }
+  // Table and ItemList write data-density on their own element; the page's density must not match it.
+  assert.doesNotMatch(theme, /\[data-density/);
+  // Only for a mouse or trackpad: touch screens keep full-size targets.
+  const media = theme.slice(0, theme.indexOf('[data-ui-density="compact"] {'));
+  assert.ok(media.trimEnd().endsWith("@media (pointer: fine) {"));
+  // A dense region below <html> sets its own text size; <html> keeps the rem.
+  assert.match(block('\\[data-ui-density="compact"\\]:not\\(:root\\)'), /font-size: var\(--text-base\);/);
+  assert.match(theme, /body \{[^}]*font-size: var\(--text-base\);\s*line-height: var\(--leading-body\);/);
+});
+
 test("the ink shell carries the dark values and maps every semantic name again", () => {
   const declarations = (block: string) =>
     new Map([...block.matchAll(/(--[a-z0-9-]+): ([^;]+);/g)].map(([, name, value]) => [name!, value!]));

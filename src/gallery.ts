@@ -8,6 +8,8 @@ export function galleryTokensFromCss(css: string) {
   const light = new Map<string, string>();
   const overrides = new Map<string, string>();
   let theme: (typeof root.nodes)[number] | undefined;
+  // The type scale sits in a plain @theme (so a density can change it) and the colors in @theme inline: read both.
+  const themes: (typeof root.nodes)[number][] = [];
 
   for (const node of root.nodes) {
     if (node.type === "rule" && (node.selector === ":root" || node.selector === ':root[data-theme="dark"]')) {
@@ -15,14 +17,17 @@ export function galleryTokensFromCss(css: string) {
       for (const child of node.nodes ?? []) {
         if (child.type === "decl") values.set(child.prop, child.value.trim());
       }
-    } else if (!theme && node.type === "atrule" && node.name === "theme" && node.params.trim() === "inline") {
-      theme = node;
+    } else if (node.type === "atrule" && node.name === "theme") {
+      themes.push(node);
+      if (!theme && node.params.trim() === "inline") theme = node;
     }
   }
 
   const dark = new Map([...light, ...overrides]);
   if (!theme || theme.type !== "atrule") throw new Error("Missing @theme inline block");
-  const declarations = (theme.nodes ?? []).filter((node) => node.type === "decl");
+  const declarations = themes.flatMap((block) =>
+    block.type === "atrule" ? (block.nodes ?? []).filter((node) => node.type === "decl") : [],
+  );
 
   function resolve(name: string, values: Map<string, string>) {
     const seen = new Set<string>();
