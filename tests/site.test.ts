@@ -72,7 +72,7 @@ test("the item pages read the design notes and the cva variants out of the sourc
   assert.deepEqual(variantsOf(button), [
     {
       name: "variant",
-      options: ["default", "outline", "secondary", "ghost", "destructive", "link"],
+      options: ["default", "highlight", "outline", "secondary", "ghost", "destructive", "link"],
       defaultOption: "default",
     },
     {
@@ -95,7 +95,10 @@ test("the item pages read the design notes and the cva variants out of the sourc
   const html = readFileSync("out/components/button.html", "utf8");
   assert.match(html, /Design notes/);
   assert.match(html, /A uniform 32px height/);
-  assert.match(readFileSync("out/md/components/button.md", "utf8"), /## Variants\n\n- `variant`: `default`, `outline`/);
+  assert.match(
+    readFileSync("out/md/components/button.md", "utf8"),
+    /## Variants\n\n- `variant`: `default`, `highlight`, `outline`/,
+  );
 });
 
 test("variantsOf reads only static property assignments from each bare cva call", async () => {

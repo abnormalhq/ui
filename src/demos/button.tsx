@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 
 export const defaultCopy = {
   save: "Save",
+  buy: "Buy a mailbox",
   cancel: "Cancel",
   duplicate: "Duplicate",
   skip: "Skip",
@@ -23,6 +24,7 @@ export default function ButtonDemo({ copy: overrides = {} }: { copy?: Partial<ty
     <div className="grid justify-items-center gap-5">
       <div className="flex flex-wrap justify-center gap-2">
         <Button>{copy.save}</Button>
+        <Button variant="highlight">{copy.buy}</Button>
         <Button variant="outline">{copy.cancel}</Button>
         <Button variant="secondary">{copy.duplicate}</Button>
         <Button variant="ghost">{copy.skip}</Button>
