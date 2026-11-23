@@ -23,7 +23,7 @@ export const defaultCopy = {
   closed: "Closed",
   export: "Export",
   add: "New ticket",
-  statusChip: "Status: Open",
+  statusChip: "Status: {value}",
   removeChip: "Remove the status condition",
   clearAll: "Clear filters",
 };
@@ -73,7 +73,7 @@ export default function ListToolbarDemo({ copy: overrides = {} }: { copy?: Parti
       {status !== "all" && (
         <ListToolbarChips>
           <Tag removeLabel={copy.removeChip} onRemove={() => setStatus("all")}>
-            {copy.statusChip}
+            {copy.statusChip.replace("{value}", status === "open" ? copy.open : copy.closed)}
           </Tag>
           <Button type="button" variant="ghost" size="sm" onClick={() => setStatus("all")}>
             {copy.clearAll}

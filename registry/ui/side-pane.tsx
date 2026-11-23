@@ -108,7 +108,7 @@ function SidePaneHeader({ className, ...props }: React.ComponentProps<"div">) {
       className={cn(
         "flex min-h-10 shrink-0 items-center gap-1 px-2",
         "group-data-[side=end]/side-pane:flex-row-reverse group-data-[side=end]/side-pane:justify-end",
-        "group-data-[state=collapsed]/side-pane:flex-col group-data-[state=collapsed]/side-pane:items-center group-data-[state=collapsed]/side-pane:gap-2 group-data-[state=collapsed]/side-pane:px-0 group-data-[state=collapsed]/side-pane:py-1.5",
+        "group-data-[state=collapsed]/side-pane:flex-col! group-data-[state=collapsed]/side-pane:items-center group-data-[state=collapsed]/side-pane:gap-2 group-data-[state=collapsed]/side-pane:px-0 group-data-[state=collapsed]/side-pane:py-1.5",
         className,
       )}
       {...props}
@@ -168,7 +168,7 @@ function SidePaneToggle({
       aria-controls={contentId}
       aria-label={label}
       title={label}
-      className={cn("shrink-0 text-muted-foreground", className)}
+      className={cn("shrink-0 text-muted-foreground group-data-[state=collapsed]/side-pane:order-first", className)}
       onClick={(event) => {
         onClick?.(event);
         if (!event.defaultPrevented) toggle();
@@ -182,9 +182,10 @@ function SidePaneToggle({
 
 /**
  * What the pane holds, scrolling on its own below the header. Folded, it stays in the page but hidden, so what is in
- * it (a search typed, a page of choices loaded) is still there when the pane opens again.
+ * it (a search typed, a page of choices loaded) is still there when the pane opens again. Its `id` is the pane's own,
+ * the one the toggle's aria-controls names.
  */
-function SidePaneContent({ className, ...props }: React.ComponentProps<"div">) {
+function SidePaneContent({ className, ...props }: Omit<React.ComponentProps<"div">, "id">) {
   const { collapsed, contentId } = useSidePane();
   return (
     <div

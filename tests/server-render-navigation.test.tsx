@@ -250,6 +250,15 @@ test("a ListToolbar lays out the search, the filters and the actions, and can be
   assert.match(html, /^<form role="search" data-slot="list-toolbar" class="[^"]*flex-wrap/);
   assert.match(html, /data-slot="list-toolbar-search" class="[^"]*sm:w-64/);
   assert.match(html, /data-slot="list-toolbar-actions" class="[^"]*ms-auto/);
+  const search = renderToStaticMarkup(
+    <ListToolbarSearch asChild>
+      <label>
+        <span className="sr-only">Search</span>
+        <input type="search" />
+      </label>
+    </ListToolbarSearch>,
+  );
+  assert.match(search, /^<label data-slot="list-toolbar-search" class="[^"]*sm:w-64/);
   const chips = renderToStaticMarkup(<ListToolbarChips>Status: Open</ListToolbarChips>);
   assert.match(chips, /^<div data-slot="list-toolbar-chips"/);
 });

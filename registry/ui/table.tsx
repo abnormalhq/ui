@@ -275,7 +275,7 @@ function TableCell({ className, pinned = false, ...props }: React.ComponentProps
             "shadow-[inset_0_-1px_0_var(--border)] [tr:last-child>&]:shadow-none",
             "in-data-[overflow=end]:shadow-[inset_1px_0_0_var(--border),inset_0_-1px_0_var(--border),-10px_0_12px_-10px_rgb(0_0_0/0.18)]",
             "in-data-[overflow=end]:[tr:last-child>&]:shadow-[inset_1px_0_0_var(--border),-10px_0_12px_-10px_rgb(0_0_0/0.18)]",
-            "bg-card transition-colors duration-100 [tr:has([aria-expanded=true])>&]:bg-accent [tr:hover>&]:bg-accent [tr[data-state=selected]>&]:bg-highlight-muted",
+            "bg-card transition-colors duration-100 [tr:has([aria-expanded=true])>&]:bg-accent [tr:hover>&]:bg-accent [tr[data-current]>&]:bg-accent [tr[data-state=selected]>&]:bg-highlight-muted",
           ],
         className,
       )}

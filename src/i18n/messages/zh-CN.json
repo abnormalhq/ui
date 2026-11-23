@@ -966,7 +966,7 @@
       "closed": "已关闭",
       "export": "导出",
       "add": "新建工单",
-      "statusChip": "状态：待处理",
+      "statusChip": "状态：{value}",
       "removeChip": "移除状态条件",
       "clearAll": "清除筛选"
     }

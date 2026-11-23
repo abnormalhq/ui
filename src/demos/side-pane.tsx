@@ -38,7 +38,7 @@ export default function SidePaneDemo({ copy: overrides = {} }: { copy?: Partial<
     { id: "closed", count: "1,092" },
   ] as const;
   return (
-    <div className="flex h-72 w-full max-w-3xl gap-1 overflow-hidden rounded-mark border border-border bg-muted/40 p-1">
+    <div className="flex h-72 w-full max-w-3xl gap-1 overflow-x-auto rounded-mark border border-border bg-muted/40 p-1">
       <SidePane side="start" aria-label={copy.filters} className="w-48 rounded-mark bg-background">
         <SidePaneHeader>
           <SidePaneTitle>{copy.filters}</SidePaneTitle>
