@@ -369,8 +369,9 @@
   },
   "tabs": {
     "Views of one subject that swap in place: the sections of a settings page, the folders of a mailbox. The row is a hairline with the tab names on it, and the current one is marked by a 2px bar in the signal color (ink in light, yellow in dark and in the ink shell), so the mark stays visible on any surface. Arrow keys move between tabs and Home and End jump to the ends; a tab opens as it takes focus. Pass activationMode=\"manual\" when showing a panel costs a request, so it opens on Enter or Space instead. Name the list with aria-label or aria-labelledby. For pages with their own URLs use links (NavTabs), not tabs. `variant=\"pill\"` on the list draws the tabs as pills with the current one in the highlighter, without the hairline: the sections of a settings panel, or tabs inside a card, where a line under them would be one line too many.": "同一主题的就地切换视图，如设置分区或邮箱文件夹。标签行是细线，当前项用 2px 信号色条标记。方向键移动，Home/End 到两端，默认聚焦即激活；切换需请求时用 activationMode=manual，Enter/Space 才打开。为列表提供 aria-label/aria-labelledby。独立 URL 页面应使用 NavTabs。variant=pill 改为高亮胶囊，不绘制底线，适合设置面板或卡片内。",
-    "The look set on the list, so every trigger in it matches without repeating it.": "列表上的外观设置自动传给每个触发项，无需重复。",
+    "What the list sets for its triggers: the look, so every trigger matches without repeating it, and whether arrows wrap.": "列表传给触发项的设置：外观（每个触发项自动一致，无需重复）以及方向键是否循环。",
     "The row scrolls sideways when the tabs do not fit, without a scrollbar of its own: arrow keys bring a tab into view.": "标签放不下时横向滚动，不显示自有滚动条；方向键会将标签带入可见区域。",
+    "Shows the whole tab after a focus with preventScroll: the nearest row that scrolls sideways (the list itself, or a scroll area around it) moves just far enough, and the page only when the tab is outside the window. A tab in a stuck row is always inside it, so there the page stays put; a row scrolled off the screen is brought back the least distance.": "以 preventScroll 聚焦后让整个标签可见：最近的横向滚动行（列表本身或外层滚动区域）只滚动所需距离；只有标签在窗口外时才滚动页面。吸顶行里的标签总在窗口内，因此页面不动；滚出屏幕的行以最短距离滚回。",
     "A panel is a tab stop itself, so a keyboard user reaches text that has no control in it.": "面板本身可 Tab 聚焦，让键盘用户能够访问没有控件的文字内容。"
   },
   "tag": {

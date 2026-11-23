@@ -32,9 +32,12 @@ const press = async (element: Element, key: string) => {
 };
 const focused = () => document.activeElement?.textContent;
 
-const tabs = (props: React.ComponentProps<typeof Tabs> = {}) => (
+const tabs = (
+  props: React.ComponentProps<typeof Tabs> = {},
+  listProps: Omit<React.ComponentProps<typeof TabsList>, "children"> = {},
+) => (
   <Tabs defaultValue="general" {...props}>
-    <TabsList aria-label="Domain settings">
+    <TabsList aria-label="Domain settings" {...listProps}>
       <TabsTrigger value="general">General</TabsTrigger>
       <TabsTrigger value="dns">DNS</TabsTrigger>
       <TabsTrigger value="billing" disabled>
@@ -70,6 +73,31 @@ test("Tabs tie each tab to its panel, and keep one tab in the tab order", async 
   assert.equal((tab("Billing") as HTMLButtonElement).disabled, true);
 });
 
+test("a click on a tab focuses it without scrolling the page, and still opens it", async () => {
+  const onValueChange = mock.fn();
+  await mount(tabs({ onValueChange }));
+  const calls: (FocusOptions | undefined)[] = [];
+  const focus = HTMLElement.prototype.focus;
+  mock.method(HTMLElement.prototype, "focus", function (this: HTMLElement, options?: FocusOptions) {
+    calls.push(options);
+    focus.call(this, options);
+  });
+  await act(async () => {
+    tab("DNS").dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, button: 0 }));
+  });
+  // A tab in a sticky row would otherwise scroll the page back to the row's resting place.
+  assert.deepEqual(calls[0], { preventScroll: true });
+  assert.equal(focused(), "DNS");
+  assert.equal(tab("DNS").getAttribute("aria-selected"), "true");
+  assert.deepEqual(onValueChange.mock.calls.at(-1)?.arguments, ["dns"]);
+  // A disabled tab is not focused.
+  calls.length = 0;
+  await act(async () => {
+    tab("Billing").dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, button: 0 }));
+  });
+  assert.equal(calls.length, 0);
+});
+
 test("arrow keys move between tabs and open them, past a disabled tab and around the ends", async () => {
   const onValueChange = mock.fn();
   await mount(tabs({ onValueChange }));
@@ -97,6 +125,142 @@ test("arrow keys move between tabs and open them, past a disabled tab and around
   assert.equal(focused(), "Members");
   assert.equal(shownPanel()!.textContent, "Twelve people");
   assert.deepEqual(onValueChange.mock.calls.at(-1)?.arguments, ["members"]);
+});
+
+const recordFocus = () => {
+  const calls: { tab: string | null; options: FocusOptions | undefined }[] = [];
+  const focus = HTMLElement.prototype.focus;
+  mock.method(HTMLElement.prototype, "focus", function (this: HTMLElement, options?: FocusOptions) {
+    calls.push({ tab: this.textContent, options });
+    focus.call(this, options);
+  });
+  return calls;
+};
+
+test("arrow keys focus the next tab without scrolling the page", async () => {
+  await mount(tabs());
+  await act(async () => tab("General").focus());
+  const calls = recordFocus();
+  await press(tab("General"), "ArrowRight");
+  await press(tab("DNS"), "End");
+  // Radix's own focus() would scroll the page back to a sticky row's resting place.
+  assert.deepEqual(calls, [
+    { tab: "DNS", options: { preventScroll: true } },
+    { tab: "Members", options: { preventScroll: true } },
+  ]);
+  // Keys with a modifier are left alone, for the browser and the page's shortcuts.
+  const event = new KeyboardEvent("keydown", { key: "ArrowLeft", altKey: true, bubbles: true, cancelable: true });
+  await act(async () => {
+    tab("Members").dispatchEvent(event);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+  assert.equal(event.defaultPrevented, false);
+  assert.equal(focused(), "Members");
+});
+
+test("a list with loop={false} stops at the ends, and right to left swaps the arrows", async () => {
+  await mount(tabs({}, { loop: false }));
+  await act(async () => tab("Members").focus());
+  assert.equal(await press(tab("Members"), "ArrowRight"), true);
+  assert.equal(focused(), "Members", "does not wrap");
+  await press(tab("Members"), "Home");
+  await press(tab("General"), "ArrowLeft");
+  assert.equal(focused(), "General", "does not wrap");
+  for (const view of mounted.splice(0)) await view.unmount();
+
+  await mount(tabs({ dir: "rtl" }));
+  await act(async () => tab("General").focus());
+  await press(tab("General"), "ArrowLeft");
+  assert.equal(focused(), "DNS", "left is next right to left");
+  await press(tab("DNS"), "ArrowRight");
+  assert.equal(focused(), "General");
+  await press(tab("General"), "ArrowRight");
+  assert.equal(focused(), "Members", "wraps, past the disabled tab");
+  await press(tab("Members"), "Home");
+  assert.equal(focused(), "General", "Home is the first tab either way");
+  await press(tab("General"), "End");
+  assert.equal(focused(), "Members");
+  for (const view of mounted.splice(0)) await view.unmount();
+
+  // The list's direction counts, not a tab's: a label set left to right does not turn the arrows round.
+  await mount(
+    <Tabs defaultValue="inbox" dir="rtl">
+      <TabsList aria-label="Folders">
+        <TabsTrigger value="inbox">Inbox</TabsTrigger>
+        <TabsTrigger value="api" dir="ltr">
+          API
+        </TabsTrigger>
+        <TabsTrigger value="sent">Sent</TabsTrigger>
+      </TabsList>
+    </Tabs>,
+  );
+  await act(async () => tab("Inbox").focus());
+  await press(tab("Inbox"), "ArrowLeft");
+  assert.equal(focused(), "API");
+  await press(tab("API"), "ArrowLeft");
+  assert.equal(focused(), "Sent");
+});
+
+test("the arrows pass over a tab that cannot take the focus, as Radix does", async () => {
+  await mount(tabs());
+  await act(async () => tab("General").focus());
+  // A tab hidden with display: none, which the browser will not focus.
+  const focus = HTMLElement.prototype.focus;
+  mock.method(HTMLElement.prototype, "focus", function (this: HTMLElement, options?: FocusOptions) {
+    if (this.textContent !== "DNS") focus.call(this, options);
+  });
+  await press(tab("General"), "ArrowRight");
+  assert.equal(focused(), "Members");
+});
+
+test("a tab moved to by key or click is scrolled into view in its row, not the page", async () => {
+  await mount(tabs());
+  const list = document.querySelector<HTMLElement>('[role="tablist"]')!;
+  // jsdom has no layout: a row 200px wide showing the first 200px of 400px of tabs, each 100px wide.
+  list.style.overflowX = "auto";
+  Object.defineProperty(list, "scrollWidth", { value: 400 });
+  Object.defineProperty(list, "clientWidth", { value: 200 });
+  const box = (left: number) => ({ left, right: left + 100 }) as DOMRect;
+  mock.method(list, "getBoundingClientRect", () => ({ left: 0, right: 200 }) as DOMRect);
+  const triggers = [...list.querySelectorAll<HTMLElement>('[role="tab"]')];
+  triggers.forEach((item, index) =>
+    mock.method(item, "getBoundingClientRect", () => box(index * 100 - list.scrollLeft)),
+  );
+  const pageScroll = mock.method(window, "scrollTo", () => {});
+
+  await act(async () => tab("General").focus());
+  await press(tab("General"), "End");
+  assert.equal(focused(), "Members");
+  assert.equal(list.scrollLeft, 200, "Members, 300px to 400px, ends at the row's right edge");
+  await press(tab("Members"), "Home");
+  assert.equal(list.scrollLeft, 0);
+  await act(async () => {
+    tab("Members").dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, button: 0 }));
+  });
+  assert.equal(list.scrollLeft, 200);
+  assert.equal(pageScroll.mock.callCount(), 0);
+});
+
+test("a tab outside the window, in a row the page was scrolled past, is brought back the least distance", async () => {
+  await mount(tabs());
+  const scrolls: { tab: string | null; options: unknown }[] = [];
+  for (const item of document.querySelectorAll<HTMLElement>('[role="tab"]')) {
+    item.scrollIntoView = (options) => scrolls.push({ tab: item.textContent, options });
+  }
+  // In the window, as a tab in a stuck row always is: the page stays put.
+  mock.method(tab("DNS"), "getBoundingClientRect", () => ({ top: 60, bottom: 92, left: 0, right: 0 }) as DOMRect);
+  await act(async () => tab("General").focus());
+  await press(tab("General"), "ArrowRight");
+  assert.deepEqual(scrolls, []);
+  // Above the window: the page brings it back.
+  mock.method(
+    tab("Members"),
+    "getBoundingClientRect",
+    () => ({ top: -200, bottom: -168, left: 0, right: 0 }) as DOMRect,
+  );
+  await press(tab("DNS"), "ArrowRight");
+  assert.equal(focused(), "Members");
+  assert.deepEqual(scrolls, [{ tab: "Members", options: { block: "nearest", inline: "nearest" } }]);
 });
 
 test("manual Tabs move focus with the arrows and open on a click only", async () => {
