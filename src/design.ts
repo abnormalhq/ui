@@ -10,7 +10,7 @@ export const principles = [
   },
   {
     title: "Density belongs to the task",
-    text: "Use compact spacing for lists and operational metadata, comfortable spacing for reading and decisions. Change padding before type size. Do not apply a global density rule that shrinks every control or touch target.",
+    text: 'Use compact spacing for lists and operational metadata, comfortable spacing for reading and decisions. A product people work in for hours opts into data-ui-density="compact" on the root html element: it tightens spacing first and steps interface type down about a pixel, and only for a mouse or trackpad, so touch targets keep their size. Message bodies and long-form copy keep their reading size.',
   },
   {
     title: "Status is not branding",
@@ -111,7 +111,7 @@ export const implementationRules = [
   ],
   [
     "Input and focus",
-    "Keep names, labels, keyboard access and visible focus. Compact rows are a desktop information-density option, not permission to make mobile targets smaller.",
+    "Keep names, labels, keyboard access and visible focus. The compact density applies only to a fine pointer: it is a desktop information-density option, not permission to make touch targets smaller.",
   ],
   [
     "Motion",

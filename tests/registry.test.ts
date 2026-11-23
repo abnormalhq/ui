@@ -446,6 +446,87 @@ test("dark: utilities follow the same rule as the dark tokens", async () => {
   assert.ok(media.lastIndexOf("@media (prefers-color-scheme: dark)") > media.lastIndexOf("}"), css);
 });
 
+test("the type scale is variable-based, and the compact density tightens spacing and interface type only", async () => {
+  const compiler = await compile(`${theme}\n@tailwind utilities;`, {
+    base: process.cwd(),
+    loadStylesheet: async () => ({ path: "", base: "", content: "" }),
+  });
+  const css = compiler.build(["text-sm", "text-display"]);
+  // A density can only change sizes the utilities read as variables.
+  assert.match(
+    css,
+    /\.text-sm \{\s*font-size: var\(--text-sm\);\s*line-height: var\(--tw-leading, var\(--text-sm--line-height\)\);/,
+  );
+  assert.match(css, /\.text-display \{\s*font-size: var\(--text-display\);/);
+  const block = (selector: string) => theme.match(new RegExp(`\\n {2}${selector} \\{([\\s\\S]*?)\\n {2}\\}`))![1]!;
+  const compact = Object.fromEntries(
+    [...block('\\[data-ui-density="compact"\\]').matchAll(/(--[a-z0-9-]+): ([^;]+);/g)].map(([, name, value]) => [
+      name!,
+      value!,
+    ]),
+  );
+  assert.equal(compact["--spacing"], "3.5px");
+  assert.equal(compact["--text-base"], "13px");
+  assert.equal(compact["--leading-body"], "1.45");
+  // 2xs is the floor for meta text and the display scale is for marketing lines: neither shrinks.
+  assert.ok(!Object.keys(compact).some((name) => name.startsWith("--text-2xs") || name.startsWith("--text-display")));
+  // Every interface size it changes is smaller than the default it replaces.
+  for (const [name, value] of Object.entries(compact)) {
+    if (!/^--text-[a-z0-9]+$/.test(name)) continue;
+    const base = theme.match(new RegExp(`\\n  ${name}: (\\d+)px;`))![1]!;
+    assert.ok(Number.parseFloat(value) < Number(base), `${name} ${value} is not below ${base}px`);
+  }
+  // The smallest targets keep the 24px WCAG minimum when the spacing step shrinks.
+  const button = readFileSync("registry/ui/button.tsx", "utf8");
+  assert.match(button, /xs: "h-6 min-h-\[24px\]/);
+  assert.match(button, /"icon-xs": "size-6 min-h-\[24px\] min-w-\[24px\]/);
+  const searchInput = readFileSync("registry/ui/search-input.tsx", "utf8");
+  // The small box's end padding (pr-8) must hold the 24px button and its right-1 inset at either spacing step.
+  assert.match(searchInput, /sm: \{ input: "pr-8 [^"]*", icon: "[^"]*", clear: "size-5 min-h-\[24px\] min-w-\[24px\]/);
+  assert.match(searchInput, /clear: "size-6 min-h-\[24px\] min-w-\[24px\]/);
+  assert.match(readFileSync("registry/ui/info-hint.tsx", "utf8"), /size-6 min-h-\[24px\] min-w-\[24px\]/);
+  // Table and ItemList write data-density on their own element; the page's density must not match it.
+  assert.doesNotMatch(theme, /\[data-density/);
+  // Only for a mouse or trackpad: touch screens keep full-size targets.
+  const media = theme.slice(0, theme.indexOf('[data-ui-density="compact"] {'));
+  assert.ok(media.trimEnd().endsWith("@media (pointer: fine) {"));
+  // A dense region below <html> sets its own text size; <html> keeps the rem. The default is in the base layer, so a
+  // text-* or leading-* utility on the region's own element (Prose's text-md/[1.9]) still wins.
+  const region = theme.indexOf('[data-ui-density="compact"]:not(:root) {');
+  assert.ok(theme.slice(0, region).trimEnd().endsWith("@layer base {\n  @media (pointer: fine) {"));
+  assert.match(theme.slice(region), /^[^}]*font-size: var\(--text-base\);\s*line-height: var\(--leading-body\);/);
+  assert.match(theme, /body \{[^}]*font-size: var\(--text-base\);\s*line-height: var\(--leading-body\);/);
+  // Compiled the way a product does, the region default lands in the base layer and the region's own utility in the
+  // utilities layer, which the declared order puts last, so the utility wins.
+  const layered = await compile(
+    `@layer theme, base, components, utilities;\n${theme}\n@layer utilities { @tailwind utilities; }`,
+    { base: process.cwd(), loadStylesheet: async () => ({ path: "", base: "", content: "" }) },
+  );
+  const built = layered.build(["text-md/[1.9]"]);
+  // The innermost open @layer block at the rule, following every brace, so a rule after a layer closes reads as unlayered.
+  const layerOf = (needle: string) => {
+    const at = built.indexOf(needle);
+    assert.ok(at >= 0, needle);
+    const open: string[] = [];
+    let start = 0;
+    for (const match of built.slice(0, at).matchAll(/[{}]/g)) {
+      if (match[0] === "{") {
+        open.push(built.slice(start, match.index).trim());
+      } else {
+        open.pop();
+      }
+      start = match.index + 1;
+    }
+    return open
+      .map((header) => header.match(/@layer ([a-z]+)$/)?.[1])
+      .filter(Boolean)
+      .at(-1);
+  };
+  assert.match(built, /@layer theme, base, components, utilities;/);
+  assert.equal(layerOf('[data-ui-density="compact"]:not(:root) {'), "base");
+  assert.equal(layerOf(".text-md\\/\\[1\\.9\\] {"), "utilities");
+});
+
 test("the ink shell carries the dark values and maps every semantic name again", () => {
   const declarations = (block: string) =>
     new Map([...block.matchAll(/(--[a-z0-9-]+): ([^;]+);/g)].map(([, name, value]) => [name!, value!]));
