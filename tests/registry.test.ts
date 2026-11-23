@@ -481,7 +481,8 @@ test("the type scale is variable-based, and the compact density tightens spacing
   assert.match(button, /xs: "h-6 min-h-\[24px\]/);
   assert.match(button, /"icon-xs": "size-6 min-h-\[24px\] min-w-\[24px\]/);
   const searchInput = readFileSync("registry/ui/search-input.tsx", "utf8");
-  assert.match(searchInput, /clear: "size-5 min-h-\[24px\] min-w-\[24px\]/);
+  // The small box's end padding (pr-8) must hold the 24px button and its right-1 inset at either spacing step.
+  assert.match(searchInput, /sm: \{ input: "pr-8 [^"]*", icon: "[^"]*", clear: "size-5 min-h-\[24px\] min-w-\[24px\]/);
   assert.match(searchInput, /clear: "size-6 min-h-\[24px\] min-w-\[24px\]/);
   assert.match(readFileSync("registry/ui/info-hint.tsx", "utf8"), /size-6 min-h-\[24px\] min-w-\[24px\]/);
   // Table and ItemList write data-density on their own element; the page's density must not match it.
