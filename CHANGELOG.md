@@ -8,7 +8,7 @@ Each entry names the items it touches, because a project installs items one by o
 
 ### Added
 
-- `bento`: a wall of feature tiles for a landing page. `Bento` (one column, two from `sm`, three from `lg`; a `ul` with `asChild`), `BentoTile` (`wide` spans two columns from `sm`), `BentoTitle`, `BentoDescription` and `BentoVisual`, the picture pushed to the foot of the tile. Server-safe.
+- `bento`: a wall of feature tiles for a landing page. `Bento` (one column, two from `sm`, three from `lg`; a `ul role="list"` with `asChild`), `BentoTile` (`wide` spans two columns from `sm`), `BentoTitle`, `BentoDescription` and `BentoVisual`, the picture pushed to the foot of the tile. Server-safe.
 - `side-pane`: a pane beside a list that folds to a 40px rail and opens again, such as the facet column on the start side and the current row's details on the end side. `SidePane` (`side`, `collapsed` / `defaultCollapsed` / `onCollapsedChange`, and `cookieName` to keep the choice across reloads, as Sidebar does), `SidePaneHeader`, `SidePaneTitle` (running down the rail when folded), `SidePaneToggle` (aria-expanded and aria-controls, labelled by `collapseLabel` and `expandLabel`) and `SidePaneContent`, hidden but kept while folded.
 - `list-toolbar`: the row over a list, the same on every list: `ListToolbar` (a `div`, or the page's `form` with `asChild`), `ListToolbarSearch`, `ListToolbarGroup`, `ListToolbarActions` at the far end and `ListToolbarChips`, the line of conditions in force. Server-safe.
 - `table`: `density="compact"` for a dense list between side panes (shorter rows, closer cells, the smaller text), and `TableRow current` for the row a details pane shows, with `aria-current`, the hover color and a bar at its start edge.

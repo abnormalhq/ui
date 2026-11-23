@@ -15,7 +15,7 @@ export default function BentoDemo({ copy: overrides = {} }: { copy?: Partial<typ
   const copy = { ...defaultCopy, ...overrides };
   return (
     <Bento asChild className="w-full max-w-3xl">
-      <ul>
+      <ul role="list">
         <BentoTile asChild wide>
           <li>
             <div>
