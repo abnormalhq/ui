@@ -7,12 +7,23 @@ import { test } from "node:test";
 import { isValidElement, type ReactElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
+import {
+  FacetCount,
+  FacetGroup,
+  FacetGroupLabel,
+  FacetItem,
+  FacetLabel,
+  FacetList,
+  FacetMore,
+  FacetRow,
+} from "@/components/ui/facet-list";
 import { FileButton } from "@/components/ui/file-button";
 import { JsonLd, serializeJsonLd } from "@/components/ui/json-ld";
 import { LanguageOptions, LanguagePicker } from "@/components/ui/language-picker";
 import { NavTab, NavTabs } from "@/components/ui/nav-tabs";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Sidebar, SidebarItem, SidebarNav } from "@/components/ui/sidebar";
+import { StatusBar, StatusBarItem, StatusBarShortcut, StatusBarSpacer } from "@/components/ui/status-bar";
 import { ThemePicker } from "@/components/ui/theme-picker";
 import { Toc, TocLink, TocList } from "@/components/ui/toc";
 import { Turnstile } from "@/components/ui/turnstile";
@@ -156,4 +167,59 @@ test("a LanguagePicker of links, without onValueChange, gives its menu items no 
     renderToStaticMarkup(<LanguagePicker options={options} value="zh" label="Language" />),
     /aria-label="Language"/,
   );
+});
+
+test("A FacetList is links in the server markup, the chosen one marked by the page and the more row a button", () => {
+  const html = renderToStaticMarkup(
+    <FacetGroup>
+      <FacetGroupLabel id="domains">Domains</FacetGroupLabel>
+      <FacetList aria-labelledby="domains">
+        <FacetItem>
+          <FacetRow asChild selected>
+            <a href="?domain=lumen.example" aria-current="true">
+              <FacetLabel>lumen.example</FacetLabel>
+              <FacetCount>1,204</FacetCount>
+            </a>
+          </FacetRow>
+        </FacetItem>
+        <FacetItem>
+          <FacetRow asChild>
+            <a href="?domain=harbor.example">
+              <FacetLabel>harbor.example</FacetLabel>
+              <FacetCount>3,988</FacetCount>
+            </a>
+          </FacetRow>
+        </FacetItem>
+      </FacetList>
+      <FacetMore asChild>
+        <button type="button">Show 50 more</button>
+      </FacetMore>
+    </FacetGroup>,
+  );
+  assert.match(html, /<ul data-slot="facet-list"[^>]*aria-labelledby="domains"/);
+  assert.match(
+    html,
+    /<a href="\?domain=lumen\.example" aria-current="true" data-slot="facet-row" data-selected="true"/,
+  );
+  assert.equal(html.match(/data-selected/g)?.length, 1);
+  assert.match(html, /<button type="button" data-slot="facet-more"[^>]*>Show 50 more<\/button>/);
+});
+
+test("A StatusBar is a footer with its entries, a spacer and key caps, and no script", () => {
+  const html = renderToStaticMarkup(
+    <StatusBar className="ink">
+      <StatusBarItem asChild>
+        <a href="/docs">/docs</a>
+      </StatusBarItem>
+      <StatusBarItem>Queue 12</StatusBarItem>
+      <StatusBarSpacer />
+      <StatusBarShortcut keys={["J", "K"]}>Move</StatusBarShortcut>
+    </StatusBar>,
+  );
+  assert.match(html, /^<footer data-slot="status-bar" class="[^"]*\bink\b/);
+  assert.match(html, /<a href="\/docs" data-slot="status-bar-item"[^>]*>\/docs<\/a>/);
+  assert.match(html, /<span aria-hidden="true" data-slot="status-bar-spacer"/);
+  assert.equal(html.match(/<kbd data-slot="kbd"/g)?.length, 2);
+  assert.match(html, /<\/kbd><\/span>Move<\/span>/);
+  assert.doesNotMatch(html, /<script/);
 });

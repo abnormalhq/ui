@@ -2,7 +2,7 @@
 import { click, render } from "./support/render.tsx";
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
-import { act, useState } from "react";
+import { act, useRef, useState } from "react";
 import { LanguagePicker } from "@/components/ui/language-picker";
 import { NavTab, NavTabs } from "@/components/ui/nav-tabs";
 import { ResizeHandle } from "@/components/ui/resize-handle";
@@ -21,6 +21,7 @@ import { ThemePicker } from "@/components/ui/theme-picker";
 import { Toc, TocLink, TocList } from "@/components/ui/toc";
 import { Toolbar, ToolbarButton, ToolbarGroup, ToolbarSeparator } from "@/components/ui/toolbar";
 import { scrollIntoRow } from "@/components/ui/use-scroll-fade";
+import { useListNavigation } from "@/components/ui/use-list-navigation";
 import { useSidebar } from "@/components/ui/use-sidebar";
 
 const mounted: { unmount: () => Promise<void> }[] = [];
@@ -685,4 +686,87 @@ test("a ScrollFade under PageHeaderActions fades the cut-off end of the row and 
   row.dispatchEvent(event);
   assert.equal(event.defaultPrevented, true);
   assert.equal(row.scrollLeft, 40);
+});
+
+function NavigableList({
+  count = 3,
+  onOpen = () => {},
+  onBoundary,
+}: {
+  count?: number;
+  onOpen?: (index: number) => void;
+  onBoundary?: (direction: 1 | -1) => void;
+}) {
+  const [index, setIndex] = useState(-1);
+  const search = useRef<HTMLInputElement>(null);
+  useListNavigation({
+    count,
+    index,
+    onIndexChange: setIndex,
+    onOpen,
+    onClose: () => setIndex(-1),
+    onBoundary,
+    searchRef: search,
+  });
+  return (
+    <div>
+      <input ref={search} aria-label="Search" defaultValue="lumen" />
+      <output data-current>{index}</output>
+      <button type="button">Edit</button>
+      <div role="dialog">
+        <button type="button">In a dialog</button>
+      </div>
+    </div>
+  );
+}
+const current = () => document.querySelector("[data-current]")!.textContent;
+
+test("useListNavigation moves the current row with J and K, stops at the ends and opens it with Enter or O", async () => {
+  const opened: number[] = [];
+  const boundaries: number[] = [];
+  await mount(
+    <NavigableList onOpen={(index) => opened.push(index)} onBoundary={(direction) => boundaries.push(direction)} />,
+  );
+  assert.equal(current(), "-1");
+  assert.equal(await press(document.body, "j"), true);
+  assert.equal(current(), "0");
+  await press(document.body, "j");
+  await press(document.body, "j");
+  assert.equal(current(), "2");
+  await press(document.body, "j");
+  assert.equal(current(), "2", "stays on the last row");
+  assert.deepEqual(boundaries, [1]);
+  await press(document.body, "k");
+  assert.equal(current(), "1");
+  await press(document.body, "Enter");
+  await press(document.body, "o");
+  assert.deepEqual(opened, [1, 1]);
+  await press(document.body, "Escape");
+  assert.equal(current(), "-1");
+  await press(document.body, "k");
+  assert.equal(current(), "2", "K with no current row starts from the last");
+});
+
+test("useListNavigation leaves keys to fields, dialogs, buttons and modifiers, and / goes to the search", async () => {
+  const opened: number[] = [];
+  await mount(<NavigableList onOpen={(index) => opened.push(index)} />);
+  const search = document.querySelector<HTMLInputElement>('input[aria-label="Search"]')!;
+  assert.equal(await press(search, "j"), false, "a letter in a field is a letter");
+  assert.equal(await press(named("In a dialog"), "j"), false);
+  assert.equal(await press(document.body, "j", { metaKey: true }), false);
+  assert.equal(await press(document.body, "j", { isComposing: true }), false);
+  assert.equal(current(), "-1");
+  await press(document.body, "j");
+  assert.equal(await press(named("Edit"), "Enter"), false, "Enter on a button is the button's");
+  assert.deepEqual(opened, []);
+  assert.equal(await press(document.body, "/"), true);
+  assert.equal(document.activeElement, search);
+  assert.equal(search.selectionStart, 0);
+  assert.equal(search.selectionEnd, 5);
+});
+
+test("useListNavigation does nothing on an empty list", async () => {
+  await mount(<NavigableList count={0} />);
+  assert.equal(await press(document.body, "j"), false);
+  assert.equal(current(), "-1");
 });
