@@ -136,18 +136,24 @@ function TabsTrigger({
         const tabs = Array.from(list.querySelectorAll<HTMLButtonElement>('[role="tab"]')).filter(
           (item) => item.closest('[role="tablist"]') === list && !item.disabled,
         );
-        const rtl = tab.closest("[dir]")?.getAttribute("dir") === "rtl";
-        const step = intent === "prev" ? (rtl ? 1 : -1) : intent === "next" ? (rtl ? -1 : 1) : 0;
-        const at = tabs.indexOf(tab as HTMLButtonElement);
-        let next: HTMLButtonElement | undefined;
-        if (intent === "first") next = tabs[0];
-        else if (intent === "last") next = tabs[tabs.length - 1];
-        else if (loop) next = tabs[(at + step + tabs.length) % tabs.length];
-        else next = tabs[at + step];
+        // The list's direction, not a tab's own: a tab whose label is set dir="ltr" must not turn the arrows round.
+        const rtl = list.closest("[dir]")?.getAttribute("dir") === "rtl";
+        const forward = intent === "first" || (intent === "next" && !rtl) || (intent === "prev" && rtl);
+        const ordered = forward ? tabs : tabs.slice().reverse();
+        let candidates = ordered;
+        if (intent === "prev" || intent === "next") {
+          const after = ordered.indexOf(tab as HTMLButtonElement) + 1;
+          candidates = loop ? [...ordered.slice(after), ...ordered.slice(0, after)] : ordered.slice(after);
+        }
         event.preventDefault();
-        if (!next || next === tab) return;
-        next.focus({ preventScroll: true });
-        revealInRow(next);
+        // Like Radix, the first candidate that takes the focus wins, so a tab that is hidden is passed over.
+        for (const candidate of candidates) {
+          candidate.focus({ preventScroll: true });
+          if (candidate.ownerDocument.activeElement === candidate) {
+            revealInRow(candidate);
+            return;
+          }
+        }
       }}
       className={cn(
         "relative inline-flex shrink-0 items-center justify-center gap-1.5 text-base whitespace-nowrap text-muted-foreground transition-colors duration-150 select-none hover:text-foreground focus-visible:-outline-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[orientation=vertical]:justify-start data-[state=active]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",

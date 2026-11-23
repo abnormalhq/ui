@@ -176,6 +176,69 @@ test("a list with loop={false} stops at the ends, and right to left swaps the ar
   assert.equal(focused(), "General");
   await press(tab("General"), "ArrowRight");
   assert.equal(focused(), "Members", "wraps, past the disabled tab");
+  await press(tab("Members"), "Home");
+  assert.equal(focused(), "General", "Home is the first tab either way");
+  await press(tab("General"), "End");
+  assert.equal(focused(), "Members");
+  for (const view of mounted.splice(0)) await view.unmount();
+
+  // The list's direction counts, not a tab's: a label set left to right does not turn the arrows round.
+  await mount(
+    <Tabs defaultValue="inbox" dir="rtl">
+      <TabsList aria-label="Folders">
+        <TabsTrigger value="inbox">Inbox</TabsTrigger>
+        <TabsTrigger value="api" dir="ltr">
+          API
+        </TabsTrigger>
+        <TabsTrigger value="sent">Sent</TabsTrigger>
+      </TabsList>
+    </Tabs>,
+  );
+  await act(async () => tab("Inbox").focus());
+  await press(tab("Inbox"), "ArrowLeft");
+  assert.equal(focused(), "API");
+  await press(tab("API"), "ArrowLeft");
+  assert.equal(focused(), "Sent");
+});
+
+test("the arrows pass over a tab that cannot take the focus, as Radix does", async () => {
+  await mount(tabs());
+  await act(async () => tab("General").focus());
+  // A tab hidden with display: none, which the browser will not focus.
+  const focus = HTMLElement.prototype.focus;
+  mock.method(HTMLElement.prototype, "focus", function (this: HTMLElement, options?: FocusOptions) {
+    if (this.textContent !== "DNS") focus.call(this, options);
+  });
+  await press(tab("General"), "ArrowRight");
+  assert.equal(focused(), "Members");
+});
+
+test("a tab moved to by key or click is scrolled into view in its row, not the page", async () => {
+  await mount(tabs());
+  const list = document.querySelector<HTMLElement>('[role="tablist"]')!;
+  // jsdom has no layout: a row 200px wide showing the first 200px of 400px of tabs, each 100px wide.
+  list.style.overflowX = "auto";
+  Object.defineProperty(list, "scrollWidth", { value: 400 });
+  Object.defineProperty(list, "clientWidth", { value: 200 });
+  const box = (left: number) => ({ left, right: left + 100 }) as DOMRect;
+  mock.method(list, "getBoundingClientRect", () => ({ left: 0, right: 200 }) as DOMRect);
+  const triggers = [...list.querySelectorAll<HTMLElement>('[role="tab"]')];
+  triggers.forEach((item, index) =>
+    mock.method(item, "getBoundingClientRect", () => box(index * 100 - list.scrollLeft)),
+  );
+  const pageScroll = mock.method(window, "scrollTo", () => {});
+
+  await act(async () => tab("General").focus());
+  await press(tab("General"), "End");
+  assert.equal(focused(), "Members");
+  assert.equal(list.scrollLeft, 200, "Members, 300px to 400px, ends at the row's right edge");
+  await press(tab("Members"), "Home");
+  assert.equal(list.scrollLeft, 0);
+  await act(async () => {
+    tab("Members").dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, button: 0 }));
+  });
+  assert.equal(list.scrollLeft, 200);
+  assert.equal(pageScroll.mock.callCount(), 0);
 });
 
 test("manual Tabs move focus with the arrows and open on a click only", async () => {
