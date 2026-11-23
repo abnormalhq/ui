@@ -190,10 +190,10 @@ function SidePaneContent({ className, ...props }: Omit<React.ComponentProps<"div
   return (
     <div
       data-slot="side-pane-content"
-      id={contentId}
-      hidden={collapsed}
       className={cn("min-h-0 flex-1 overflow-y-auto", className)}
       {...props}
+      id={contentId}
+      hidden={collapsed}
     />
   );
 }
