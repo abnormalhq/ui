@@ -6,8 +6,10 @@ import { cn } from "@/lib/utils";
 /**
  * A strip of clips in playing order, each as wide as it is long: the shots of a video, the takes in a cut, the
  * segments of a recording. The page names the strip with `aria-label` ("Shots"), in its own language, and lays out a
- * ClipTrackRuler, one ClipTrackLane and, after the lane, any ClipTrackPlayhead inside it. The track takes the width it is given and
- * never scrolls on its own; a long programme belongs in the page's own scroll box.
+ * ClipTrackRuler, one ClipTrackLane and, after the lane, any ClipTrackPlayhead inside it. Every part puts time on one linear
+ * scale across the track's width, so a clip's left edge sits on its start time on the ruler and the playhead crosses into
+ * the clip that is playing. The track takes the width it is given and never scrolls on its own: when short clips would be
+ * too narrow to hit, give it a `min-width` from clipTrackMinWidth inside the page's own horizontal scroll box.
  */
 function ClipTrack({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -68,32 +70,37 @@ function ClipTrackLane({ className, ...props }: React.ComponentProps<"ol">) {
     <ol
       role="list"
       data-slot="clip-track-lane"
-      className={cn("relative m-0 flex h-14 min-w-0 list-none gap-0.5 p-0", className)}
+      className={cn("relative m-0 flex h-14 min-w-0 list-none p-0", className)}
       {...props}
     />
   );
 }
 
 /**
- * One clip's place in the lane. `length` is its length in the ruler's unit: the clips share the lane's width in
- * proportion, and a clip never gets narrower than `minWidth` pixels (default 48), so a one-second clip stays easy to
- * hit beside a minute-long one.
+ * One clip's place in the lane. `length` is its length in the ruler's unit, and the clip takes exactly that share of the
+ * lane's width; the gap before the next clip comes out of its own share, so every clip starts where its time does.
  */
-function ClipTrackItem({
-  className,
-  length,
-  minWidth = 48,
-  style,
-  ...props
-}: React.ComponentProps<"li"> & { length: number; minWidth?: number }) {
+function ClipTrackItem({ className, length, style, ...props }: React.ComponentProps<"li"> & { length: number }) {
   return (
     <li
       data-slot="clip-track-item"
-      className={cn("flex min-w-0", className)}
-      style={{ flex: `${Math.max(0, length)} 1 0px`, minWidth, ...style }}
+      className={cn("flex min-w-0 pe-0.5 last:pe-0", className)}
+      style={{ flex: `${Math.max(0, length)} 1 0px`, ...style }}
       {...props}
     />
   );
+}
+
+/**
+ * The narrowest track, in pixels, on which the shortest clip is still `clipWidth` pixels wide (default 48), from the
+ * clips' lengths. Give it to ClipTrack as `min-width` inside a horizontal scroll box: a one-second clip stays easy to hit
+ * beside a minute-long one, and the time scale stays straight.
+ */
+function clipTrackMinWidth(lengths: readonly number[], clipWidth = 48): number {
+  const positive = lengths.filter((length) => length > 0);
+  if (!positive.length) return 0;
+  const total = positive.reduce((sum, length) => sum + length, 0);
+  return Math.ceil((clipWidth * total) / Math.min(...positive));
 }
 
 const clipTrackClipVariants = cva(
@@ -189,4 +196,5 @@ export {
   ClipTrackClip,
   ClipTrackPlayhead,
   clipTrackClipVariants,
+  clipTrackMinWidth,
 };

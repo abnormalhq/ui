@@ -16,6 +16,7 @@ import {
   ClipTrackLane,
   ClipTrackPlayhead,
   ClipTrackRuler,
+  clipTrackMinWidth,
 } from "@/components/ui/clip-track";
 import { CodeBlock } from "@/components/ui/code-block";
 import { DescriptionDetails, DescriptionItem, DescriptionList } from "@/components/ui/description-list";
@@ -389,7 +390,7 @@ test("a ClipTrack shares the lane by length, marks the selected clip and fills a
             </button>
           </ClipTrackClip>
         </ClipTrackItem>
-        <ClipTrackItem length={15} minWidth={64}>
+        <ClipTrackItem length={15}>
           <ClipTrackClip tone="current" progress={1.4}>
             02 Glass
           </ClipTrackClip>
@@ -403,8 +404,9 @@ test("a ClipTrack shares the lane by length, marks the selected clip and fills a
   assert.match(html, /style="left:50%">10s<\/span>/);
   assert.match(html, /data-edge="end" style="right:0">20s<\/span>/);
   assert.match(html, /<ol role="list" data-slot="clip-track-lane"/);
-  assert.match(html, /<li data-slot="clip-track-item" class="[^"]*" style="flex:5 1 0px;min-width:48px">/);
-  assert.match(html, /style="flex:15 1 0px;min-width:64px"/);
+  // Each clip takes exactly its share of the width, so its edge sits on its start time on the ruler.
+  assert.match(html, /<li data-slot="clip-track-item" class="[^"]*" style="flex:5 1 0px">/);
+  assert.match(html, /style="flex:15 1 0px"/);
   // asChild hands the clip's look to the page's button, with the bar inside it.
   assert.match(
     html,
@@ -420,4 +422,11 @@ test("a ClipTrack shares the lane by length, marks the selected clip and fills a
     /<span aria-hidden="true" data-slot="clip-track-playhead" class="[^"]*" style="left:100%"><\/span><\/div>$/,
   );
   assert.doesNotMatch(html, /<script/);
+});
+
+test("clipTrackMinWidth keeps the shortest clip 48px wide without bending the time scale", () => {
+  assert.equal(clipTrackMinWidth([5, 3, 5, 2, 5]), 480);
+  assert.equal(clipTrackMinWidth([1, 60], 40), 2440);
+  assert.equal(clipTrackMinWidth([0, 10]), 48);
+  assert.equal(clipTrackMinWidth([]), 0);
 });
