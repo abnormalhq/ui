@@ -68,11 +68,20 @@ function TabsList({
   );
 }
 
-function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
+function TabsTrigger({ className, onMouseDown, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
   const variant = React.useContext(TabsVariantContext);
   return (
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
+      onMouseDown={(event) => {
+        onMouseDown?.(event);
+        // Radix opens a tab on mousedown with a plain focus(), and a browser that focuses an element in a sticky row scrolls
+        // the page back to the row's resting place: in a long settings page scrolled down, the row jumped down on every
+        // click. Focusing it first without scrolling turns that call into a no-op; keyboard and touch are unaffected.
+        if (!event.defaultPrevented && event.button === 0 && !event.ctrlKey && !props.disabled) {
+          event.currentTarget.focus({ preventScroll: true });
+        }
+      }}
       className={cn(
         "relative inline-flex shrink-0 items-center justify-center gap-1.5 text-base whitespace-nowrap text-muted-foreground transition-colors duration-150 select-none hover:text-foreground focus-visible:-outline-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[orientation=vertical]:justify-start data-[state=active]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         TABS_TRIGGER_VARIANTS[variant],

@@ -28,6 +28,10 @@ Each entry names the items it touches, because a project installs items one by o
 - `theme-script`: `ThemeScript` takes `defaultTheme` (`"system"`, the default, `"light"` or `"dark"`) for a site whose visitors start on one theme until they choose; `createThemeScript(defaultTheme)` returns that script. A choice equal to the default is not stored, and `<meta name="theme-color">` starts in the default's color.
 - `item-list`: opt-in `density="compact"` row spacing and a `selected` muted-highlight treatment. Default spacing is unchanged. The product supplies selection semantics (`aria-current`, `aria-pressed`, or its widget's role); the visual prop does not invent them. Row transitions now respect reduced motion.
 
+### Fixed
+
+- `tabs`: a click on a tab no longer scrolls the page. Radix focuses the tab on mousedown, and in a sticky tab row the browser scrolled the page back to the row's resting place, so on a long page scrolled down the row jumped on every click. `TabsTrigger` now focuses it with `preventScroll` first.
+
 ## [0.5.0] - 2026-11-14
 
 The pieces the projects kept building for themselves: page structure, lists and their states, navigation, and the fields that were still native inputs. Twenty-eight new items bring the registry to 93, and the items that render without a client module no longer bring one in through their icons. One package was added: `uqr`, for `qr-code`.

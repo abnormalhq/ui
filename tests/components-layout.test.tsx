@@ -70,6 +70,31 @@ test("Tabs tie each tab to its panel, and keep one tab in the tab order", async 
   assert.equal((tab("Billing") as HTMLButtonElement).disabled, true);
 });
 
+test("a click on a tab focuses it without scrolling the page, and still opens it", async () => {
+  const onValueChange = mock.fn();
+  await mount(tabs({ onValueChange }));
+  const calls: (FocusOptions | undefined)[] = [];
+  const focus = HTMLElement.prototype.focus;
+  mock.method(HTMLElement.prototype, "focus", function (this: HTMLElement, options?: FocusOptions) {
+    calls.push(options);
+    focus.call(this, options);
+  });
+  await act(async () => {
+    tab("DNS").dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, button: 0 }));
+  });
+  // A tab in a sticky row would otherwise scroll the page back to the row's resting place.
+  assert.deepEqual(calls[0], { preventScroll: true });
+  assert.equal(focused(), "DNS");
+  assert.equal(tab("DNS").getAttribute("aria-selected"), "true");
+  assert.deepEqual(onValueChange.mock.calls.at(-1)?.arguments, ["dns"]);
+  // A disabled tab is not focused.
+  calls.length = 0;
+  await act(async () => {
+    tab("Billing").dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, button: 0 }));
+  });
+  assert.equal(calls.length, 0);
+});
+
 test("arrow keys move between tabs and open them, past a disabled tab and around the ends", async () => {
   const onValueChange = mock.fn();
   await mount(tabs({ onValueChange }));
