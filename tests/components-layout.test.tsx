@@ -32,9 +32,12 @@ const press = async (element: Element, key: string) => {
 };
 const focused = () => document.activeElement?.textContent;
 
-const tabs = (props: React.ComponentProps<typeof Tabs> = {}) => (
+const tabs = (
+  props: React.ComponentProps<typeof Tabs> = {},
+  listProps: Omit<React.ComponentProps<typeof TabsList>, "children"> = {},
+) => (
   <Tabs defaultValue="general" {...props}>
-    <TabsList aria-label="Domain settings">
+    <TabsList aria-label="Domain settings" {...listProps}>
       <TabsTrigger value="general">General</TabsTrigger>
       <TabsTrigger value="dns">DNS</TabsTrigger>
       <TabsTrigger value="billing" disabled>
@@ -122,6 +125,57 @@ test("arrow keys move between tabs and open them, past a disabled tab and around
   assert.equal(focused(), "Members");
   assert.equal(shownPanel()!.textContent, "Twelve people");
   assert.deepEqual(onValueChange.mock.calls.at(-1)?.arguments, ["members"]);
+});
+
+const recordFocus = () => {
+  const calls: { tab: string | null; options: FocusOptions | undefined }[] = [];
+  const focus = HTMLElement.prototype.focus;
+  mock.method(HTMLElement.prototype, "focus", function (this: HTMLElement, options?: FocusOptions) {
+    calls.push({ tab: this.textContent, options });
+    focus.call(this, options);
+  });
+  return calls;
+};
+
+test("arrow keys focus the next tab without scrolling the page", async () => {
+  await mount(tabs());
+  await act(async () => tab("General").focus());
+  const calls = recordFocus();
+  await press(tab("General"), "ArrowRight");
+  await press(tab("DNS"), "End");
+  // Radix's own focus() would scroll the page back to a sticky row's resting place.
+  assert.deepEqual(calls, [
+    { tab: "DNS", options: { preventScroll: true } },
+    { tab: "Members", options: { preventScroll: true } },
+  ]);
+  // Keys with a modifier are left alone, for the browser and the page's shortcuts.
+  const event = new KeyboardEvent("keydown", { key: "ArrowLeft", altKey: true, bubbles: true, cancelable: true });
+  await act(async () => {
+    tab("Members").dispatchEvent(event);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+  assert.equal(event.defaultPrevented, false);
+  assert.equal(focused(), "Members");
+});
+
+test("a list with loop={false} stops at the ends, and right to left swaps the arrows", async () => {
+  await mount(tabs({}, { loop: false }));
+  await act(async () => tab("Members").focus());
+  assert.equal(await press(tab("Members"), "ArrowRight"), true);
+  assert.equal(focused(), "Members", "does not wrap");
+  await press(tab("Members"), "Home");
+  await press(tab("General"), "ArrowLeft");
+  assert.equal(focused(), "General", "does not wrap");
+  for (const view of mounted.splice(0)) await view.unmount();
+
+  await mount(tabs({ dir: "rtl" }));
+  await act(async () => tab("General").focus());
+  await press(tab("General"), "ArrowLeft");
+  assert.equal(focused(), "DNS", "left is next right to left");
+  await press(tab("DNS"), "ArrowRight");
+  assert.equal(focused(), "General");
+  await press(tab("General"), "ArrowRight");
+  assert.equal(focused(), "Members", "wraps, past the disabled tab");
 });
 
 test("manual Tabs move focus with the arrows and open on a click only", async () => {

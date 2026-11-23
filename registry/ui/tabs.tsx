@@ -26,8 +26,11 @@ function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive
 
 type TabsVariant = "underline" | "pill";
 
-/** The look set on the list, so every trigger in it matches without repeating it. */
-const TabsVariantContext = React.createContext<TabsVariant>("underline");
+/** What the list sets for its triggers: the look, so every trigger matches without repeating it, and whether arrows wrap. */
+const TabsListContext = React.createContext<{ variant: TabsVariant; loop: boolean }>({
+  variant: "underline",
+  loop: true,
+});
 
 const TABS_LIST_VARIANTS = {
   underline:
@@ -46,6 +49,7 @@ const TABS_TRIGGER_VARIANTS = {
 function TabsList({
   className,
   variant = "underline",
+  loop = true,
   children,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.List> & {
@@ -61,15 +65,48 @@ function TabsList({
         TABS_LIST_VARIANTS[variant],
         className,
       )}
+      loop={loop}
       {...props}
     >
-      <TabsVariantContext.Provider value={variant}>{children}</TabsVariantContext.Provider>
+      <TabsListContext.Provider value={{ variant, loop }}>{children}</TabsListContext.Provider>
     </TabsPrimitive.List>
   );
 }
 
-function TabsTrigger({ className, onMouseDown, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
-  const variant = React.useContext(TabsVariantContext);
+const KEY_TO_INTENT: Record<string, "prev" | "next" | "first" | "last"> = {
+  ArrowLeft: "prev",
+  ArrowRight: "next",
+  Home: "first",
+  PageUp: "first",
+  End: "last",
+  PageDown: "last",
+};
+
+/**
+ * Scrolls the nearest row that scrolls sideways (the list itself, or a scroll area around it) just far enough to show the
+ * whole tab. Only sideways, and never the page: focusing with preventScroll leaves this to us.
+ */
+function revealInRow(tab: HTMLElement) {
+  const page = tab.ownerDocument.scrollingElement;
+  for (let row = tab.parentElement; row && row !== page && row !== tab.ownerDocument.body; row = row.parentElement) {
+    if (row.scrollWidth <= row.clientWidth) continue;
+    const overflow = getComputedStyle(row).overflowX;
+    if (overflow !== "auto" && overflow !== "scroll") continue;
+    const tabBox = tab.getBoundingClientRect();
+    const rowBox = row.getBoundingClientRect();
+    if (tabBox.left < rowBox.left) row.scrollLeft -= rowBox.left - tabBox.left;
+    else if (tabBox.right > rowBox.right) row.scrollLeft += tabBox.right - rowBox.right;
+    return;
+  }
+}
+
+function TabsTrigger({
+  className,
+  onMouseDown,
+  onKeyDown,
+  ...props
+}: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
+  const { variant, loop } = React.useContext(TabsListContext);
   return (
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
@@ -77,10 +114,40 @@ function TabsTrigger({ className, onMouseDown, ...props }: React.ComponentProps<
         onMouseDown?.(event);
         // Radix opens a tab on mousedown with a plain focus(), and a browser that focuses an element in a sticky row scrolls
         // the page back to the row's resting place: in a long settings page scrolled down, the row jumped down on every
-        // click. Focusing it first without scrolling turns that call into a no-op; keyboard and touch are unaffected.
+        // click. Focusing it first without scrolling turns that call into a no-op; touch is unaffected.
         if (!event.defaultPrevented && event.button === 0 && !event.ctrlKey && !props.disabled) {
           event.currentTarget.focus({ preventScroll: true });
+          revealInRow(event.currentTarget);
         }
+      }}
+      onKeyDown={(event) => {
+        onKeyDown?.(event);
+        // Radix moves between tabs with a plain focus() too, which scrolled the page the same way. A row of tabs is moved
+        // through here instead, with the same keys and rules (disabled tabs skipped, wrapping unless the list says
+        // loop={false}, arrows swapped right to left); preventDefault tells Radix it is handled. Its focus handler still
+        // opens the tab and moves the tab stop. A vertical list is left to Radix.
+        const tab = event.currentTarget;
+        const intent = KEY_TO_INTENT[event.key];
+        if (event.defaultPrevented || !intent || event.target !== tab) return;
+        if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+        if (tab.getAttribute("data-orientation") !== "horizontal") return;
+        const list = tab.closest<HTMLElement>('[role="tablist"]');
+        if (!list) return;
+        const tabs = Array.from(list.querySelectorAll<HTMLButtonElement>('[role="tab"]')).filter(
+          (item) => item.closest('[role="tablist"]') === list && !item.disabled,
+        );
+        const rtl = tab.closest("[dir]")?.getAttribute("dir") === "rtl";
+        const step = intent === "prev" ? (rtl ? 1 : -1) : intent === "next" ? (rtl ? -1 : 1) : 0;
+        const at = tabs.indexOf(tab as HTMLButtonElement);
+        let next: HTMLButtonElement | undefined;
+        if (intent === "first") next = tabs[0];
+        else if (intent === "last") next = tabs[tabs.length - 1];
+        else if (loop) next = tabs[(at + step + tabs.length) % tabs.length];
+        else next = tabs[at + step];
+        event.preventDefault();
+        if (!next || next === tab) return;
+        next.focus({ preventScroll: true });
+        revealInRow(next);
       }}
       className={cn(
         "relative inline-flex shrink-0 items-center justify-center gap-1.5 text-base whitespace-nowrap text-muted-foreground transition-colors duration-150 select-none hover:text-foreground focus-visible:-outline-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[orientation=vertical]:justify-start data-[state=active]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",

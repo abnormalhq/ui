@@ -30,7 +30,7 @@ Each entry names the items it touches, because a project installs items one by o
 
 ### Fixed
 
-- `tabs`: a click on a tab no longer scrolls the page. Radix focuses the tab on mousedown, and in a sticky tab row the browser scrolled the page back to the row's resting place, so on a long page scrolled down the row jumped on every click. `TabsTrigger` now focuses it with `preventScroll` first.
+- `tabs`: a click on a tab no longer scrolls the page. Radix focuses the tab on mousedown, and in a sticky tab row the browser scrolled the page back to the row's resting place, so on a long page scrolled down the row jumped on every click. `TabsTrigger` now focuses it with `preventScroll` first. The arrow keys, Home and End did the same through Radix's roving focus, so a horizontal `TabsList` now moves between its tabs itself, with Radix's keys and rules (disabled tabs skipped, wrapping unless `loop={false}`, arrows swapped right to left), focusing without scrolling the page. Both scroll the row sideways just far enough to show the tab.
 
 ## [0.5.0] - 2026-11-14
 
