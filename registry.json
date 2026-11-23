@@ -10,7 +10,12 @@
       "description": "An ink frame with sibling navigation and paper panes. Local padding for reading and compact lists, without imposing product navigation or scroll behavior.",
       "dependencies": ["class-variance-authority", "radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
-      "files": [{ "path": "registry/ui/workspace.tsx", "type": "registry:ui" }]
+      "files": [
+        {
+          "path": "registry/ui/workspace.tsx",
+          "type": "registry:ui"
+        }
+      ]
     },
     {
       "name": "theme",
@@ -732,6 +737,20 @@
       ]
     },
     {
+      "name": "facet-list",
+      "type": "registry:ui",
+      "title": "Facet List",
+      "description": "The column beside a list that narrows it: groups of views or values with a count each, a selected row and a show-more row for long groups.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/facet-list.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "pagination",
       "type": "registry:ui",
       "title": "Pagination",
@@ -893,6 +912,19 @@
       ]
     },
     {
+      "name": "list-navigation",
+      "type": "registry:ui",
+      "title": "List Navigation",
+      "description": "useListNavigation: J and K move a list's current row, Enter opens it, Escape lets go and / goes to its search, except while typing or in a dialog or menu.",
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/use-list-navigation.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "separator",
       "type": "registry:ui",
       "title": "Separator",
@@ -1028,6 +1060,20 @@
       "files": [
         {
           "path": "registry/ui/status-label.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "status-bar",
+      "type": "registry:ui",
+      "title": "Status Bar",
+      "description": "The strip along the bottom of an app window: entries, a spacer, separators and the keys that work on the screen.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/kbd", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/status-bar.tsx",
           "type": "registry:ui"
         }
       ]

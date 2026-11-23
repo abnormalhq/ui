@@ -382,5 +382,17 @@
   "text-link": {
     "title": "文字链接",
     "description": "悬停时加深的低强调链接，也提供适用于句内的下划线样式。"
+  },
+  "status-bar": {
+    "title": "状态条",
+    "description": "应用窗口底部的细条：条目、占位推开、分隔线，以及当前界面可用的按键。"
+  },
+  "facet-list": {
+    "title": "筛选面板列表",
+    "description": "列表旁用于缩小范围的一栏：成组的视图或取值，每项带计数，有选中行，长分组末尾有“显示更多”行。"
+  },
+  "list-navigation": {
+    "title": "列表键盘导航",
+    "description": "useListNavigation：J、K 移动列表当前行，Enter 打开，Escape 放开，/ 跳到搜索；输入时或在对话框、菜单中不生效。"
   }
 }
