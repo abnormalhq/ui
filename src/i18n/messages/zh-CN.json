@@ -609,6 +609,9 @@
       "disabled": "已禁用"
     },
     "section-heading": {
+      "help": "帮助中心",
+      "pageTitle": "找到你要的答案",
+      "lead": "关于设置、使用和管理邮箱的分步说明。",
       "pricing": "定价",
       "title": "按发送量付费"
     },

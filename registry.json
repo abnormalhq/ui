@@ -1420,7 +1420,7 @@
       "name": "section-heading",
       "type": "registry:ui",
       "title": "Section Heading",
-      "description": "The eyebrow label, section title and section spacing.",
+      "description": "The eyebrow label, page and section titles, the lead under a page title and section spacing.",
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {

@@ -467,6 +467,8 @@
     "Section spacing that grows with the viewport.": "随视口增大的分区间距。",
     "A small uppercase label, led by a signal-colored dot.": "以信号色圆点引导的小型大写标签。",
     "The section title scale: 28px on phones, then the display scale: 34px on tablets, 40px on desktops.": "分区标题字号：手机 28px，平板 34px，桌面 40px。",
+    "The title at the top of an inner page (pricing, help, a document): its h1, a step above the section title, from 36px on phones to 56px on wide screens. A landing page's hero sets its own, larger headline.": "内页（定价、帮助、文档）顶部的标题，即页面的 h1，比分区标题大一级：手机 36px，宽屏 56px。落地页首屏的大标题自行设定，更大一些。",
+    "The sentence or two under a page title that says what the page is for.": "页面标题下一两句说明页面用途的导语。",
     "The punctuation that ends a headline, in the signal color.": "标题末尾使用信号色的标点。"
   },
   "text-link": {

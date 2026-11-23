@@ -22,6 +22,7 @@ Each entry names the items it touches, because a project installs items one by o
 
 ### Changed
 
+- `section-heading`: `PageTitle`, the h1 at the top of an inner page (36px on phones to 56px on wide screens), and `PageLead`, the sentence under it, so a site's inner pages share one title scale.
 - `button`: `variant="highlight"`, the highlighter fill with ink text in both themes, for the one action a marketing page leads with.
 - `theme-script`: `ThemeScript` takes `defaultTheme` (`"system"`, the default, `"light"` or `"dark"`) for a site whose visitors start on one theme until they choose; `createThemeScript(defaultTheme)` returns that script. A choice equal to the default is not stored, and `<meta name="theme-color">` starts in the default's color.
 - `item-list`: opt-in `density="compact"` row spacing and a `selected` muted-highlight treatment. Default spacing is unchanged. The product supplies selection semantics (`aria-current`, `aria-pressed`, or its widget's role); the visual prop does not invent them. Row transitions now respect reduced motion.
