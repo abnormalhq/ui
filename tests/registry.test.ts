@@ -481,8 +481,11 @@ test("the type scale is variable-based, and the compact density tightens spacing
   // Only for a mouse or trackpad: touch screens keep full-size targets.
   const media = theme.slice(0, theme.indexOf('[data-ui-density="compact"] {'));
   assert.ok(media.trimEnd().endsWith("@media (pointer: fine) {"));
-  // A dense region below <html> sets its own text size; <html> keeps the rem.
-  assert.match(block('\\[data-ui-density="compact"\\]:not\\(:root\\)'), /font-size: var\(--text-base\);/);
+  // A dense region below <html> sets its own text size; <html> keeps the rem. The default is in the base layer, so a
+  // text-* or leading-* utility on the region's own element (Prose's text-md/[1.9]) still wins.
+  const region = theme.indexOf('[data-ui-density="compact"]:not(:root) {');
+  assert.ok(theme.slice(0, region).trimEnd().endsWith("@layer base {\n  @media (pointer: fine) {"));
+  assert.match(theme.slice(region), /^[^}]*font-size: var\(--text-base\);\s*line-height: var\(--leading-body\);/);
   assert.match(theme, /body \{[^}]*font-size: var\(--text-base\);\s*line-height: var\(--leading-body\);/);
 });
 

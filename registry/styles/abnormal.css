@@ -602,12 +602,16 @@
  * - The interface type steps down about 1px (body 13px, secondary text 11.5-12.5px, page title 24px), 2xs stays 11px,
  *   the floor for legible meta text, and the display scale is left alone: a hero line is not dense.
  * - Body and line heights close from 1.5-1.55 to 1.45.
- * It applies only to a fine pointer (a mouse or trackpad): on a touch screen the page keeps the default, so touch
- * targets keep their size. Fixed pixel values, radii, borders and the phone inputs' 16px (below) do not change.
- * Unlayered, so it beats the theme's own values in Tailwind's theme layer. A region that is not <html> also sets its
- * own text size, since its text would otherwise inherit the size already computed outside it; <html> is left alone,
- * as its font size is the rem. The attribute is data-ui-density, not data-density: a compact table or item list marks
- * its own element data-density="compact" for its row spacing, and must not restart the scale inside a page.
+ * It applies only when the primary pointer is fine (a mouse or trackpad): where the primary pointer is touch the page
+ * keeps the default, so touch targets keep their size. A laptop with a touchscreen but a trackpad as its primary
+ * pointer is compact. Fixed pixel values, radii, borders and the phone inputs' 16px (below) do not change.
+ * The variables are unlayered, so they beat the theme's own values in Tailwind's theme layer. A region that is not
+ * <html> also sets its own text size, since its text would otherwise inherit the size already computed outside it;
+ * that default is in the base layer, so a text-* or leading-* utility on the region's own element still wins. <html>
+ * is left alone, as its font size is the rem. Menus, selects and dialogs portal to <body>, outside a region: put the
+ * attribute on <html> for a whole product. The attribute is data-ui-density, not data-density: a compact table or
+ * item list marks its own element data-density="compact" for its row spacing, and must not restart the scale inside a
+ * page.
  */
 @media (pointer: fine) {
   [data-ui-density="compact"] {
@@ -632,9 +636,13 @@
     --text-4xl--line-height: 1.2;
     --leading-body: 1.45;
   }
-  [data-ui-density="compact"]:not(:root) {
-    font-size: var(--text-base);
-    line-height: var(--leading-body);
+}
+@layer base {
+  @media (pointer: fine) {
+    [data-ui-density="compact"]:not(:root) {
+      font-size: var(--text-base);
+      line-height: var(--leading-body);
+    }
   }
 }
 
