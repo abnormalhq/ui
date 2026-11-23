@@ -21,10 +21,18 @@ function ListToolbar({ className, asChild = false, ...props }: React.ComponentPr
   );
 }
 
-/** The search's place: the full width on a narrow screen, a steady width beside the filters on a wider one. */
-function ListToolbarSearch({ className, ...props }: React.ComponentProps<"div">) {
+/**
+ * The search's place: the full width on a narrow screen, a steady width beside the filters on a wider one. A `div`
+ * unless `asChild` gives the page's own element, such as the `form` or `label` around the search box.
+ */
+function ListToolbarSearch({
+  className,
+  asChild = false,
+  ...props
+}: React.ComponentProps<"div"> & { asChild?: boolean }) {
+  const Comp = asChild ? Slot.Root : "div";
   return (
-    <div
+    <Comp
       data-slot="list-toolbar-search"
       className={cn("relative w-full min-w-0 sm:w-64 sm:shrink-0", className)}
       {...props}
