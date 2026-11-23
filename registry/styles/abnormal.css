@@ -604,7 +604,8 @@
  * - Body and line heights close from 1.5-1.55 to 1.45.
  * It applies only when the primary pointer is fine (a mouse or trackpad): where the primary pointer is touch the page
  * keeps the default, so touch targets keep their size. A laptop with a touchscreen but a trackpad as its primary
- * pointer is compact. Fixed pixel values, radii, borders and the phone inputs' 16px (below) do not change.
+ * pointer is compact. Fixed pixel values, radii, borders and the phone inputs' 16px (below) do not change, and the
+ * smallest targets (xs and icon-xs buttons, the search clear button, InfoHint) keep a 24px floor, the WCAG minimum.
  * The variables are unlayered, so they beat the theme's own values in Tailwind's theme layer. A region that is not
  * <html> also sets its own text size, since its text would otherwise inherit the size already computed outside it;
  * that default is in the base layer, so a text-* or leading-* utility on the region's own element still wins. <html>

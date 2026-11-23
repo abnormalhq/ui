@@ -476,6 +476,12 @@ test("the type scale is variable-based, and the compact density tightens spacing
     const base = theme.match(new RegExp(`\\n  ${name}: (\\d+)px;`))![1]!;
     assert.ok(Number.parseFloat(value) < Number(base), `${name} ${value} is not below ${base}px`);
   }
+  // The smallest targets keep the 24px WCAG minimum when the spacing step shrinks.
+  const button = readFileSync("registry/ui/button.tsx", "utf8");
+  assert.match(button, /xs: "h-6 min-h-\[24px\]/);
+  assert.match(button, /"icon-xs": "size-6 min-h-\[24px\] min-w-\[24px\]/);
+  assert.match(readFileSync("registry/ui/search-input.tsx", "utf8"), /clear: "size-6 min-h-\[24px\] min-w-\[24px\]/);
+  assert.match(readFileSync("registry/ui/info-hint.tsx", "utf8"), /size-6 min-h-\[24px\] min-w-\[24px\]/);
   // Table and ItemList write data-density on their own element; the page's density must not match it.
   assert.doesNotMatch(theme, /\[data-density/);
   // Only for a mouse or trackpad: touch screens keep full-size targets.

@@ -9,7 +9,7 @@ import { useFormReset } from "@/components/ui/use-form-reset";
 /** Per size: the input's padding around the icon and the clear button, the icon's place, and the clear button's box. */
 const SEARCH_INPUT_SIZES = {
   sm: { input: "pr-7 pl-7", icon: "left-2 size-3.5", clear: "size-5 [&_svg]:size-3.5" },
-  default: { input: "pr-8 pl-9", icon: "left-3 size-4", clear: "size-6 [&_svg]:size-4" },
+  default: { input: "pr-8 pl-9", icon: "left-3 size-4", clear: "size-6 min-h-[24px] min-w-[24px] [&_svg]:size-4" },
   lg: { input: "pr-10 pl-10", icon: "left-3.5 size-4", clear: "size-8 [&_svg]:size-4" },
 };
 
