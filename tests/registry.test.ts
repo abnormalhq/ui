@@ -495,6 +495,20 @@ test("the type scale is variable-based, and the compact density tightens spacing
   assert.ok(theme.slice(0, region).trimEnd().endsWith("@layer base {\n  @media (pointer: fine) {"));
   assert.match(theme.slice(region), /^[^}]*font-size: var\(--text-base\);\s*line-height: var\(--leading-body\);/);
   assert.match(theme, /body \{[^}]*font-size: var\(--text-base\);\s*line-height: var\(--leading-body\);/);
+  // Compiled the way a product does, the region default lands in the base layer and the region's own utility in the
+  // utilities layer, which the declared order puts last, so the utility wins.
+  const layered = await compile(
+    `@layer theme, base, components, utilities;\n${theme}\n@layer utilities { @tailwind utilities; }`,
+    { base: process.cwd(), loadStylesheet: async () => ({ path: "", base: "", content: "" }) },
+  );
+  const built = layered.build(["text-md/[1.9]"]);
+  const layerOf = (needle: string) => {
+    const before = built.slice(0, built.indexOf(needle));
+    return [...before.matchAll(/@layer ([a-z]+) \{/g)].at(-1)?.[1];
+  };
+  assert.match(built, /@layer theme, base, components, utilities;/);
+  assert.equal(layerOf('[data-ui-density="compact"]:not(:root) {'), "base");
+  assert.equal(layerOf(".text-md\\/\\[1\\.9\\] {"), "utilities");
 });
 
 test("the ink shell carries the dark values and maps every semantic name again", () => {
