@@ -23,6 +23,7 @@ import { Toolbar, ToolbarButton, ToolbarGroup, ToolbarSeparator } from "@/compon
 import { scrollIntoRow } from "@/components/ui/use-scroll-fade";
 import { useListNavigation } from "@/components/ui/use-list-navigation";
 import { useSidebar } from "@/components/ui/use-sidebar";
+import FacetListDemo from "@/site/demos/facet-list";
 
 const mounted: { unmount: () => Promise<void> }[] = [];
 const mount = async (ui: React.ReactNode) => {
@@ -773,6 +774,33 @@ test("useListNavigation leaves keys to fields, dialogs, buttons and modifiers, a
   assert.equal(document.activeElement, search);
   assert.equal(search.selectionStart, 0);
   assert.equal(search.selectionEnd, 5);
+});
+
+test("useListNavigation keeps its keys on markup that says it is not editable, in any case", async () => {
+  await mount(<NavigableList />);
+  const plain = document.createElement("div");
+  plain.setAttribute("contenteditable", "FALSE");
+  plain.tabIndex = 0;
+  document.body.append(plain);
+  try {
+    assert.equal(await press(plain, "j"), true);
+    assert.equal(current(), "0");
+  } finally {
+    plain.remove();
+  }
+});
+
+test("the facet demo's Show more hands the focus to the first domain it reveals", async () => {
+  await mount(<FacetListDemo />);
+  const more = named("Show more");
+  more.focus();
+  await click(more);
+  assert.equal(document.querySelector('button[aria-pressed][title="brightside.example"]'), document.activeElement);
+  assert.equal(
+    [...document.querySelectorAll("button")].some((button) => button.textContent === "Show more"),
+    false,
+    "nothing is left to show",
+  );
 });
 
 test("useListNavigation does nothing on an empty list", async () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { SearchInput } from "@/components/ui/search-input";
 import {
   FacetCount,
@@ -56,6 +56,8 @@ export default function FacetListDemo({ copy: overrides = {} }: { copy?: Partial
   const [limit, setLimit] = useState(DOMAIN_PAGE);
   const matched = domains.filter(({ name }) => name.includes(query.trim().toLowerCase()));
   const shown = matched.slice(0, limit);
+  // The first domain "Show more" reveals takes the focus, since the button goes away once nothing is left to show.
+  const reveal = useRef<string | null>(null);
 
   return (
     <div className="grid w-full max-w-60 gap-5">
@@ -105,6 +107,12 @@ export default function FacetListDemo({ copy: overrides = {} }: { copy?: Partial
                   type="button"
                   aria-pressed={domain === name}
                   title={name}
+                  ref={(element) => {
+                    if (element && reveal.current === name) {
+                      reveal.current = null;
+                      element.focus();
+                    }
+                  }}
                   onClick={() => setDomain(domain === name ? null : name)}
                 >
                   <FacetLabel>{name}</FacetLabel>
@@ -117,7 +125,13 @@ export default function FacetListDemo({ copy: overrides = {} }: { copy?: Partial
         {matched.length === 0 && <FacetMore>{copy.noDomains}</FacetMore>}
         {matched.length > shown.length && (
           <FacetMore asChild>
-            <button type="button" onClick={() => setLimit((current) => current + DOMAIN_PAGE)}>
+            <button
+              type="button"
+              onClick={() => {
+                reveal.current = matched[shown.length]?.name ?? null;
+                setLimit((current) => current + DOMAIN_PAGE);
+              }}
+            >
               {copy.showMore}
             </button>
           </FacetMore>

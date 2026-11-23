@@ -48,7 +48,7 @@ type ListNavigationOptions = {
 
 /** Typing, a menu or a dialog owns the keys: a letter there is a letter, and Escape closes that, not the list's row. */
 const OWNED_BY_TARGET =
-  'input, textarea, select, [contenteditable]:not([contenteditable="false"]), dialog, [role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"], [role="combobox"]';
+  'input, textarea, select, [contenteditable=""], dialog, [role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"], [role="combobox"]';
 
 /** Enter on a link, a button or a summary activates it; the list's own Enter only applies where it would do nothing. */
 const ACTIVATES_ON_ENTER = 'a[href], button, summary, [role="button"], [role="link"], [role="checkbox"], [role="tab"]';
