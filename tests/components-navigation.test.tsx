@@ -716,6 +716,13 @@ function NavigableList({
       <div role="dialog">
         <button type="button">In a dialog</button>
       </div>
+      <dialog open>
+        <button type="button">In a native dialog</button>
+      </dialog>
+      <div contentEditable="plaintext-only" suppressContentEditableWarning aria-label="Plain editor" />
+      <div contentEditable suppressContentEditableWarning>
+        <p aria-label="Inherited editor">text</p>
+      </div>
     </div>
   );
 }
@@ -753,6 +760,9 @@ test("useListNavigation leaves keys to fields, dialogs, buttons and modifiers, a
   const search = document.querySelector<HTMLInputElement>('input[aria-label="Search"]')!;
   assert.equal(await press(search, "j"), false, "a letter in a field is a letter");
   assert.equal(await press(named("In a dialog"), "j"), false);
+  assert.equal(await press(named("In a native dialog"), "j"), false);
+  assert.equal(await press(document.querySelector('[aria-label="Plain editor"]')!, "j"), false);
+  assert.equal(await press(document.querySelector('[aria-label="Inherited editor"]')!, "k"), false);
   assert.equal(await press(document.body, "j", { metaKey: true }), false);
   assert.equal(await press(document.body, "j", { isComposing: true }), false);
   assert.equal(current(), "-1");

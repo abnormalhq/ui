@@ -67,7 +67,14 @@ export default function ListNavigationDemo({ copy: overrides = {} }: { copy?: Pa
         {shown.map(({ address, note }, row) => (
           <ItemListItem key={address}>
             <ItemListRow asChild density="compact" selected={row === index}>
-              <button type="button" aria-pressed={row === index} onClick={() => setIndex(row)}>
+              <button
+                type="button"
+                aria-pressed={row === index}
+                onClick={() => {
+                  setIndex(row);
+                  setOpened(address);
+                }}
+              >
                 <ItemListContent>
                   <ItemListTitle className="font-mono text-xs">{address}</ItemListTitle>
                   <ItemListDescription>{copy[note]}</ItemListDescription>

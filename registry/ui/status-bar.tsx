@@ -35,7 +35,7 @@ function StatusBarItem({ className, asChild = false, ...props }: React.Component
       data-slot="status-bar-item"
       className={cn(
         "inline-flex h-full min-w-0 shrink-0 items-center gap-1.5 [&_svg:not([class*='size-'])]:size-3.5",
-        "[&:is(a,button)]:cursor-pointer [&:is(a,button)]:transition-colors [&:is(a,button)]:hover:text-foreground [&:is(a,button)]:focus-visible:text-foreground motion-reduce:transition-none",
+        "[&:is(a,button)]:cursor-pointer [&:is(a,button)]:transition-colors [&:is(a,button)]:hover:text-foreground [&:is(a,button)]:focus-visible:text-foreground [&:is(a,button)]:focus-visible:-outline-offset-2 motion-reduce:transition-none",
         className,
       )}
       {...props}

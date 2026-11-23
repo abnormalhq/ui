@@ -926,7 +926,7 @@
       "domains": "域名",
       "searchDomains": "搜索域名",
       "clearSearch": "清除搜索",
-      "showMore": "再显示 50 个",
+      "showMore": "显示更多",
       "noDomains": "没有匹配的域名"
     },
     "list-navigation": {

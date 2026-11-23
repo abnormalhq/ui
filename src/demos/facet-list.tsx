@@ -23,7 +23,7 @@ export const defaultCopy = {
   domains: "Domains",
   searchDomains: "Search domains",
   clearSearch: "Clear search",
-  showMore: "Show 50 more",
+  showMore: "Show more",
   noDomains: "No domain matches",
 };
 
@@ -39,15 +39,23 @@ const domains = [
   { name: "harbor.example", count: "3,988" },
   { name: "lumen.example", count: "1,204" },
   { name: "atlas-logistics.example", count: "655" },
+  { name: "brightside.example", count: "412" },
+  { name: "cobalt.example", count: "208" },
+  { name: "meridian.example", count: "97" },
 ];
 
-/* A project loads the domains a page at a time from its server; this demo filters four in memory. */
+/** How many domains the demo shows at a time; a project would ask its server for the next page instead. */
+const DOMAIN_PAGE = 4;
+
+/* A project loads the domains a page at a time from its server; this demo filters and pages a short list in memory. */
 export default function FacetListDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
   const copy = { ...defaultCopy, ...overrides };
   const [view, setView] = useState<(typeof views)[number]["id"]>("all");
   const [domain, setDomain] = useState<string | null>(null);
   const [query, setQuery] = useState("");
-  const shown = domains.filter(({ name }) => name.includes(query.trim().toLowerCase()));
+  const [limit, setLimit] = useState(DOMAIN_PAGE);
+  const matched = domains.filter(({ name }) => name.includes(query.trim().toLowerCase()));
+  const shown = matched.slice(0, limit);
 
   return (
     <div className="grid w-full max-w-60 gap-5">
@@ -76,11 +84,17 @@ export default function FacetListDemo({ copy: overrides = {} }: { copy?: Partial
         <FacetGroupLabel id="facet-demo-domains">{copy.domains}</FacetGroupLabel>
         <SearchInput
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(event) => {
+            setQuery(event.target.value);
+            setLimit(DOMAIN_PAGE);
+          }}
           aria-label={copy.searchDomains}
           placeholder={copy.searchDomains}
           clearLabel={copy.clearSearch}
-          onClear={() => setQuery("")}
+          onClear={() => {
+            setQuery("");
+            setLimit(DOMAIN_PAGE);
+          }}
           className="mb-1"
         />
         <FacetList aria-labelledby="facet-demo-domains">
@@ -100,11 +114,12 @@ export default function FacetListDemo({ copy: overrides = {} }: { copy?: Partial
             </FacetItem>
           ))}
         </FacetList>
-        {shown.length === 0 ? (
-          <FacetMore>{copy.noDomains}</FacetMore>
-        ) : (
+        {matched.length === 0 && <FacetMore>{copy.noDomains}</FacetMore>}
+        {matched.length > shown.length && (
           <FacetMore asChild>
-            <button type="button">{copy.showMore}</button>
+            <button type="button" onClick={() => setLimit((current) => current + DOMAIN_PAGE)}>
+              {copy.showMore}
+            </button>
           </FacetMore>
         )}
       </FacetGroup>
