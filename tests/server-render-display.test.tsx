@@ -9,6 +9,14 @@ import { encode } from "uqr";
 import { Badge, BadgeCount, BadgeDot } from "@/components/ui/badge";
 import { Bento, BentoDescription, BentoTile, BentoTitle, BentoVisual } from "@/components/ui/bento";
 import { Banner, BannerClose, BannerDot, BannerText } from "@/components/ui/banner";
+import {
+  ClipTrack,
+  ClipTrackClip,
+  ClipTrackItem,
+  ClipTrackLane,
+  ClipTrackPlayhead,
+  ClipTrackRuler,
+} from "@/components/ui/clip-track";
 import { CodeBlock } from "@/components/ui/code-block";
 import { DescriptionDetails, DescriptionItem, DescriptionList } from "@/components/ui/description-list";
 import { EmptyState, EmptyStateTitle } from "@/components/ui/empty-state";
@@ -367,4 +375,49 @@ test("a Bento renders on the server as a list of tiles, a wide tile spanning two
     ),
     /^<div data-slot="bento"[^>]*><article data-slot="bento-tile" class="[^"]*">Alone<\/article><\/div>$/,
   );
+});
+
+test("a ClipTrack shares the lane by length, marks the selected clip and fills a clip's bar by its progress", () => {
+  const html = renderToStaticMarkup(
+    <ClipTrack aria-label="Shots">
+      <ClipTrackRuler total={20} ticks={[0, 10, 20]} format={(time) => `${time}s`} />
+      <ClipTrackLane>
+        <ClipTrackItem length={5}>
+          <ClipTrackClip asChild selected tone="success">
+            <button type="button" aria-pressed="true">
+              01 Window
+            </button>
+          </ClipTrackClip>
+        </ClipTrackItem>
+        <ClipTrackItem length={15} minWidth={64}>
+          <ClipTrackClip tone="current" progress={1.4}>
+            02 Glass
+          </ClipTrackClip>
+        </ClipTrackItem>
+      </ClipTrackLane>
+      <ClipTrackPlayhead position={25} total={20} />
+    </ClipTrack>,
+  );
+  assert.match(html, /^<div role="group" data-slot="clip-track"[^>]*aria-label="Shots"/);
+  assert.match(html, /<div aria-hidden="true" data-slot="clip-track-ruler"/);
+  assert.match(html, /style="left:50%">10s<\/span>/);
+  assert.match(html, /data-edge="end" style="right:0">20s<\/span>/);
+  assert.match(html, /<ol role="list" data-slot="clip-track-lane"/);
+  assert.match(html, /<li data-slot="clip-track-item" class="[^"]*" style="flex:5 1 0px;min-width:48px">/);
+  assert.match(html, /style="flex:15 1 0px;min-width:64px"/);
+  // asChild hands the clip's look to the page's button, with the bar inside it.
+  assert.match(
+    html,
+    /<button type="button" aria-pressed="true" data-slot="clip-track-clip" data-selected="true" class="[^"]*border-signal[^"]*">01 Window<span aria-hidden="true" data-slot="clip-track-bar"[^>]*style="transform:scaleX\(1\)"><\/span><\/button>/,
+  );
+  // Progress past the end is a full bar, and a playhead past the end sits at the end.
+  assert.match(
+    html,
+    /<div data-slot="clip-track-clip" class="[^"]*--clip-bar:var\(--signal\)[^"]*">02 Glass<span[^>]*scaleX\(1\)/,
+  );
+  assert.match(
+    html,
+    /<span aria-hidden="true" data-slot="clip-track-playhead" class="[^"]*" style="left:100%"><\/span><\/div>$/,
+  );
+  assert.doesNotMatch(html, /<script/);
 });

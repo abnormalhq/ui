@@ -1223,6 +1223,20 @@
       ]
     },
     {
+      "name": "clip-track",
+      "type": "registry:ui",
+      "title": "Clip Track",
+      "description": "A strip of clips in playing order, each as wide as it is long, with a time ruler, a state bar per clip and a playhead.",
+      "dependencies": ["class-variance-authority", "radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/clip-track.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "toc",
       "type": "registry:ui",
       "title": "Table of Contents",
