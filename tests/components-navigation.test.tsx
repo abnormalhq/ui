@@ -23,6 +23,7 @@ import { Toolbar, ToolbarButton, ToolbarGroup, ToolbarSeparator } from "@/compon
 import { scrollIntoRow } from "@/components/ui/use-scroll-fade";
 import { useListNavigation } from "@/components/ui/use-list-navigation";
 import { useSidebar } from "@/components/ui/use-sidebar";
+import { SidePane, SidePaneContent, SidePaneHeader, SidePaneTitle, SidePaneToggle } from "@/components/ui/side-pane";
 import FacetListDemo from "@/site/demos/facet-list";
 
 const mounted: { unmount: () => Promise<void> }[] = [];
@@ -809,4 +810,61 @@ test("useListNavigation does nothing on an empty list", async () => {
   await mount(<NavigableList count={0} />);
   assert.equal(await press(document.body, "j"), false);
   assert.equal(current(), "-1");
+});
+
+const sidePane = (props: Partial<React.ComponentProps<typeof SidePane>> = {}) => (
+  <SidePane aria-label="Filters" className="w-56" {...props}>
+    <SidePaneHeader>
+      <SidePaneTitle>Filters</SidePaneTitle>
+      <SidePaneToggle collapseLabel="Hide filters" expandLabel="Show filters" />
+    </SidePaneHeader>
+    <SidePaneContent>
+      <input aria-label="Search domains" />
+    </SidePaneContent>
+  </SidePane>
+);
+
+test("a SidePane folds to a rail and opens again, keeping what it holds, and writes the cookie it is given", async () => {
+  const onCollapsedChange = mock.fn();
+  document.cookie = "pane=; max-age=0; path=/";
+  await mount(sidePane({ cookieName: "pane", onCollapsedChange }));
+  const pane = document.querySelector<HTMLElement>('[data-slot="side-pane"]')!;
+  const search = document.querySelector<HTMLInputElement>('input[aria-label="Search domains"]')!;
+  search.value = "north";
+  // Nothing is written before a change: the server already rendered the state it read.
+  assert.doesNotMatch(document.cookie, /pane=/);
+  const hide = document.querySelector<HTMLButtonElement>('button[aria-label="Hide filters"]')!;
+  assert.equal(hide.getAttribute("aria-expanded"), "true");
+  const content = document.getElementById(hide.getAttribute("aria-controls")!)!;
+  assert.equal(content.hidden, false);
+
+  await click(hide);
+  assert.equal(pane.dataset.state, "collapsed");
+  assert.match(pane.className, /w-10!/);
+  assert.equal(content.hidden, true);
+  assert.deepEqual(onCollapsedChange.mock.calls[0]?.arguments, [true]);
+  assert.match(document.cookie, /pane=collapsed/);
+  const show = document.querySelector<HTMLButtonElement>('button[aria-label="Show filters"]')!;
+  assert.equal(show.getAttribute("aria-expanded"), "false");
+
+  await click(show);
+  assert.equal(pane.dataset.state, "expanded");
+  assert.equal(content.hidden, false);
+  assert.equal(search.value, "north");
+  assert.match(document.cookie, /pane=expanded/);
+});
+
+test("a controlled SidePane waits for its owner, and starts folded from defaultCollapsed", async () => {
+  const onCollapsedChange = mock.fn();
+  await mount(sidePane({ collapsed: false, onCollapsedChange }));
+  await click(document.querySelector('button[aria-label="Hide filters"]')!);
+  assert.deepEqual(onCollapsedChange.mock.calls[0]?.arguments, [true]);
+  assert.equal(document.querySelector<HTMLElement>('[data-slot="side-pane"]')!.dataset.state, "expanded");
+  for (const view of mounted.splice(0)) await view.unmount();
+
+  await mount(sidePane({ side: "end", defaultCollapsed: true }));
+  const pane = document.querySelector<HTMLElement>('[data-slot="side-pane"]')!;
+  assert.equal(pane.dataset.state, "collapsed");
+  assert.equal(pane.dataset.side, "end");
+  assert.ok(document.querySelector('button[aria-label="Show filters"]'));
 });

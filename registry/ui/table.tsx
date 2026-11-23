@@ -6,9 +6,12 @@ import { Slot } from "radix-ui";
 import { cn } from "@/lib/utils";
 
 type TableVariant = "default" | "plain";
+type TableDensity = "default" | "compact";
 
 /** Table variants: `default` has a header background and row lines (tables inside panels such as the settings page); `plain` is the list style: no row lines, a light header, rounded hover rows. */
 const TableVariantContext = React.createContext<TableVariant>("default");
+/** `compact` rows are shorter and their cells closer, in the smaller text: a dense list beside a pane of facets or details. */
+const TableDensityContext = React.createContext<TableDensity>("default");
 
 /**
  * An easy-to-scan data table, keeping horizontal scrolling and clear row-selection feedback.
@@ -18,15 +21,18 @@ const TableVariantContext = React.createContext<TableVariant>("default");
  * do not focus a scroller by themselves (Safari); a table that fits adds no tab stop. A focusable region needs a
  * name, and the words are the page's: name the table with `aria-label` or `aria-labelledby` and the container
  * becomes a region with the same name.
+ * `density="compact"` makes the rows shorter and the cells closer, in the smaller text, for a dense list that sits
+ * between side panes; every list of a product should use the same density.
  * The row helpers (`rowActionClassName`, `rowClickHandler`) are in table-row.ts: this module is "use client", so it exports components only.
  */
 function Table({
   className,
   variant = "default",
+  density = "default",
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledby,
   ...props
-}: React.ComponentProps<"table"> & { variant?: TableVariant }) {
+}: React.ComponentProps<"table"> & { variant?: TableVariant; density?: TableDensity }) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [overflowing, setOverflowing] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
@@ -56,31 +62,35 @@ function Table({
 
   return (
     <TableVariantContext.Provider value={variant}>
-      <div
-        ref={containerRef}
-        data-slot="table-container"
-        data-overflow={overflowing ? "end" : undefined}
-        data-scrolled={scrolled || undefined}
-        tabIndex={scrollable ? 0 : undefined}
-        role={scrollable && named ? "region" : undefined}
-        aria-label={scrollable ? ariaLabel : undefined}
-        aria-labelledby={scrollable ? ariaLabelledby : undefined}
-        // The focus ring is drawn inside the edge: outside it, a panel that clips its content would cut it off.
-        className="relative min-h-0 w-full overflow-x-auto focus-visible:-outline-offset-2"
-      >
-        <table
-          aria-label={ariaLabel}
-          aria-labelledby={ariaLabelledby}
-          data-slot="table"
-          data-variant={variant}
-          className={cn(
-            "w-full caption-bottom text-base",
-            variant === "plain" && "border-separate border-spacing-0",
-            className,
-          )}
-          {...props}
-        />
-      </div>
+      <TableDensityContext.Provider value={density}>
+        <div
+          ref={containerRef}
+          data-slot="table-container"
+          data-overflow={overflowing ? "end" : undefined}
+          data-scrolled={scrolled || undefined}
+          tabIndex={scrollable ? 0 : undefined}
+          role={scrollable && named ? "region" : undefined}
+          aria-label={scrollable ? ariaLabel : undefined}
+          aria-labelledby={scrollable ? ariaLabelledby : undefined}
+          // The focus ring is drawn inside the edge: outside it, a panel that clips its content would cut it off.
+          className="relative min-h-0 w-full overflow-x-auto focus-visible:-outline-offset-2"
+        >
+          <table
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabelledby}
+            data-slot="table"
+            data-variant={variant}
+            data-density={density}
+            className={cn(
+              "w-full caption-bottom text-base",
+              variant === "plain" && "border-separate border-spacing-0",
+              density === "compact" && "text-sm",
+              className,
+            )}
+            {...props}
+          />
+        </div>
+      </TableDensityContext.Provider>
     </TableVariantContext.Provider>
   );
 }
@@ -124,17 +134,27 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
   );
 }
 
-function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
+/**
+ * A row. `current` marks the row a list's details pane shows, the one J and K move: it takes the hover color and a
+ * bar at its start edge, and `aria-current`. It is not selection (`data-state="selected"`, the checked rows).
+ */
+function TableRow({ className, current = false, ...props }: React.ComponentProps<"tr"> & { current?: boolean }) {
   const variant = React.useContext(TableVariantContext);
   return (
     <tr
       data-slot="table-row"
+      data-current={current || undefined}
+      aria-current={current || undefined}
       className={cn(
         "group/row data-flash:animate-flash",
         // plain: the row itself draws no background or row lines (the radius is drawn on the cells); for the hover / selected / menu-open backgrounds see TableCell.
         variant === "plain"
           ? ""
           : "border-b transition-colors duration-100 hover:bg-accent has-aria-expanded:bg-accent data-[state=selected]:bg-highlight-muted",
+        current &&
+          (variant === "plain"
+            ? "[&>td]:bg-accent [&>td:first-child]:shadow-[inset_2px_0_0_var(--signal)]"
+            : "bg-accent shadow-[inset_2px_0_0_var(--signal)]"),
         props.onClick && "cursor-pointer",
         className,
       )}
@@ -145,11 +165,13 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
 
 function TableHead({ className, pinned = false, ...props }: React.ComponentProps<"th"> & { pinned?: boolean }) {
   const plain = React.useContext(TableVariantContext) === "plain";
+  const compact = React.useContext(TableDensityContext) === "compact";
   return (
     <th
       data-slot="table-head"
       className={cn(
-        "px-4 text-left align-middle whitespace-nowrap text-muted-foreground [&:has([role=checkbox])]:pr-0",
+        "text-left align-middle whitespace-nowrap text-muted-foreground [&:has([role=checkbox])]:pr-0",
+        compact ? "px-3" : "px-4",
         // The plain header sticks to the top of the table container (when the container has no height limit it does not scroll, so it is effectively not sticky); it needs its own background to cover the rows scrolled past.
         // Each sticky cell is its own stacking layer, so the next cell's background covers a focus outline that spills past this cell's edge (the select-all checkbox column has no right padding): the cell holding keyboard focus is raised above its siblings (to the pinned column's level, which comes later and so still stays on top).
         plain
@@ -233,11 +255,13 @@ const plainCell =
 
 function TableCell({ className, pinned = false, ...props }: React.ComponentProps<"td"> & { pinned?: boolean }) {
   const plain = React.useContext(TableVariantContext) === "plain";
+  const compact = React.useContext(TableDensityContext) === "compact";
   return (
     <td
       data-slot="table-cell"
       className={cn(
-        "px-4 py-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0",
+        "align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0",
+        compact ? "px-3 py-1.5" : "px-4 py-2",
         plain && plainCell,
         pinned &&
           plain && [

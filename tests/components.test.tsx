@@ -782,3 +782,28 @@ test("the search input attaches the caller's ref once, not on every keystroke", 
     [input],
   );
 });
+
+test("a compact Table makes its cells closer, and a current row says so to the eye and to a screen reader", async () => {
+  await mount(
+    <Table variant="plain" density="compact" aria-label="Tickets">
+      <TableBody>
+        <TableRow current>
+          <TableCell>one</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>two</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>,
+  );
+  const table = document.querySelector("table")!;
+  assert.equal(table.dataset.density, "compact");
+  const [current, other] = [...document.querySelectorAll("tr")];
+  assert.equal(current!.getAttribute("aria-current"), "true");
+  assert.equal(current!.dataset.current, "true");
+  assert.match(current!.className, /--signal/);
+  assert.equal(other!.hasAttribute("aria-current"), false);
+  const cell = document.querySelector("td")!;
+  assert.match(cell.className, /\bpy-1\.5\b/);
+  assert.doesNotMatch(cell.className, /\bpx-4\b/);
+});

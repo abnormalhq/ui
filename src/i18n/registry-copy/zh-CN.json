@@ -394,5 +394,13 @@
   "list-navigation": {
     "title": "列表键盘导航",
     "description": "useListNavigation：J、K 移动列表当前行，Enter 打开，Escape 放开，/ 跳到搜索；输入时或在对话框、菜单中不生效。"
+  },
+  "side-pane": {
+    "title": "可折叠侧栏",
+    "description": "列表旁可折叠成窄条、再展开的面板：一侧放筛选，另一侧放当前行详情，状态记在 cookie 里。"
+  },
+  "list-toolbar": {
+    "title": "列表工具栏",
+    "description": "列表上方的一行：搜索、筛选和作用于整个列表的操作，在每个列表里位置相同，下方列出生效的条件。"
   }
 }
