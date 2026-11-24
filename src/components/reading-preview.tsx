@@ -20,7 +20,7 @@ const messages = [{ id: "plan" }, { id: "journal" }, { id: "book" }] as const;
 export function ReadingPreview() {
   const t = useTranslations("Previews");
   const [selected, setSelected] = useState<string>(messages[0].id);
-  const message = messages.find(({ id }) => id === selected) ?? messages[0]!;
+  const message = messages.find(({ id }) => id === selected) ?? messages[0];
   const readerId = useId();
   const headingId = useId();
   return (

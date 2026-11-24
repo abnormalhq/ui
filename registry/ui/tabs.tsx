@@ -147,7 +147,7 @@ function TabsTrigger({
         const ordered = forward ? tabs : tabs.slice().reverse();
         let candidates = ordered;
         if (intent === "prev" || intent === "next") {
-          const after = ordered.indexOf(tab as HTMLButtonElement) + 1;
+          const after = ordered.indexOf(tab) + 1;
           candidates = loop ? [...ordered.slice(after), ...ordered.slice(0, after)] : ordered.slice(after);
         }
         event.preventDefault();

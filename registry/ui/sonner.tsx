@@ -36,7 +36,7 @@ function subscribe(onChange: () => void) {
  */
 const Toaster = ({ className, style, icons, toastOptions, ...props }: ToasterProps) => {
   // The server does not know the theme; the first client render corrects it before any toast can show.
-  const theme = React.useSyncExternalStore(subscribe, currentTheme, () => "light" as Theme);
+  const theme = React.useSyncExternalStore<Theme>(subscribe, currentTheme, () => "light");
 
   return (
     <Sonner

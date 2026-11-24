@@ -60,7 +60,7 @@ test("reading selection updates the controlled pane and keeps exactly one presse
     assert.equal(reader?.querySelector("h3")?.textContent, "Next week's plan");
     await click(rows[1]!);
     assert.equal(reader?.querySelector("h3")?.textContent, "A quieter workspace");
-    assert.match(reader!.textContent!, /A useful interface does not have to compete/);
+    assert.match(reader.textContent, /A useful interface does not have to compete/);
     assert.deepEqual(
       rows.map((row) => row.getAttribute("aria-pressed")),
       ["false", "true", "false"],

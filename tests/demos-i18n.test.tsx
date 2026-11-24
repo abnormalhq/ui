@@ -128,7 +128,7 @@ test("LinkRow demo keeps English defaults and prefixes both row and nested link 
 });
 
 test("every localized demo copy key matches and is used by its standalone demo", async () => {
-  for (const [name, copy] of Object.entries(demoMessages) as [string, Record<string, string>][]) {
+  for (const [name, copy] of Object.entries<Record<string, string>>(demoMessages)) {
     const source = readFileSync("src/demos/" + name + ".tsx", "utf8");
     const exported = defaults[name] ?? (await import("../src/demos/" + name + ".tsx")).defaultCopy;
     assert.ok(exported, name + " exports defaultCopy");

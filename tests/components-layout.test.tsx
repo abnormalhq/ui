@@ -495,6 +495,6 @@ test("an Avatar given only a srcSet shows that picture", async () => {
   );
   const image = container.querySelector("img");
   assert.equal(image?.getAttribute("srcset"), "/ada.png 1x, /ada@2x.png 2x");
-  await act(async () => void image!.dispatchEvent(new Event("load")));
+  await act(async () => void image.dispatchEvent(new Event("load")));
   assert.equal(container.querySelector('[data-slot="avatar-fallback"]'), null);
 });

@@ -1172,7 +1172,7 @@ test("a DateRangePicker opens a range calendar, and changes only once both ends 
   assert.equal(rangeTrigger().getAttribute("aria-haspopup"), "dialog");
   assert.equal(rangeTrigger().getAttribute("aria-expanded"), "false");
   // The range as the locale writes one (the spaces around the dash depend on the ICU release).
-  assert.match(rangeTrigger().textContent!, /^2\s*–\s*10 Nov 2026$/);
+  assert.match(rangeTrigger().textContent, /^2\s*–\s*10 Nov 2026$/);
   assert.deepEqual(period(form), ["2026-11-02", "2026-11-10"]);
   assert.equal(container.querySelectorAll('input[type="hidden"]').length, 2);
 
@@ -1187,7 +1187,7 @@ test("a DateRangePicker opens a range calendar, and changes only once both ends 
   await click(document.activeElement!);
   assert.ok(document.querySelector('[role="dialog"]'));
   assert.deepEqual(selectedDays(), ["2026-11-09"]);
-  assert.match(rangeTrigger().textContent!, /^2\s*–\s*10 Nov 2026$/);
+  assert.match(rangeTrigger().textContent, /^2\s*–\s*10 Nov 2026$/);
   assert.deepEqual(period(form), ["2026-11-02", "2026-11-10"]);
   assert.equal(onValueChange.mock.callCount(), 0);
 
@@ -1200,7 +1200,7 @@ test("a DateRangePicker opens a range calendar, and changes only once both ends 
     [[{ from: "2026-11-07", to: "2026-11-09" }]],
   );
   assert.equal(document.querySelector('[role="dialog"]'), null, "the second end closes the popover");
-  assert.match(rangeTrigger().textContent!, /^7\s*–\s*9 Nov 2026$/);
+  assert.match(rangeTrigger().textContent, /^7\s*–\s*9 Nov 2026$/);
   assert.deepEqual(period(form), ["2026-11-07", "2026-11-09"]);
 });
 
@@ -1257,7 +1257,7 @@ test("a DateRangePicker closed halfway keeps its range, and shows its placeholde
       aria-label="Period"
     />,
   );
-  assert.match(rangeTrigger().textContent!, /^Dec 28, 2026\s*–\s*Jan 3, 2027$/);
+  assert.match(rangeTrigger().textContent, /^Dec 28, 2026\s*–\s*Jan 3, 2027$/);
   // A disabled field is left out of the form.
   assert.equal(document.querySelector('input[type="hidden"]'), null);
 });
@@ -1304,12 +1304,12 @@ test("a form reset puts an uncontrolled DateRangePicker back on its default, unl
   await click(one('button[type="reset"]', container));
   await settle();
   assert.deepEqual(submitted(), ["2026-11-16", "2026-11-20", "2026-11-25"]);
-  assert.match(inside!.textContent!, /^16\s*–\s*20 Nov 2026$/);
+  assert.match(inside!.textContent, /^16\s*–\s*20 Nov 2026$/);
 
   await rerender(fields(false));
   await act(async () => form.reset());
   assert.deepEqual(submitted(), ["2026-11-02", "2026-11-10", ""]);
-  assert.match(inside!.textContent!, /^2\s*–\s*10 Nov 2026$/);
+  assert.match(inside!.textContent, /^2\s*–\s*10 Nov 2026$/);
   assert.equal(outside!.textContent, "Choose a period");
 });
 
@@ -1367,9 +1367,9 @@ test("a form reset reaches a DateRangePicker that has no field names, or is disa
   await click(day("2026-11-16"));
   await click(day("2026-11-20"));
   await settle();
-  assert.match(rangeTrigger().textContent!, /^16\s*–\s*20 Nov 2026$/);
+  assert.match(rangeTrigger().textContent, /^16\s*–\s*20 Nov 2026$/);
   await act(async () => form.reset());
-  assert.match(rangeTrigger().textContent!, /^2\s*–\s*10 Nov 2026$/);
+  assert.match(rangeTrigger().textContent, /^2\s*–\s*10 Nov 2026$/);
 
   await click(rangeTrigger());
   await click(day("2026-11-16"));
@@ -1387,9 +1387,9 @@ test("a form reset reaches a DateRangePicker that has no field names, or is disa
       />
     </form>,
   );
-  assert.match(rangeTrigger().textContent!, /^16\s*–\s*20 Nov 2026$/);
+  assert.match(rangeTrigger().textContent, /^16\s*–\s*20 Nov 2026$/);
   await act(async () => form.reset());
-  assert.match(rangeTrigger().textContent!, /^2\s*–\s*10 Nov 2026$/);
+  assert.match(rangeTrigger().textContent, /^2\s*–\s*10 Nov 2026$/);
 });
 
 test("a form reset reaches a Combobox and a DatePicker that have no name, or are disabled", async () => {

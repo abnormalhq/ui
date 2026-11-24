@@ -30,7 +30,7 @@ export const defaultCopy = {
 export default function SelectionBarDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
   const copy = { ...defaultCopy, ...overrides };
   const messageValues = messages.map(({ value }) => value);
-  const [checked, setChecked] = useState<string[]>([messages[1]!.value]);
+  const [checked, setChecked] = useState<string[]>([messages[1].value]);
   const clear = () => setChecked([]);
   return (
     <div className="grid w-full max-w-xl gap-2">

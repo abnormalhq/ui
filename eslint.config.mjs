@@ -13,6 +13,29 @@ const eslintConfig = defineConfig([
   ...fixupConfigRules(nextVitals),
   ...fixupConfigRules(nextTs),
   {
+    // A few of typescript-eslint's type-aware rules, as abnormalhq runs: awaiting something that is not a promise, promises
+    // that are neither awaited nor handled, promises passed where a void callback is expected, and type assertions the
+    // types already make pointless. Only the rules: eslint-config-next/typescript already registers the plugin and parser.
+    files: ["**/*.{ts,tsx,mts}"],
+    languageOptions: {
+      parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
+    },
+    rules: {
+      "@typescript-eslint/await-thenable": "error",
+      "@typescript-eslint/no-floating-promises": [
+        "error",
+        {
+          // node:test runs the tests it registers; the promise test() and describe() return needs no handling.
+          allowForKnownSafeCalls: [
+            { from: "package", package: "node:test", name: ["test", "it", "describe", "suite"] },
+          ],
+        },
+      ],
+      "@typescript-eslint/no-misused-promises": "error",
+      "@typescript-eslint/no-unnecessary-type-assertion": "error",
+    },
+  },
+  {
     // A bare <select> shows the browser's own arrow pressed against the right edge; NativeSelect draws the chevron with room for it.
     files: ["**/*.tsx"],
     ignores: ["registry/ui/native-select.tsx"],

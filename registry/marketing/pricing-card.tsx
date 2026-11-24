@@ -165,7 +165,7 @@ function PricingCard({
         // The two variants of the struck price travel together.
         {...(originalPrice === undefined
           ? { originalPriceLabel }
-          : { originalPrice, originalPriceLabel: originalPriceLabel as string })}
+          : { originalPrice, originalPriceLabel: originalPriceLabel })}
         highlight={featured}
       />
       <div data-slot="pricing-card-features" className="flex-1">
