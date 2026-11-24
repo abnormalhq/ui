@@ -37,7 +37,7 @@ export default function GlobalNotFound() {
             </Button>
           </NotFoundActions>
           <NotFoundAside lang="zh-CN">
-            <p className="font-medium text-foreground">这里什么也没有</p>
+            <h2 className="font-medium text-foreground">这里什么也没有</h2>
             <p className="mt-1">此页面或组件条目不存在。</p>
             <p className="mt-3">
               <Link className="underline decoration-current/40 underline-offset-4 hover:text-foreground" href="/zh">

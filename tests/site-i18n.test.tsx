@@ -61,7 +61,7 @@ test("static pages render their locale, page metadata and translated copy", () =
   assert.match(notFound, /<html[^>]*lang="en"/);
   assert.match(notFound, /data-slot="not-found"/);
   assert.match(notFound, /Nothing here/);
-  assert.match(notFound, /<div[^>]*lang="zh-CN"[^>]*>.*这里什么也没有/s);
+  assert.match(notFound, /<div[^>]*lang="zh-CN"[^>]*><h2[^>]*>这里什么也没有<\/h2>/s);
   assert.match(notFound, /Back to the overview/);
   assert.match(notFound, /中文首页/);
 });
