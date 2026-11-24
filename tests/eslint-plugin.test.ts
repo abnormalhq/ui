@@ -28,6 +28,9 @@ test("classes with hand-picked values are reported, with the theme's name to use
     "mt-4.5",
     "rounded-control",
     "rounded-[1px]",
+    "rounded-xs",
+    "rounded-[999px]",
+    "@max-md:text-[0px]",
     "z-overlay",
     "z-[2]",
     "-z-10",
@@ -64,6 +67,8 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
     ".a { --own: #ffe14d; color: #111; background: rgb(20 20 18 / 72%); }",
     ".b { font-size: 12px; padding: 8px 1px; margin: --spacing(2); border-radius: 6px; z-index: 40; }",
     ".c { font-size: var(--text-sm); padding: 1px 2px; border-radius: 2px; z-index: 3; color: var(--text); }",
+    "@theme { --breakpoint-phone: 23.8125rem; }",
+    ".d { border-radius: 999px; }",
   ].join("\n");
   const messages = linter.verify(
     source,
@@ -71,6 +76,7 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
       {
         files: ["**/*.css"],
         language: "css/css",
+        languageOptions: { tolerant: true },
         plugins: { css, abnormal },
         rules: { "abnormal/no-hardcoded-css": "error" },
       },

@@ -75,6 +75,7 @@ const eslintConfig = defineConfig([
     files: ["**/*.css"],
     ignores: ["registry/styles/abnormal.css", "registry/styles/abnormal-fonts.css"],
     language: "css/css",
+    languageOptions: { tolerant: true },
     plugins: { css, abnormal },
     rules: { "abnormal/no-hardcoded-css": "error" },
   },

@@ -6,9 +6,12 @@
  *   import abnormal from "./eslint/eslint-plugin-abnormal.mjs";
  *
  *   { files: ["**\/*.{ts,tsx}"], plugins: { abnormal }, rules: { "abnormal/no-hardcoded-classes": "error" } },
- *   { files: ["**\/*.css"], language: "css/css", plugins: { css, abnormal }, rules: { "abnormal/no-hardcoded-css": "error" } },
+ *   { files: ["**\/*.css"], language: "css/css", languageOptions: { tolerant: true }, plugins: { css, abnormal },
+ *     rules: { "abnormal/no-hardcoded-css": "error" } },
  *
- * and leave out the registry's own files (abnormal.css and the installed components), which the registry checks itself.
+ * and leave out the theme (abnormal.css), where the literal values live. `tolerant` lets the CSS parser read Tailwind's
+ * at-rules (@theme, @utility) instead of stopping at them. The installed components pass both rules; the few values in them
+ * that have to stay carry an eslint-disable comment, which is why the plugin has to be loaded wherever they are.
  * In a project with existing values, `eslint --suppress-rule abnormal/no-hardcoded-classes` records them in
  * eslint-suppressions.json, so only new ones fail; the file shrinks as they are fixed (`eslint --prune-suppressions`).
  *
@@ -16,10 +19,12 @@
  * - Tailwind's palette (text-zinc-500, bg-sky-500/12) and arbitrary colors (bg-[#f7f7f4]): use a semantic color, or a
  *   category hue for things told apart by color.
  * - dark: with a color: the theme's colors already change with the theme.
- * - Arbitrary font sizes (text-[13px]): use the type scale, text-2xs to text-display-lg.
+ * - Arbitrary font sizes (text-[13px]): use the type scale, text-2xs to text-display-lg. text-[0px], which hides text
+ *   while keeping it in the accessibility tree, stays allowed.
  * - Arbitrary whole-pixel spacing (mt-[18px]): use a spacing step (mt-4.5), so the density reaches it.
  * - Tailwind's own radii and shadows (rounded-md, shadow-lg) and arbitrary radii above 2px: use rounded-chip /
- *   control / mark / panel / dialog and shadow-panel / popover.
+ *   control / mark / panel / dialog and shadow-panel / popover. rounded-xs (2px) and pill radii of 999px or more stay
+ *   allowed, like rounded-full.
  * - Numeric layers (z-50, z-[60]): use z-raised, z-sticky, z-header, z-overlay, z-floating or z-skip-link. Small
  *   arbitrary layers under 10 (z-[2]) stay allowed for stacking inside one component, and so do negative ones (-z-10,
  *   behind the parent).
@@ -30,7 +35,7 @@
  * - Hex, rgb(), hsl() and oklch() colors: use var(--token).
  * - font-size in px or rem: var(--text-*).
  * - padding, margin, gap and inset in px of 3 or more: --spacing(n) or calc(var(--spacing) * n).
- * - border-radius in px above 2: var(--radius-*).
+ * - border-radius in px above 2 and below 999 (a pill): var(--radius-*).
  * - z-index of 10 or more: var(--z-index-*).
  *
  * A value that has to stay (a QR code's white, a brand lockup's 17px, an email's inline colors) takes an
@@ -47,10 +52,10 @@ const SPACING_PROPS =
 const palette = new RegExp(`^-?(?:${COLOR_PROPS})-(?:${PALETTE})-\\d{2,3}(?:/\\d+)?$`);
 const blackWhite = new RegExp(`^(?:${COLOR_PROPS})-(?:black|white)(?:/\\d+)?$`);
 const arbitraryColor = new RegExp(`^(?:${COLOR_PROPS})-\\[(?:#|rgba?\\(|hsla?\\(|oklch\\(|color:#)`);
-const fontSize = /^text-\[\d*\.?\d+(?:px|rem)\]$/;
+const fontSize = /^text-\[(?!0(?:px|rem)?\])\d*\.?\d+(?:px|rem)\]$/;
 const spacing = new RegExp(`^-?(?:${SPACING_PROPS})-\\[\\d+(?:px|rem)\\]$`);
 const radius =
-  /^rounded(?:-(?:[trblse]|tl|tr|bl|br|ss|se|es|ee))?-(?:(xs|sm|md|lg|xl|2xl|3xl|4xl)|\[(\d*\.?\d+)(px|rem)\])$/;
+  /^rounded(?:-(?:[trblse]|tl|tr|bl|br|ss|se|es|ee))?-(?:(sm|md|lg|xl|2xl|3xl|4xl)|\[(\d*\.?\d+)(px|rem)\])$/;
 const shadow = /^shadow-(?:2xs|xs|sm|md|lg|xl|2xl)$/;
 const zStep = /^z-(?:10|20|30|40|50)$/;
 const zArbitrary = /^z-\[(\d+)\]$/;
@@ -92,7 +97,8 @@ export function checkClass(token) {
       return `"${token}": use a spacing step (${utility.replace(/\[.*\]/, String(px / 4))}), so the density reaches it.`;
   }
   const corner = utility.match(radius);
-  if (corner && (corner[1] || Number(corner[2]) * (corner[3] === "rem" ? 16 : 1) > 2))
+  const cornerPx = corner && Number(corner[2]) * (corner[3] === "rem" ? 16 : 1);
+  if (corner && (corner[1] || (cornerPx > 2 && cornerPx < 999)))
     return `"${token}": use rounded-chip, rounded-control, rounded-mark, rounded-panel or rounded-dialog.`;
   if (shadow.test(utility)) return `"${token}": use shadow-panel or shadow-popover.`;
   if (zStep.test(utility) || (zArbitrary.test(utility) && Number(utility.match(zArbitrary)[1]) >= 10))
@@ -170,7 +176,10 @@ const noHardcodedCss = {
           if (large)
             return report("use spacing steps (--spacing(n), or calc(var(--spacing) * n) where Tailwind does not run).");
         }
-        if (property.endsWith("radius") && [...value.matchAll(/(\d*\.?\d+)px\b/g)].some(([, n]) => Number(n) > 2))
+        if (
+          property.endsWith("radius") &&
+          [...value.matchAll(/(\d*\.?\d+)px\b/g)].some(([, n]) => Number(n) > 2 && Number(n) < 999)
+        )
           return report("use var(--radius-chip), var(--radius-control), var(--radius-mark) or var(--radius-panel).");
         if (property === "z-index" && /^\s*\d+\s*$/.test(value) && Number(value) >= 10)
           return report("use var(--z-index-*) from the stacking scale.");
