@@ -53,7 +53,7 @@ test("classes with hand-picked values are reported, with the theme's name to use
 test("the class rule reads class strings and style objects in TSX", () => {
   const linter = new Linter();
   const messages = linter.verify(
-    'const a = cn("p-3 text-zinc-500", ok && `z-50`);\nconst b = <div className="text-sm" style={{ color: "#fff", width: 3 }} />;\nimport x from "text-red-500";\n// abnormal-allow: a printed page stays white\nconst c = "bg-white";\nconst d = "bg-white";\nconst e = <div style={{ color: `#fed`, width: `${w}px` }} />;',
+    'const a = cn("p-3 text-zinc-500", ok && `z-50`);\nconst b = <div className="text-sm" style={{ color: "#fff", width: 3 }} />;\nimport x from "text-red-500";\n// abnormal-allow: a printed page stays white\nconst c = "bg-white";\nconst d = "bg-white";\nconst e = <div style={{ color: `#fed`, width: `${w}px`, fill: `url(#fade)`, stroke: "url(#abc)" }} />;',
     {
       languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
       plugins: { abnormal },
@@ -89,7 +89,8 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
     '.i { font: var(--text-sm) / 18px "Mono 12px", monospace; background: url("a).png") center, #fff url("b.png"); }',
     ".j { font: calc(1rem + 2px) sans-serif; gap: max( 12px, 1vw); }",
     ".k { font: 16PX sans-serif; margin: max(12px, 1vw); }",
-    ".l { @apply data-[state=open]:underline; padding: 8px; }",
+    ".l { font: clamp(0.75rem, calc(var(--text-sm) + 1vw), 1rem) system-ui; line-height: 1; }",
+    '.m { font: var(--text-xs)/calc(1em + 2px) monospace; background: url("a\\").png") #fff; }',
   ].join("\n");
   const messages = linter.verify(
     source,
@@ -97,7 +98,7 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
       {
         files: ["**/*.css"],
         language: "css/css",
-        languageOptions: { customSyntax: tailwind4, tolerant: true },
+        languageOptions: { customSyntax: tailwind4 },
         plugins: { css, abnormal },
         rules: { "abnormal/no-hardcoded-css": "error" },
       },
@@ -121,7 +122,7 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
       [13, "gap"],
       [14, "font"],
       [14, "margin"],
-      [15, "padding"],
+      [16, "background"],
     ],
   );
 });

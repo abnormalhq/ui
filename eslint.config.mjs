@@ -77,8 +77,7 @@ const eslintConfig = defineConfig([
     ignores: ["registry/styles/abnormal.css", "registry/styles/abnormal-fonts.css"],
     language: "css/css",
     // Tailwind's syntax, so @theme, @utility and @apply with variants parse and every declaration in them is checked.
-    // tolerant, so a piece the syntax cannot read yet (an @apply of data-[state=open]:) is skipped, not the whole file.
-    languageOptions: { customSyntax: tailwind4, tolerant: true },
+    languageOptions: { customSyntax: tailwind4 },
     plugins: { css, abnormal },
     rules: { "abnormal/no-hardcoded-css": "error" },
   },
