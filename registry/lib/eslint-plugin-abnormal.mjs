@@ -11,7 +11,8 @@
  *     plugins: { css, abnormal }, rules: { "abnormal/no-hardcoded-css": "error" } },
  *
  * and leave out the theme (abnormal.css), where the literal values live. The Tailwind syntax lets the CSS parser read
- * @theme, @utility, @apply with variants and nested rules, so every declaration in them is checked. Blocks of your config
+ * @theme, @utility, @apply with variants and nested rules, so every declaration in them is checked. A @keyframes inside
+ * @theme is beyond that syntax for now: add `tolerant: true` to languageOptions if your theme holds one. Blocks of your config
  * that set rules without `files` (eslint-config-next's, for one) also run on CSS, whose syntax their rules cannot read:
  * give them `files: ["**\/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}"]`.
  *
@@ -33,9 +34,9 @@
  * - Tailwind's own radii and shadows (rounded-md, shadow-lg) and arbitrary radii above 2px: use rounded-chip /
  *   control / mark / panel / dialog and shadow-panel / popover. rounded-xs (2px) and pill radii of 999px or more stay
  *   allowed, like rounded-full.
- * - Numeric layers of 10 or more (z-50, z-60, z-[60]): use z-raised, z-sticky, z-header, z-overlay, z-floating or z-skip-link. Small
- *   arbitrary layers under 10 (z-[2]) stay allowed for stacking inside one component, and so do negative ones (-z-10,
- *   behind the parent).
+ * - Numeric layers of 10 or more (z-50, z-60, z-[60]): use z-raised, z-sticky, z-header, z-chrome, z-overlay,
+ *   z-floating or z-skip-link. Small arbitrary layers under 10 (z-[2]) stay allowed for stacking inside one component,
+ *   and so do negative ones (-z-10, behind the parent).
  * - Letter spacing that has a name (tracking-[-0.02em]): tracking-title, heading, display or caps.
  * - Hex and rgb() colors in a JSX style object.
  *
@@ -111,7 +112,7 @@ export function checkClass(token) {
   if (shadow.test(utility)) return `"${token}": use shadow-panel or shadow-popover.`;
   const layer = utility.match(zNumber);
   if (layer && Number(layer[1] ?? layer[2]) >= 10)
-    return `"${token}": use the stacking scale (z-raised, z-sticky, z-header, z-overlay, z-floating, z-skip-link).`;
+    return `"${token}": use the stacking scale (z-raised, z-sticky, z-header, z-chrome, z-overlay, z-floating, z-skip-link).`;
   const named = utility.match(tracking);
   if (named) return `"${token}": use tracking-${trackingName[named[1]]}.`;
   return undefined;

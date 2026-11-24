@@ -32,6 +32,6 @@ export const CN_THEME = {
 };
 
 /** The stacking layers: z-index is a class group rather than a theme scale, so `cn("z-overlay", "z-40")` keeps the last. */
-export const CN_LAYERS = ["raised", "sticky", "header", "overlay", "floating", "skip-link"];
+export const CN_LAYERS = ["raised", "sticky", "header", "chrome", "overlay", "floating", "skip-link"];
 
 export const cn = createCn({ extend: { theme: CN_THEME, classGroups: { z: [{ z: CN_LAYERS }] } } });
