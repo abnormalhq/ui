@@ -12,8 +12,10 @@ export function galleryTokensFromCss(css: string) {
   const themes: (typeof root.nodes)[number][] = [];
 
   for (const node of root.nodes) {
-    if (node.type === "rule" && (node.selector === ":root" || node.selector === ':root[data-theme="dark"]')) {
-      const values = node.selector === ":root" ? light : overrides;
+    // The derived mixes are declared on ":root, .ink" together, so a selector list that names :root counts as :root.
+    const selectors = node.type === "rule" ? node.selectors.map((selector) => selector.trim()) : [];
+    if (node.type === "rule" && (selectors.includes(":root") || node.selector === ':root[data-theme="dark"]')) {
+      const values = selectors.includes(":root") ? light : overrides;
       for (const child of node.nodes ?? []) {
         if (child.type === "decl") values.set(child.prop, child.value.trim());
       }

@@ -10,6 +10,11 @@
  *   always carries ink text (14.2:1), and is never text on a light background nor the background of long text.
  * - Cards have no fill (card is the page color); layering comes from thin borders.
  * - control and input are semi-transparent ink, so they read the same over the page, the sidebar and popovers.
+ * - Status colors: success, destructive and warning (amber: pending, in progress, about to happen). badge-ink is the old
+ *   name of warning and stays as an alias. Tint them with Tailwind's opacity (bg-warning/12) or, in handwritten CSS, the
+ *   -soft fills and -line borders below.
+ * - Categories: eight named hues (category-gray ... category-purple) for things a person tells apart by color, such as
+ *   labels, calendars and file types; each has a dot color, a -soft fill and an -ink text color for that fill.
  * - hover is opaque: pinned table columns rely on it to cover the content scrolling underneath.
  *   Floating surfaces (menus, selects, popovers, dialogs) use popover-hover: in dark mode hover is the popover color.
  * - The ink shell: a product's navigation column and the frame around its content can be the brand ink in both themes,
@@ -87,9 +92,12 @@
   --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235c5c55' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   --input: #14141222;
   /* Status colors stay at least 4.5:1 on their own 10-25% tints over the page and popovers. */
-  --badge-ink: #704800;
+  --warning: #704800;
+  --badge-ink: var(--warning);
   --success: #335c24;
   --destructive: #9f1a2c;
+  /* The dim behind a dialog or sheet. */
+  --overlay: rgb(0 0 0 / 0.4);
   --card: var(--bg);
   --popover-bg: #ffffff;
   --sidebar: #f2f2ee;
@@ -106,6 +114,34 @@
   --chart-2: #eb6834;
   --chart-3: #1baf7a;
   --chart-4: #eda100;
+  /*
+   * Category hues. The dot is at least 3:1 on the page, a popover and the ink shell; the -ink text is at least 6:1 on
+   * its -soft fill. They are drawn towards the chart colors and the paper, so a row of them still reads as one brand.
+   */
+  --category-gray: #77776d;
+  --category-gray-soft: #e6e6df;
+  --category-gray-ink: #3d3d38;
+  --category-red: #c8423a;
+  --category-red-soft: #f7dcd8;
+  --category-red-ink: #8a1f1a;
+  --category-orange: #cc6a26;
+  --category-orange-soft: #f9e0cc;
+  --category-orange-ink: #8a3d0c;
+  --category-yellow: #a88000;
+  --category-yellow-soft: #f6e8b0;
+  --category-yellow-ink: #6b4a00;
+  --category-green: #4a9136;
+  --category-green-soft: #dcecd2;
+  --category-green-ink: #2f5a1f;
+  --category-teal: #17917b;
+  --category-teal-soft: #d3ece6;
+  --category-teal-ink: #135a50;
+  --category-blue: #2a78d6;
+  --category-blue-soft: #d9e6f7;
+  --category-blue-ink: #1b4f8f;
+  --category-purple: #8455c9;
+  --category-purple-soft: #e7def5;
+  --category-purple-ink: #56308f;
   color-scheme: light;
 }
 
@@ -126,9 +162,10 @@
   --control: #f0f0ea0d;
   --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a6a69c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   --input: #f0f0ea1f;
-  --badge-ink: #e8b85a;
+  --warning: #e8b85a;
   --success: #a8c48f;
   --destructive: #ff8a96;
+  --overlay: rgb(0 0 0 / 0.7);
   --popover-bg: #1c1c19;
   --sidebar: #0f0f0d;
   --ink: #0f0f0d;
@@ -139,6 +176,30 @@
   --chart-2: #d95926;
   --chart-3: #199e70;
   --chart-4: #c98500;
+  --category-gray: #8f8f85;
+  --category-gray-soft: #33332e;
+  --category-gray-ink: #d6d6cc;
+  --category-red: #e06a61;
+  --category-red-soft: #47201d;
+  --category-red-ink: #f5aaa3;
+  --category-orange: #e08a4a;
+  --category-orange-soft: #48290f;
+  --category-orange-ink: #f3b687;
+  --category-yellow: #d6ae2e;
+  --category-yellow-soft: #403410;
+  --category-yellow-ink: #ecd073;
+  --category-green: #6db556;
+  --category-green-soft: #233a1a;
+  --category-green-ink: #a9d595;
+  --category-teal: #35b59d;
+  --category-teal-soft: #123a34;
+  --category-teal-ink: #86d6c6;
+  --category-blue: #4a93e8;
+  --category-blue-soft: #172f4d;
+  --category-blue-ink: #9cc3f2;
+  --category-purple: #9a72dc;
+  --category-purple-soft: #33244f;
+  --category-purple-ink: #c9b0f2;
   color-scheme: dark;
 }
 
@@ -159,9 +220,10 @@
     --control: #f0f0ea0d;
     --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a6a69c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     --input: #f0f0ea1f;
-    --badge-ink: #e8b85a;
+    --warning: #e8b85a;
     --success: #a8c48f;
     --destructive: #ff8a96;
+    --overlay: rgb(0 0 0 / 0.7);
     --popover-bg: #1c1c19;
     --sidebar: #0f0f0d;
     --ink: #0f0f0d;
@@ -171,6 +233,30 @@
     --chart-2: #d95926;
     --chart-3: #199e70;
     --chart-4: #c98500;
+    --category-gray: #8f8f85;
+    --category-gray-soft: #33332e;
+    --category-gray-ink: #d6d6cc;
+    --category-red: #e06a61;
+    --category-red-soft: #47201d;
+    --category-red-ink: #f5aaa3;
+    --category-orange: #e08a4a;
+    --category-orange-soft: #48290f;
+    --category-orange-ink: #f3b687;
+    --category-yellow: #d6ae2e;
+    --category-yellow-soft: #403410;
+    --category-yellow-ink: #ecd073;
+    --category-green: #6db556;
+    --category-green-soft: #233a1a;
+    --category-green-ink: #a9d595;
+    --category-teal: #35b59d;
+    --category-teal-soft: #123a34;
+    --category-teal-ink: #86d6c6;
+    --category-blue: #4a93e8;
+    --category-blue-soft: #172f4d;
+    --category-blue-ink: #9cc3f2;
+    --category-purple: #9a72dc;
+    --category-purple-soft: #33244f;
+    --category-purple-ink: #c9b0f2;
     color-scheme: dark;
   }
 }
@@ -217,11 +303,36 @@
   --control: #f0f0ea12;
   --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a6a69c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   --input: #f0f0ea1f;
-  --badge-ink: #e8b85a;
+  --warning: #e8b85a;
+  --badge-ink: var(--warning);
   --success: #a8c48f;
   --destructive: #ff8a96;
   --popover-bg: #1c1c19;
   --focus: #6f6f66;
+  --category-gray: #8f8f85;
+  --category-gray-soft: #33332e;
+  --category-gray-ink: #d6d6cc;
+  --category-red: #e06a61;
+  --category-red-soft: #47201d;
+  --category-red-ink: #f5aaa3;
+  --category-orange: #e08a4a;
+  --category-orange-soft: #48290f;
+  --category-orange-ink: #f3b687;
+  --category-yellow: #d6ae2e;
+  --category-yellow-soft: #403410;
+  --category-yellow-ink: #ecd073;
+  --category-green: #6db556;
+  --category-green-soft: #233a1a;
+  --category-green-ink: #a9d595;
+  --category-teal: #35b59d;
+  --category-teal-soft: #123a34;
+  --category-teal-ink: #86d6c6;
+  --category-blue: #4a93e8;
+  --category-blue-soft: #172f4d;
+  --category-blue-ink: #9cc3f2;
+  --category-purple: #9a72dc;
+  --category-purple-soft: #33244f;
+  --category-purple-ink: #c9b0f2;
   --card: var(--bg);
   --sidebar: var(--bg);
   --sidebar-foreground: var(--text);
@@ -241,6 +352,26 @@
   --accent-foreground: var(--text);
   --ring: var(--focus);
 }
+/*
+ * Mixes of the tokens above, for the states that have no color of their own. They are declared on .ink as well, since a
+ * custom property that refers to another is resolved where it is declared: on :root alone the shell would mix the
+ * page's light values. Tailwind users mostly reach the status tints through opacity (bg-success/12); the -soft and
+ * -line names are for handwritten CSS, at the strengths StatusLabel and Banner use.
+ */
+:root,
+.ink {
+  /* A border one step stronger than --border: a hovered card, an empty-state outline. */
+  --border-strong: color-mix(in oklab, var(--border), var(--text) 18%);
+  /* An input's border on hover and focus: inputs deepen their border instead of drawing a glow. */
+  --input-hover: color-mix(in oklab, var(--input), var(--text) 30%);
+  --success-soft: color-mix(in oklab, var(--success) 12%, transparent);
+  --success-line: color-mix(in oklab, var(--success) 35%, transparent);
+  --warning-soft: color-mix(in oklab, var(--warning) 12%, transparent);
+  --warning-line: color-mix(in oklab, var(--warning) 35%, transparent);
+  --destructive-soft: color-mix(in oklab, var(--destructive) 10%, transparent);
+  --destructive-line: color-mix(in oklab, var(--destructive) 35%, transparent);
+}
+
 /* The shell's own fill and text color are defaults, in the base layer, so a utility on the same element (bg-*, text-*) still wins. */
 @layer base {
   .ink {
@@ -289,6 +420,28 @@
   /* Body text inherits 1.55; long-form copy opens up to 1.8. Use as text-md/prose. */
   --leading-body: 1.55;
   --leading-prose: 1.8;
+
+  /*
+   * Letter spacing. Headings close up as they grow (h1-h4 get tracking-heading by default); small uppercase labels
+   * (eyebrows, table group titles) open up.
+   */
+  --tracking-title: -0.01em;
+  --tracking-heading: -0.02em;
+  --tracking-display: -0.03em;
+  --tracking-caps: 0.06em;
+
+  /*
+   * Stacking. raised lifts an element over its siblings (a focused segment, a pinned column); sticky is a bar or handle
+   * over the content it scrolls with; header is the page's sticky header; overlay is every floating layer (dialogs,
+   * sheets, menus, popovers, tooltips: the one opened last is on top, by document order); floating is the brief
+   * feedback that must show above an open dialog; skip-link is above everything.
+   */
+  --z-index-raised: 1;
+  --z-index-sticky: 10;
+  --z-index-header: 20;
+  --z-index-overlay: 50;
+  --z-index-floating: 60;
+  --z-index-skip-link: 70;
 }
 
 @theme inline {
@@ -308,8 +461,12 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-overlay: var(--overlay);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-input: var(--input);
+  --color-input-hover: var(--input-hover);
   --color-control: var(--control);
   --color-ring: var(--ring);
   --color-brand: var(--brand);
@@ -328,6 +485,30 @@
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
+  --color-category-gray: var(--category-gray);
+  --color-category-gray-soft: var(--category-gray-soft);
+  --color-category-gray-ink: var(--category-gray-ink);
+  --color-category-red: var(--category-red);
+  --color-category-red-soft: var(--category-red-soft);
+  --color-category-red-ink: var(--category-red-ink);
+  --color-category-orange: var(--category-orange);
+  --color-category-orange-soft: var(--category-orange-soft);
+  --color-category-orange-ink: var(--category-orange-ink);
+  --color-category-yellow: var(--category-yellow);
+  --color-category-yellow-soft: var(--category-yellow-soft);
+  --color-category-yellow-ink: var(--category-yellow-ink);
+  --color-category-green: var(--category-green);
+  --color-category-green-soft: var(--category-green-soft);
+  --color-category-green-ink: var(--category-green-ink);
+  --color-category-teal: var(--category-teal);
+  --color-category-teal-soft: var(--category-teal-soft);
+  --color-category-teal-ink: var(--category-teal-ink);
+  --color-category-blue: var(--category-blue);
+  --color-category-blue-soft: var(--category-blue-soft);
+  --color-category-blue-ink: var(--category-blue-ink);
+  --color-category-purple: var(--category-purple);
+  --color-category-purple-soft: var(--category-purple-soft);
+  --color-category-purple-ink: var(--category-purple-ink);
   --shadow-panel: var(--panel-shadow);
   --shadow-popover: var(--popover-shadow);
 
@@ -512,6 +693,11 @@
     -webkit-text-size-adjust: 100%;
     font-synthesis: none;
   }
+  /*
+   * Figures are proportional by default: Inter's tabular figures also widen the hyphen and the dashes, so "2026-11-16"
+   * or "sign-in" set in tabular-nums look monospaced. Columns of numbers that must line up (counts, sizes, times in a
+   * list, a stat) ask for tabular-nums themselves; the components that show such numbers already do.
+   */
   body {
     background: var(--bg);
     color: var(--text);
@@ -519,7 +705,6 @@
     font-size: var(--text-base);
     line-height: var(--leading-body);
     font-feature-settings: "cv11", "ss03";
-    font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -533,7 +718,7 @@
   h4 {
     font-family: var(--font-heading);
     font-weight: 600;
-    letter-spacing: -0.02em;
+    letter-spacing: var(--tracking-heading);
   }
   /* Selected text is the brand's highlighter: yellow with ink text in both themes. */
   ::selection {

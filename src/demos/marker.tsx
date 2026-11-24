@@ -14,7 +14,7 @@ export default function MarkerDemo({ copy: overrides = {} }: { copy?: Partial<ty
       <span className="font-heading text-[3.25rem] leading-none font-light tracking-[-0.04em]">
         <Marker>01</Marker>
       </span>
-      <p className="font-heading text-3xl font-semibold tracking-[-0.02em]">
+      <p className="font-heading text-3xl font-semibold tracking-heading">
         {copy.mailboxIs} <Marker>{copy.live}</Marker>
       </p>
       <p className="text-muted-foreground">

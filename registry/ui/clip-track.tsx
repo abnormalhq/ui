@@ -114,7 +114,7 @@ const clipTrackClipVariants = cva(
       /** The color of the bar along the clip's foot: its state, in the same tones as a timeline's marks. */
       tone: {
         default: "[--clip-bar:var(--muted-foreground)]",
-        pending: "[--clip-bar:var(--badge-ink)]",
+        pending: "[--clip-bar:var(--warning)]",
         success: "[--clip-bar:var(--success)]",
         destructive: "[--clip-bar:var(--destructive)]",
         current: "[--clip-bar:var(--signal)]",

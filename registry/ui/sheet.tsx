@@ -36,12 +36,12 @@ function SheetContent({
 }) {
   return (
     <SheetPrimitive.Portal>
-      <SheetPrimitive.Overlay className="fixed inset-0 z-50 bg-black/30 data-open:animate-fade-in data-closed:animate-fade-out dark:bg-black/60" />
+      <SheetPrimitive.Overlay className="fixed inset-0 z-overlay bg-overlay data-open:animate-fade-in data-closed:animate-fade-out" />
       <SheetPrimitive.Content
         data-slot="sheet-content"
         data-side={side}
         className={cn(
-          "fixed z-50 flex flex-col bg-popover text-popover-foreground shadow-popover outline-none",
+          "fixed z-overlay flex flex-col bg-popover text-popover-foreground shadow-popover outline-none",
           side === "right" &&
             "inset-y-0 right-0 w-full max-w-[480px] border-l border-border data-open:animate-slide-in-right data-closed:animate-slide-out-right",
           side === "left" &&

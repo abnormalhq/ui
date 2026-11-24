@@ -42,7 +42,7 @@ export default function BannerDemo({ copy: overrides = {} }: { copy?: Partial<ty
         <Banner tone="warning">
           <WrenchIcon />
           <BannerText>
-            <span className="font-medium text-badge-ink">{copy.maintenance}</span> {copy.databaseUpgrade}
+            <span className="font-medium text-warning">{copy.maintenance}</span> {copy.databaseUpgrade}
           </BannerText>
           <BannerMeta>{copy.maintenanceWindow}</BannerMeta>
         </Banner>

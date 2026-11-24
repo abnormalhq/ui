@@ -27,17 +27,17 @@ const bannerVariants = cva(
       tone: {
         default: "border-border bg-muted [&>svg]:text-muted-foreground",
         highlight: "border-border bg-highlight-muted",
-        warning: "bg-badge-ink/8 [&>svg]:text-badge-ink",
+        warning: "bg-warning/8 [&>svg]:text-warning",
         destructive: "bg-destructive/8 [&>svg]:text-destructive",
         success: "bg-success/8 [&>svg]:text-success",
       },
     },
     compoundVariants: [
-      { variant: "strip", tone: "warning", className: "border-badge-ink/25" },
+      { variant: "strip", tone: "warning", className: "border-warning/25" },
       { variant: "strip", tone: "destructive", className: "border-destructive/25" },
       { variant: "strip", tone: "success", className: "border-success/25" },
       { variant: "panel", tone: "default", className: "bg-muted/40" },
-      { variant: "panel", tone: "warning", className: "border-badge-ink/40" },
+      { variant: "panel", tone: "warning", className: "border-warning/40" },
       { variant: "panel", tone: "destructive", className: "border-destructive/50" },
       { variant: "panel", tone: "success", className: "border-success/40" },
     ],
@@ -88,7 +88,7 @@ function BannerDot({ className, ...props }: Omit<React.ComponentProps<"span">, "
       data-slot="banner-dot"
       aria-hidden="true"
       className={cn(
-        "size-2 shrink-0 rounded-full bg-muted-foreground group-data-[variant=panel]/banner:size-2.5 group-data-[tone=destructive]/banner:bg-destructive group-data-[tone=highlight]/banner:bg-signal group-data-[tone=success]/banner:bg-success group-data-[tone=warning]/banner:bg-badge-ink",
+        "size-2 shrink-0 rounded-full bg-muted-foreground group-data-[variant=panel]/banner:size-2.5 group-data-[tone=destructive]/banner:bg-destructive group-data-[tone=highlight]/banner:bg-signal group-data-[tone=success]/banner:bg-success group-data-[tone=warning]/banner:bg-warning",
         className,
       )}
       {...props}

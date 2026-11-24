@@ -37,7 +37,7 @@ function Progress({
         className={cn(
           "h-full rounded-full",
           tone === "warning"
-            ? "bg-badge-ink"
+            ? "bg-warning"
             : tone === "destructive"
               ? "bg-destructive"
               : tone === "muted"

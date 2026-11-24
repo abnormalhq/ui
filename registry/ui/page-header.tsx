@@ -18,7 +18,7 @@ function PageHeader({ className, sticky = false, ...props }: React.ComponentProp
       className={cn(
         "relative isolate flex min-w-0 flex-col gap-2 pb-5",
         sticky &&
-          "sticky top-0 z-20 pt-5 pb-3 before:absolute before:inset-y-0 before:-inset-x-[100vmax] before:-z-10 before:border-b before:border-transparent before:bg-background before:transition-colors data-stuck:before:border-border",
+          "sticky top-0 z-header pt-5 pb-3 before:absolute before:inset-y-0 before:-inset-x-[100vmax] before:-z-10 before:border-b before:border-transparent before:bg-background before:transition-colors data-stuck:before:border-border",
         className,
       )}
       {...props}
