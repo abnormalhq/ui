@@ -22,6 +22,7 @@ import { CodeBlock } from "@/components/ui/code-block";
 import { DescriptionDetails, DescriptionItem, DescriptionList } from "@/components/ui/description-list";
 import { EmptyState, EmptyStateTitle } from "@/components/ui/empty-state";
 import { ItemListRow } from "@/components/ui/item-list";
+import { NotFound, NotFoundTitle } from "@/components/ui/not-found";
 import { Kbd, KbdCombo } from "@/components/ui/kbd";
 import { PageHeader, PageHeaderActions, PageHeaderBack, PageHeaderTitle } from "@/components/ui/page-header";
 import { PricingCard, PricingPrice } from "@/components/ui/pricing-card";
@@ -429,4 +430,37 @@ test("clipTrackMinWidth keeps the shortest clip 48px wide without bending the ti
   assert.equal(clipTrackMinWidth([1, 60], 40), 2440);
   assert.equal(clipTrackMinWidth([0, 10]), 48);
   assert.equal(clipTrackMinWidth([]), 0);
+});
+
+test("a NotFound is a main with the mark first, or the page's own element, and leaves the mark out when asked", () => {
+  const plain = renderToStaticMarkup(
+    <NotFound>
+      <NotFoundTitle>Gone</NotFoundTitle>
+    </NotFound>,
+  );
+  assert.match(plain, /^<main data-slot="not-found"[^>]*><svg[^>]*>.*<\/svg><h1[^>]*>Gone<\/h1><\/main>$/s);
+
+  const own = renderToStaticMarkup(
+    <NotFound asChild>
+      <section aria-label="Lost">
+        <NotFoundTitle>Gone</NotFoundTitle>
+      </section>
+    </NotFound>,
+  );
+  assert.doesNotMatch(own, /<main/);
+  assert.match(
+    own,
+    /^<section(?=[^>]*aria-label="Lost")(?=[^>]*data-slot="not-found")[^>]*><svg[^>]*>.*<\/svg><h1[^>]*>Gone<\/h1><\/section>$/s,
+  );
+
+  const bare = renderToStaticMarkup(
+    <NotFound asChild mark={false}>
+      <section>
+        <NotFoundTitle>Gone</NotFoundTitle>
+      </section>
+    </NotFound>,
+  );
+  assert.doesNotMatch(bare, /<svg/);
+  assert.match(bare, /^<section data-slot="not-found"[^>]*><h1[^>]*>Gone<\/h1><\/section>$/);
+  assert.doesNotMatch(renderToStaticMarkup(<NotFound mark={false} />), /<svg/);
 });
