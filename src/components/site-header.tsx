@@ -60,7 +60,7 @@ function MobileNav({ groups, locale }: { groups: NavGroup[]; locale: Locale }) {
 export function SiteHeader({ groups, locale }: { groups: NavGroup[]; locale: Locale }) {
   const t = useTranslations("SiteHeader");
   return (
-    // eslint-disable-next-line abnormal/no-hardcoded-classes -- above the demos' own sticky page headers (z-header) as they scroll under it.
+    // abnormal-allow: above the demos' own sticky page headers (z-header) as they scroll under it.
     <header className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="flex h-14 items-center gap-2 px-4 md:px-6">
         <MobileNav groups={groups} locale={locale} />

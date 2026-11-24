@@ -409,12 +409,17 @@ test("the client import check follows registry modules and stops at a client bou
 
 test("cn knows every custom token in the theme", () => {
   const utils = read("registry/lib/utils.ts");
-  const listed = (key: string) =>
-    [...utils.match(new RegExp(`${key}: \\[([^\\]]*)\\]`))![1]!.matchAll(/"([^"]+)"/g)].map((m) => m[1]!);
+  const listed = (key: string, separator = ":") =>
+    [...utils.match(new RegExp(`${key}${separator} \\[([^\\]]*)\\]`))![1]!.matchAll(/"([^"]+)"/g)].map((m) => m[1]!);
   const tokens = (prefix: string) => [...theme.matchAll(new RegExp(`--${prefix}-([a-z-]+):`, "g"))].map((m) => m[1]!);
   assert.deepEqual(listed("radius").toSorted(), tokens("radius").toSorted());
   assert.deepEqual(listed("shadow").toSorted(), tokens("shadow").toSorted());
   assert.deepEqual(listed("animate").toSorted(), tokens("animate").toSorted());
+  assert.deepEqual(listed("tracking").toSorted(), tokens("tracking").toSorted());
+  assert.deepEqual(listed("CN_LAYERS", " =").toSorted(), tokens("z-index").toSorted());
+  assert.equal(cn("z-overlay", "z-40"), "z-40");
+  assert.equal(cn("z-50", "z-floating"), "z-floating");
+  assert.equal(cn("tracking-heading", "tracking-tight"), "tracking-tight");
   // The built-in size names (xs to 4xl, and the theme's 2xs and md) are sizes to cn already; the display names are not.
   const display = tokens("text").filter((name) => name.startsWith("display") && !name.endsWith("-line-height"));
   assert.deepEqual(listed("text").toSorted(), display.toSorted());

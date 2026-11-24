@@ -71,7 +71,7 @@ function Switch({
       <span
         aria-hidden="true"
         className={cn(
-          // eslint-disable-next-line abnormal/no-hardcoded-classes -- the thumb's small lift, not a panel or a floating layer.
+          // abnormal-allow: the thumb's small lift, not a panel or a floating layer.
           "pointer-events-none block size-4.5 rounded-full bg-muted-foreground shadow-xs transition-transform duration-150",
           checked ? "translate-x-4 bg-background" : "translate-x-0",
         )}

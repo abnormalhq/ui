@@ -3,6 +3,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 import css from "@eslint/css";
+import { tailwind4 } from "tailwind-csstree";
 import abnormal from "./registry/lib/eslint-plugin-abnormal.mjs";
 
 /*
@@ -65,8 +66,8 @@ const eslintConfig = defineConfig([
   {
     // The registry's own rule, run on the registry and the site, as each project runs it on its own code.
     files: ["**/*.{ts,tsx}"],
-    // The rule's own test and demo spell out the classes it reports.
-    ignores: ["tests/eslint-plugin.test.ts", "src/demos/eslint-plugin.tsx"],
+    // Tests spell out the classes components render, and the rule's demo the classes it reports.
+    ignores: ["tests/**", "src/demos/eslint-plugin.tsx"],
     plugins: { abnormal },
     rules: { "abnormal/no-hardcoded-classes": "error" },
   },
@@ -75,7 +76,8 @@ const eslintConfig = defineConfig([
     files: ["**/*.css"],
     ignores: ["registry/styles/abnormal.css", "registry/styles/abnormal-fonts.css"],
     language: "css/css",
-    languageOptions: { tolerant: true },
+    // Tailwind's syntax, so @theme, @utility and @apply with variants parse and every declaration in them is checked.
+    languageOptions: { customSyntax: tailwind4 },
     plugins: { css, abnormal },
     rules: { "abnormal/no-hardcoded-css": "error" },
   },
