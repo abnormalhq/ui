@@ -93,6 +93,7 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
     '.m { font: var(--text-xs)/calc(1em + 2px) monospace; background: url("a\\").png") #fff; }',
     ".n { background: url(a\\'b.png), linear-gradient(#fff, #000), url('c.png'); }",
     '.o { content: "\\\n#fff"; }',
+    ".p { padding: 0 /* don't add vertical padding */ 16px; color: var(--text) /* #fff */; }",
   ].join("\n");
   const messages = linter.verify(
     source,
@@ -126,6 +127,7 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
       [14, "margin"],
       [16, "background"],
       [17, "background"],
+      [20, "padding"],
     ],
   );
 });
