@@ -96,6 +96,7 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
     ".p { padding: 0 /* don't add vertical padding */ 16px; color: var(--text) /* #fff */; }",
     ".q { border-radius: var(--radius-control) /* not 8px */; z-index: 40 /* above the header */; }",
     ".r { border-radius: calc(var(--radius-panel) + -4px); }",
+    ".s { border-radius: var(--圆角-4px); padding: var(--间距-8px); }",
   ].join("\n");
   const messages = linter.verify(
     source,
