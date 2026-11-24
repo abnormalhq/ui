@@ -134,6 +134,23 @@ function CopyButton({
   const outcome = feedback === "copied" ? copiedLabel : feedback === "failed" ? failedLabel : "";
   const iconOnly = children === undefined || children === null || children === false;
 
+  // Copies the text (or the code beside the button) and shows how that went; it never rejects, as a failure is shown.
+  const copyFrom = async (button: HTMLButtonElement) => {
+    try {
+      const value = text ?? adjacentCode(button);
+      if (write) await write(value);
+      else await copyText(value, button);
+      // A copy that settles after the button has gone tells nobody, as it shows nothing.
+      if (!mounted.current) return;
+      show("copied");
+      onCopied?.(value);
+    } catch (error) {
+      if (!mounted.current) return;
+      show("failed");
+      onCopyFailed?.(error);
+    }
+  };
+
   return (
     <>
       <Button
@@ -149,26 +166,13 @@ function CopyButton({
           feedback === "failed" && "text-destructive",
           className,
         )}
-        onClick={async (event) => {
+        onClick={(event) => {
           onClick?.(event);
           if (event.defaultPrevented) return;
           const rect = event.currentTarget.getBoundingClientRect();
           const below = rect.top < BUBBLE_ROOM;
           setAnchor({ x: rect.left + rect.width / 2, y: below ? rect.bottom : rect.top, below });
-          const button = event.currentTarget;
-          try {
-            const value = text ?? adjacentCode(button);
-            if (write) await write(value);
-            else await copyText(value, button);
-            // A copy that settles after the button has gone tells nobody, as it shows nothing.
-            if (!mounted.current) return;
-            show("copied");
-            onCopied?.(value);
-          } catch (error) {
-            if (!mounted.current) return;
-            show("failed");
-            onCopyFailed?.(error);
-          }
+          void copyFrom(event.currentTarget);
         }}
         {...props}
       >

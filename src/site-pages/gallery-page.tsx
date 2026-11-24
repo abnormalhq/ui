@@ -19,9 +19,9 @@ import { registryCopy } from "@/site/registry-copy";
 
 type DemoProps = { copy?: Record<string, string>; locale?: string };
 const demos: Record<string, ComponentType<DemoProps>> = {
-  button: ButtonDemo as unknown as ComponentType<DemoProps>,
-  badge: BadgeDemo as unknown as ComponentType<DemoProps>,
-  switch: SwitchDemo as unknown as ComponentType<DemoProps>,
+  button: ButtonDemo,
+  badge: BadgeDemo,
+  switch: SwitchDemo,
 };
 const families = [
   { name: "Bricolage Grotesque", utility: "font-heading", sample: "Aa" },

@@ -208,11 +208,11 @@ test("an ExpandableText offers its button only when the text runs past its lines
   globalThis.ResizeObserver = class {
     constructor(private callback: ResizeObserverCallback) {}
     observe() {
-      this.callback([], this as unknown as ResizeObserver);
+      this.callback([], this);
     }
     unobserve() {}
     disconnect() {}
-  } as unknown as typeof ResizeObserver;
+  };
   try {
     overflowing("height", false);
     const short = await mount(

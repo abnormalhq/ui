@@ -39,10 +39,11 @@ export default function InputGroupDemo({ copy: overrides = {} }: { copy?: Partia
           {visible ? copy.hide : copy.show}
         </InputGroupButton>
         <InputGroupButton
-          onClick={async () => {
-            await navigator.clipboard.writeText(password);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1500);
+          onClick={() => {
+            void navigator.clipboard.writeText(password).then(() => {
+              setCopied(true);
+              setTimeout(() => setCopied(false), 1500);
+            });
           }}
         >
           {copied ? copy.copied : copy.copy}
