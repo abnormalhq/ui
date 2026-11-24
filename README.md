@@ -196,7 +196,7 @@ Static assets can't vary on a request header, so negotiation needs the Worker. `
 
 The site and the registry share one Cloudflare Worker (`wrangler.jsonc`), served at `ui.abnormalhq.com`. `next build` exports every page to `out/` with the registry JSON and fonts, and all of it is served as static assets. The Worker runs only on `/` and `/components/*`, and only chooses which file to serve: it never renders.
 
-Every push to `main` deploys from GitHub Actions, as in mail. CI (`.github/workflows/ci.yml`) runs `pnpm cf:build` on pull requests and `main` with no Cloudflare credentials; when it passes for a push to `main`, `.github/workflows/deploy.yml` builds the same commit again (`pnpm build`) and runs `pnpm cf:deploy`. If any step fails nothing is deployed, and the last good version keeps serving. Only `main`'s latest commit deploys, one deployment at a time, so re-running an older commit's CI cannot roll the site back. A manual run (**Actions → Deploy → Run workflow** on `main`) redeploys `main`'s latest commit once CI has passed for it; to stop deployments for a while, disable the workflow under **Actions → Deploy → ⋯ → Disable workflow**.
+Every push to `main` deploys from GitHub Actions, as in mail. CI (`.github/workflows/ci.yml`) runs `pnpm cf:build` on pull requests and `main` with no Cloudflare credentials; when it passes for a push to `main`, `.github/workflows/deploy.yml` builds `main`'s latest commit again (`pnpm build`) and runs `pnpm cf:deploy`. If any step fails nothing is deployed, and the last good version keeps serving. Only `main`'s latest commit deploys, one deployment at a time, so re-running an older commit's CI cannot roll the site back. A manual run (**Actions → Deploy → Run workflow** on `main`) redeploys `main`'s latest commit once CI has passed for it; to stop deployments for a while, disable the workflow under **Actions → Deploy → ⋯ → Disable workflow**.
 
 Projects keep their own copy of each item, so a deploy changes nothing until a project reinstalls with `--overwrite`.
 
@@ -212,7 +212,7 @@ Until the cutover the Worker was deployed by Cloudflare Workers Builds. In one s
 
 ### Workers Builds settings (the way back)
 
-To go back, disable the workflow and connect `abnormalhq/ui` to the `abnormalhq-ui` Worker again, with `main` as the production branch, `/` as the root directory and builds for other branches turned off:
+To go back, disable the workflow, let a run already in progress finish, and connect `abnormalhq/ui` to the `abnormalhq-ui` Worker again, with `main` as the production branch, `/` as the root directory and builds for other branches turned off:
 
 - Build command: `pnpm install --frozen-lockfile && pnpm cf:build`
 - Deploy command: `pnpm cf:deploy`
