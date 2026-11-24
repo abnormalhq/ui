@@ -17,6 +17,8 @@ test("classes with hand-picked values are reported, with the theme's name to use
     "rounded-md": /rounded-control/,
     "rounded-[5px]": /rounded-chip/,
     "text-[13px]/6": /type scale/,
+    "text-[13px]/[1.35]": /type scale/,
+    "text-[length:13px]": /type scale/,
     "text-zinc-500/[.5]": /semantic color/,
     "[&_h2]:mt-[3.25rem]": /\[&_h2\]:mt-13\)/,
     "z-60": /stacking scale/,
@@ -51,7 +53,7 @@ test("classes with hand-picked values are reported, with the theme's name to use
 test("the class rule reads class strings and style objects in TSX", () => {
   const linter = new Linter();
   const messages = linter.verify(
-    'const a = cn("p-3 text-zinc-500", ok && `z-50`);\nconst b = <div className="text-sm" style={{ color: "#fff", width: 3 }} />;\nimport x from "text-red-500";\n// abnormal-allow: a printed page stays white\nconst c = "bg-white";\nconst d = "bg-white";',
+    'const a = cn("p-3 text-zinc-500", ok && `z-50`);\nconst b = <div className="text-sm" style={{ color: "#fff", width: 3 }} />;\nimport x from "text-red-500";\n// abnormal-allow: a printed page stays white\nconst c = "bg-white";\nconst d = "bg-white";\nconst e = <div style={{ color: `#fed`, width: `${w}px` }} />;',
     {
       languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
       plugins: { abnormal },
@@ -65,6 +67,7 @@ test("the class rule reads class strings and style objects in TSX", () => {
       [1, '"z-50"'],
       [2, '"#fff"'],
       [6, '"bg-white"'],
+      [7, '"#fed"'],
     ],
   );
 });
@@ -83,6 +86,9 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
     ".f { background: #fff; }",
     ".g { font: 10px var(--font-mono); }",
     ".h { font: var(--text-2xs)/1.4 var(--font-mono); }",
+    '.i { font: var(--text-sm) / 18px "Mono 12px", monospace; background: url("a).png") center, #fff url("b.png"); }',
+    ".j { font: calc(1rem + 2px) sans-serif; gap: max( 12px, 1vw); }",
+    ".k { font: 16PX sans-serif; margin: max(12px, 1vw); }",
   ].join("\n");
   const messages = linter.verify(
     source,
@@ -109,6 +115,11 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
       [6, "padding"],
       [7, "color"],
       [10, "font"],
+      [12, "background"],
+      [13, "font"],
+      [13, "gap"],
+      [14, "font"],
+      [14, "margin"],
     ],
   );
 });
