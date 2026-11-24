@@ -81,6 +81,8 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
     "@utility badge { color: #111; &:hover { color: var(--text); } }",
     "/* abnormal-allow: a printed page stays white */",
     ".f { background: #fff; }",
+    ".g { font: 10px var(--font-mono); }",
+    ".h { font: var(--text-2xs)/1.4 var(--font-mono); }",
   ].join("\n");
   const messages = linter.verify(
     source,
@@ -106,6 +108,7 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
       [2, "z-index"],
       [6, "padding"],
       [7, "color"],
+      [10, "font"],
     ],
   );
 });
