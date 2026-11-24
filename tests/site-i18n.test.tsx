@@ -59,7 +59,9 @@ test("static pages render their locale, page metadata and translated copy", () =
 
   const notFound = readFileSync("out/404.html", "utf8");
   assert.match(notFound, /<html[^>]*lang="en"/);
-  assert.match(notFound, /Nothing here · <span lang="zh-CN">这里什么也没有<\/span>/);
+  assert.match(notFound, /data-slot="not-found"/);
+  assert.match(notFound, /Nothing here/);
+  assert.match(notFound, /<div[^>]*lang="zh-CN"[^>]*>.*这里什么也没有/s);
   assert.match(notFound, /Back to the overview/);
   assert.match(notFound, /中文首页/);
 });

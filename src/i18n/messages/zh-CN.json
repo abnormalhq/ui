@@ -995,6 +995,14 @@
       "draft": "草稿",
       "failed": "失败",
       "seconds": " 秒"
+    },
+    "not-found": {
+      "code": "404 · 页面不存在",
+      "title": "这个页面不存在",
+      "description": "链接可能已经过期，或者地址输错了。从首页重新开始吧。",
+      "home": "返回首页",
+      "help": "帮助中心",
+      "pricing": "套餐与价格"
     }
   },
   "GalleryPage": {
