@@ -196,13 +196,23 @@ Static assets can't vary on a request header, so negotiation needs the Worker. `
 
 The site and the registry share one Cloudflare Worker (`wrangler.jsonc`), served at `ui.abnormalhq.com`. `next build` exports every page to `out/` with the registry JSON and fonts, and all of it is served as static assets. The Worker runs only on `/` and `/components/*`, and only chooses which file to serve: it never renders.
 
-Cloudflare Workers Builds watches `main` and deploys every push. If any step fails nothing is deployed, and the last good version keeps serving. CI runs the same `pnpm cf:build` on pull requests and `main`, and does not publish anything.
+Every push to `main` deploys from GitHub Actions, as in mail. CI (`.github/workflows/ci.yml`) runs `pnpm cf:build` on pull requests and `main` with no Cloudflare credentials; when it passes for a push to `main`, `.github/workflows/deploy.yml` builds `main`'s latest commit again (`pnpm build`) and runs `pnpm cf:deploy`. If any step fails nothing is deployed, and the last good version keeps serving. Only `main`'s latest commit deploys, one deployment at a time, so re-running an older commit's CI cannot roll the site back. A manual run (**Actions → Deploy → Run workflow** on `main`) redeploys `main`'s latest commit once CI has passed for it; to stop deployments for a while, disable the workflow under **Actions → Deploy → ⋯ → Disable workflow**.
 
 Projects keep their own copy of each item, so a deploy changes nothing until a project reinstalls with `--overwrite`.
 
-### Workers Builds settings
+The workflow uses the `abnormalhq` organization secret `CLOUDFLARE_API_TOKEN`, the account API token mail deploys with (mail's `docs/deployment.md`, "Moving from Workers Builds"), whose repository access must include this repository. It needs **Workers Scripts → Edit** and **Workers Routes → Edit** on `abnormalhq.com`, which mail's deployment already uses. The account ID is not secret and is in the workflow.
 
-Connect `abnormalhq/ui` to the `abnormalhq-ui` Worker, with `main` as the production branch, `/` as the root directory and builds for other branches turned off:
+### Moving from Workers Builds
+
+Until the cutover the Worker was deployed by Cloudflare Workers Builds. In one sitting, or every push deploys twice:
+
+1. Add this repository to the repository access of the organization secret `CLOUDFLARE_API_TOKEN`.
+2. Disconnect the repository under **Settings → Builds** of the `abnormalhq-ui` Worker (keep the Worker, its domain and its settings), then merge the workflow to `main`: the merge's CI starts the first deployment.
+3. Check the run (or start one by hand on `main`), `https://ui.abnormalhq.com` and a registry item such as `https://ui.abnormalhq.com/r/button.json`.
+
+### Workers Builds settings (the way back)
+
+To go back, disable the workflow, let a run already in progress finish, and connect `abnormalhq/ui` to the `abnormalhq-ui` Worker again, with `main` as the production branch, `/` as the root directory and builds for other branches turned off:
 
 - Build command: `pnpm install --frozen-lockfile && pnpm cf:build`
 - Deploy command: `pnpm cf:deploy`
@@ -212,7 +222,7 @@ Connect `abnormalhq/ui` to the `abnormalhq-ui` Worker, with `main` as the produc
 | `SKIP_DEPENDENCY_INSTALL` | `1`   | Skips the default install in favor of the frozen one |
 | `NEXT_TELEMETRY_DISABLED` | `1`   | Turns off Next.js build telemetry                    |
 
-The pnpm version comes from `packageManager` in `package.json`: Workers Builds reads it before any `PNPM_VERSION` build variable, so none is set.
+The pnpm version comes from `packageManager` in `package.json`: Workers Builds and `pnpm/action-setup` both read it, so no `PNPM_VERSION` build variable is set.
 
 ## License
 
