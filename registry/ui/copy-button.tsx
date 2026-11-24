@@ -134,7 +134,8 @@ function CopyButton({
   const outcome = feedback === "copied" ? copiedLabel : feedback === "failed" ? failedLabel : "";
   const iconOnly = children === undefined || children === null || children === false;
 
-  // Copies the text (or the code beside the button) and shows how that went; it never rejects, as a failure is shown.
+  // Copies the text (or the code beside the button) and shows how that went. A failed copy is shown on the button, so this
+  // only rejects when onCopied or onCopyFailed throws, which then surfaces as an unhandled rejection, as it did before.
   const copyFrom = async (button: HTMLButtonElement) => {
     try {
       const value = text ?? adjacentCode(button);
