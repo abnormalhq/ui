@@ -95,6 +95,7 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
     '.o { content: "\\\n#fff"; }',
     ".p { padding: 0 /* don't add vertical padding */ 16px; color: var(--text) /* #fff */; }",
     ".q { border-radius: var(--radius-control) /* not 8px */; z-index: 40 /* above the header */; }",
+    ".r { border-radius: calc(var(--radius-panel) + -4px); }",
   ].join("\n");
   const messages = linter.verify(
     source,
@@ -130,6 +131,7 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
       [17, "background"],
       [20, "padding"],
       [21, "z-index"],
+      [22, "border-radius"],
     ],
   );
 });
