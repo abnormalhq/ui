@@ -89,6 +89,7 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
     '.i { font: var(--text-sm) / 18px "Mono 12px", monospace; background: url("a).png") center, #fff url("b.png"); }',
     ".j { font: calc(1rem + 2px) sans-serif; gap: max( 12px, 1vw); }",
     ".k { font: 16PX sans-serif; margin: max(12px, 1vw); }",
+    ".l { @apply data-[state=open]:underline; padding: 8px; }",
   ].join("\n");
   const messages = linter.verify(
     source,
@@ -96,7 +97,7 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
       {
         files: ["**/*.css"],
         language: "css/css",
-        languageOptions: { customSyntax: tailwind4 },
+        languageOptions: { customSyntax: tailwind4, tolerant: true },
         plugins: { css, abnormal },
         rules: { "abnormal/no-hardcoded-css": "error" },
       },
@@ -120,6 +121,7 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
       [13, "gap"],
       [14, "font"],
       [14, "margin"],
+      [15, "padding"],
     ],
   );
 });
