@@ -409,12 +409,17 @@ test("the client import check follows registry modules and stops at a client bou
 
 test("cn knows every custom token in the theme", () => {
   const utils = read("registry/lib/utils.ts");
-  const listed = (key: string) =>
-    [...utils.match(new RegExp(`${key}: \\[([^\\]]*)\\]`))![1]!.matchAll(/"([^"]+)"/g)].map((m) => m[1]!);
+  const listed = (key: string, separator = ":") =>
+    [...utils.match(new RegExp(`${key}${separator} \\[([^\\]]*)\\]`))![1]!.matchAll(/"([^"]+)"/g)].map((m) => m[1]!);
   const tokens = (prefix: string) => [...theme.matchAll(new RegExp(`--${prefix}-([a-z-]+):`, "g"))].map((m) => m[1]!);
   assert.deepEqual(listed("radius").toSorted(), tokens("radius").toSorted());
   assert.deepEqual(listed("shadow").toSorted(), tokens("shadow").toSorted());
   assert.deepEqual(listed("animate").toSorted(), tokens("animate").toSorted());
+  assert.deepEqual(listed("tracking").toSorted(), tokens("tracking").toSorted());
+  assert.deepEqual(listed("CN_LAYERS", " =").toSorted(), tokens("z-index").toSorted());
+  assert.equal(cn("z-overlay", "z-40"), "z-40");
+  assert.equal(cn("z-50", "z-floating"), "z-floating");
+  assert.equal(cn("tracking-heading", "tracking-tight"), "tracking-tight");
   // The built-in size names (xs to 4xl, and the theme's 2xs and md) are sizes to cn already; the display names are not.
   const display = tokens("text").filter((name) => name.startsWith("display") && !name.endsWith("-line-height"));
   assert.deepEqual(listed("text").toSorted(), display.toSorted());
@@ -533,8 +538,9 @@ test("the ink shell carries the dark values and maps every semantic name again",
   const dark = declarations(theme.match(/:root\[data-theme="dark"\] \{([\s\S]*?)\n\}/)![1]!);
   const ink = declarations(theme.match(/\n\.ink \{([\s\S]*?)\n\}/)![1]!);
   // Its own surface is --ink, so bg and sidebar point there; control is a step stronger on purpose; a shadow falls on
-  // the page, so it keeps the page's; charts are not for a shell.
-  const own = new Set(["--bg", "--sidebar", "--control", "--ink", "--popover-shadow"]);
+  // the page, so it keeps the page's; charts are not for a shell, and neither is the overlay, which dims the page behind
+  // a dialog portaled to <body>.
+  const own = new Set(["--bg", "--sidebar", "--control", "--ink", "--popover-shadow", "--overlay"]);
   for (const [name, value] of dark) {
     if (own.has(name) || name.startsWith("--chart-")) continue;
     assert.equal(ink.get(name), value, name);
@@ -646,4 +652,37 @@ test("phone inputs stay at 16px outside any layer", () => {
   const rule = theme.lastIndexOf('[data-slot="native-select"]');
   assert.ok(rule > theme.lastIndexOf("@layer base"));
   assert.ok(theme.slice(theme.lastIndexOf("}\n\n", rule)).startsWith("}\n\n"));
+});
+
+test("figures are proportional by default, so Inter's hyphens and dashes keep their width", () => {
+  const body = theme.match(/\n {2}body \{([\s\S]*?)\n {2}\}/)![1]!;
+  assert.doesNotMatch(body, /tabular-nums/);
+});
+
+test("the semantic names for warning, overlays, strong borders, categories, tracking and stacking compile", async () => {
+  const compiler = await compile(`${theme}\n@tailwind utilities;`, {
+    base: process.cwd(),
+    loadStylesheet: async () => ({ path: "", base: "", content: "" }),
+  });
+  const css = compiler.build([
+    "text-warning",
+    "bg-overlay",
+    "border-border-strong",
+    "hover:border-input-hover",
+    "bg-category-teal-soft",
+    "text-category-teal-ink",
+    "tracking-heading",
+    "tracking-caps",
+    "z-overlay",
+    "z-skip-link",
+  ]);
+  assert.match(css, /\.text-warning \{\s*color: var\(--color-warning\)|\.text-warning \{\s*color: var\(--warning\)/);
+  assert.match(css, /\.bg-overlay \{\s*background-color: var\(--overlay\)/);
+  assert.match(css, /\.bg-category-teal-soft \{\s*background-color: var\(--category-teal-soft\)/);
+  assert.match(css, /\.tracking-heading \{[^}]*letter-spacing: var\(--tracking-heading\)/);
+  assert.match(css, /\.z-overlay \{\s*z-index: var\(--z-index-overlay\)/);
+  assert.match(css, /\.z-skip-link \{\s*z-index: var\(--z-index-skip-link\)/);
+  // badge-ink stays as an alias of warning, also inside the ink shell, where a :root alias would keep the light value.
+  assert.match(theme, /:root \{[^}]*--badge-ink: var\(--warning\);/);
+  assert.match(theme, /\n\.ink \{[^}]*--badge-ink: var\(--warning\);/);
 });

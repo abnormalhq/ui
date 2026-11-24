@@ -24,7 +24,7 @@ function AlertDialogOverlay({ className, ...props }: React.ComponentProps<typeof
     <AlertDialogPrimitive.Overlay
       data-slot="alert-dialog-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px] data-open:animate-fade-in data-closed:animate-fade-out dark:bg-black/70",
+        "fixed inset-0 z-overlay bg-overlay backdrop-blur-[2px] data-open:animate-fade-in data-closed:animate-fade-out",
         className,
       )}
       {...props}
@@ -39,7 +39,7 @@ function AlertDialogContent({ className, ...props }: React.ComponentProps<typeof
       <AlertDialogPrimitive.Content
         data-slot="alert-dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid max-h-[calc(100dvh-2rem)] w-full overflow-y-auto max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-5 rounded-dialog border border-border bg-popover p-6 text-base shadow-popover text-popover-foreground outline-none data-open:animate-arrive data-closed:animate-leave sm:max-w-sm",
+          "fixed top-1/2 left-1/2 z-overlay grid max-h-[calc(100dvh-2rem)] w-full overflow-y-auto max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-5 rounded-dialog border border-border bg-popover p-6 text-base shadow-popover text-popover-foreground outline-none data-open:animate-arrive data-closed:animate-leave sm:max-w-sm",
           className,
         )}
         {...props}

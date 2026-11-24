@@ -22,7 +22,7 @@ function uptimeStatus(up: number, total: number): UptimeStatus {
 
 const bucketClassName: Record<UptimeStatus, string> = {
   up: "bg-success",
-  degraded: "bg-badge-ink",
+  degraded: "bg-warning",
   down: "bg-destructive",
   none: "bg-muted",
 };
@@ -91,7 +91,7 @@ function UptimeValue({
       className={cn(
         "tabular-nums",
         tone === "none" && "text-muted-foreground",
-        tone === "degraded" && "text-badge-ink",
+        tone === "degraded" && "text-warning",
         tone === "down" && "text-destructive",
         className,
       )}

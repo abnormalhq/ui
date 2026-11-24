@@ -286,7 +286,7 @@ test("a Progress bar takes the tone of a meter near or at its limit", async () =
   const bar = () => container.querySelector<HTMLElement>('[data-slot="progress-indicator"]')!;
   assert.match(bar().className, /bg-signal/);
   await rerender(<Progress value={90} tone="warning" aria-label="Storage" />);
-  assert.match(bar().className, /bg-badge-ink/);
+  assert.match(bar().className, /bg-warning/);
   await rerender(<Progress value={100} tone="destructive" aria-label="Storage" />);
   assert.match(bar().className, /bg-destructive/);
 });

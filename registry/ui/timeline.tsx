@@ -20,19 +20,19 @@ const timelineMarkVariants = cva("relative z-[1] flex shrink-0 items-center just
       current: "",
     },
     kind: {
-      dot: "mt-[0.4375rem] size-[7px]",
+      dot: "mt-1.75 size-[7px]",
       icon: "size-7 border bg-background [&_svg:not([class*='size-'])]:size-3.5",
     },
   },
   compoundVariants: [
     { kind: "dot", tone: "default", className: "bg-muted-foreground" },
     { kind: "dot", tone: "success", className: "bg-success" },
-    { kind: "dot", tone: "pending", className: "bg-badge-ink" },
+    { kind: "dot", tone: "pending", className: "bg-warning" },
     { kind: "dot", tone: "destructive", className: "bg-destructive" },
     { kind: "dot", tone: "current", className: "bg-signal" },
     { kind: "icon", tone: "default", className: "border-border text-muted-foreground" },
     { kind: "icon", tone: "success", className: "border-success/40 text-success" },
-    { kind: "icon", tone: "pending", className: "border-badge-ink/40 text-badge-ink" },
+    { kind: "icon", tone: "pending", className: "border-warning/40 text-warning" },
     { kind: "icon", tone: "destructive", className: "border-destructive/40 text-destructive" },
     { kind: "icon", tone: "current", className: "border-signal/50 text-signal" },
   ],
@@ -71,7 +71,7 @@ function TimelineItem({
         aria-hidden="true"
         className={cn(
           "absolute w-px -translate-x-1/2 bg-border group-last/timeline-item:hidden",
-          kind === "dot" ? "top-[0.4375rem] -bottom-[0.4375rem] left-[3.5px]" : "inset-y-0 left-3.5",
+          kind === "dot" ? "top-1.75 -bottom-1.75 left-[3.5px]" : "inset-y-0 left-3.5",
         )}
       />
       <span aria-hidden="true" className={timelineMarkVariants({ tone, kind })}>

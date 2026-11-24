@@ -9,7 +9,10 @@ const surfaces = [
   ["popover-hover", "popoverRows"],
   ["control", "buttonsInputs"],
   ["border", "hairlines"],
+  ["border-strong", "strongHairlines"],
   ["input", "inputBorders"],
+  ["input-hover", "inputHoverBorders"],
+  ["overlay", "dialogOverlay"],
 ] as const;
 
 const accents = [
@@ -23,11 +26,12 @@ const accents = [
 const statuses = [
   ["success", "enabledSent"],
   ["destructive", "errors"],
-  ["badge-ink", "pendingProgress"],
+  ["warning", "pendingProgress"],
   ["text-secondary", "secondaryText"],
 ] as const;
 
 const charts = ["chart-1", "chart-2", "chart-3", "chart-4"];
+const categories = ["gray", "red", "orange", "yellow", "green", "teal", "blue", "purple"];
 const radii = [
   ["rounded-chip", "chipRadius"],
   ["rounded-control", "controlRadius"],
@@ -79,7 +83,10 @@ export const defaultCopy = {
   popoverRows: "Hovered rows inside popovers.",
   buttonsInputs: "Buttons and inputs: translucent ink, the same over any surface.",
   hairlines: "Hairlines between things.",
+  strongHairlines: "A hovered card or an empty-state outline.",
   inputBorders: "Input borders and the scrollbar.",
+  inputHoverBorders: "An input's border on hover and focus.",
+  dialogOverlay: "The dim behind a dialog or sheet.",
   primaryAction: "The primary action: ink in light, paper in dark.",
   chromaticBrand: "The only chromatic brand color: current, selected or new.",
   selectedRows: "Selected rows and the chosen option.",
@@ -109,6 +116,9 @@ export const defaultCopy = {
   pageOnPaper: "The page, on paper",
   charts: "Charts",
   chartDescription: "A fixed order; the last two sit below 3:1, so a chart always carries a legend.",
+  categories: "Categories",
+  categoryDescription:
+    "Hues a person tells apart by name: labels, calendars, file types. Each has a dot, a soft fill and ink text for that fill.",
   radii: "Radii",
   shadows: "Shadows",
   type: "Type",
@@ -186,6 +196,23 @@ export default function ThemeDemo({ copy: overrides = {} }: { copy?: Partial<typ
             <div key={token} className="flex-1 rounded-control" style={{ background: `var(--${token})` }}>
               <span className="sr-only">{token}</span>
             </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-3">
+        <h3 className="text-sm font-medium">{copy.categories}</h3>
+        <p className="text-xs text-muted-foreground">{copy.categoryDescription}</p>
+        <div className="flex flex-wrap gap-2">
+          {categories.map((hue) => (
+            <span
+              key={hue}
+              className="inline-flex items-center gap-1.5 rounded-chip px-2 py-0.5 text-xs font-medium"
+              style={{ background: `var(--category-${hue}-soft)`, color: `var(--category-${hue}-ink)` }}
+            >
+              <span className="size-2 rounded-full" style={{ background: `var(--category-${hue})` }} />
+              {hue}
+            </span>
           ))}
         </div>
       </div>

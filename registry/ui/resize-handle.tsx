@@ -107,7 +107,7 @@ function ResizeHandle({
       data-orientation={orientation}
       data-dragging={dragging ? "" : undefined}
       className={cn(
-        "group/resize relative z-10 shrink-0 touch-none outline-none select-none",
+        "group/resize relative z-sticky shrink-0 touch-none outline-none select-none",
         vertical ? "-mx-1 w-[9px] cursor-col-resize self-stretch" : "-my-1 h-[9px] w-full cursor-row-resize",
         className,
       )}

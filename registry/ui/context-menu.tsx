@@ -20,7 +20,7 @@ function ContextMenuContent({ className, ...props }: React.ComponentProps<typeof
       <ContextMenuPrimitive.Content
         data-slot="context-menu-content"
         className={cn(
-          "z-50 max-h-(--radix-context-menu-content-available-height) min-w-44 origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-mark border border-border bg-popover p-1.5 text-popover-foreground shadow-popover data-open:animate-arrive data-closed:animate-leave data-[state=closed]:overflow-hidden",
+          "z-overlay max-h-(--radix-context-menu-content-available-height) min-w-44 origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-mark border border-border bg-popover p-1.5 text-popover-foreground shadow-popover data-open:animate-arrive data-closed:animate-leave data-[state=closed]:overflow-hidden",
           className,
         )}
         {...props}
@@ -101,7 +101,7 @@ function ContextMenuSubContent({ className, ...props }: React.ComponentProps<typ
       <ContextMenuPrimitive.SubContent
         data-slot="context-menu-sub-content"
         className={cn(
-          "z-50 max-h-(--radix-context-menu-content-available-height) min-w-40 origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-mark border border-border bg-popover p-1.5 text-popover-foreground shadow-popover data-open:animate-arrive data-closed:animate-leave",
+          "z-overlay max-h-(--radix-context-menu-content-available-height) min-w-40 origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-mark border border-border bg-popover p-1.5 text-popover-foreground shadow-popover data-open:animate-arrive data-closed:animate-leave",
           className,
         )}
         {...props}

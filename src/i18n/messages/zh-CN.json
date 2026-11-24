@@ -740,6 +740,11 @@
       "tags": "标签",
       "readOnly": "只读"
     },
+    "eslint-plugin": {
+      "instead": "不要写",
+      "use": "改用",
+      "reported": "会报告"
+    },
     "template": {
       "notice": "请求受{terms}和{privacy}约束。",
       "terms": "服务条款",
@@ -777,6 +782,9 @@
       "popoverRows": "弹出层中的悬停行。",
       "buttonsInputs": "按钮和输入框：半透明墨色，可用于任何表面。",
       "hairlines": "元素之间的细分隔线。",
+      "strongHairlines": "悬停的卡片或空状态的轮廓。",
+      "inputHoverBorders": "输入框悬停和聚焦时的边框。",
+      "dialogOverlay": "对话框和抽屉背后的遮罩。",
       "inputBorders": "输入框边框与滚动条。",
       "primaryAction": "主要操作：浅色模式用墨色，深色模式用纸色。",
       "chromaticBrand": "唯一的彩色品牌：表示当前、已选或新建状态。",
@@ -806,6 +814,8 @@
       "pageOnPaper": "纸面上的页面",
       "charts": "图表",
       "chartDescription": "顺序固定；最后两种颜色的对比度低于 3:1，因此图表始终需要图例。",
+      "categories": "分类色",
+      "categoryDescription": "需要按名字区分的色相：标签、日历、文件类型。每种都有圆点色、浅底色和浅底上的文字色。",
       "radii": "圆角",
       "shadows": "阴影",
       "type": "字体",

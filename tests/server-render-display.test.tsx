@@ -71,7 +71,7 @@ test("an UptimeBar is one named image of titled bars, colored by status, with no
   );
   assert.match(html, /^<div role="img" aria-label="Last 4 days"/);
   assert.equal([...html.matchAll(/<span /g)].length, 4);
-  assert.match(html, /data-status="degraded" title="Day 3: 3 of 4 passed" class="[^"]*bg-badge-ink/);
+  assert.match(html, /data-status="degraded" title="Day 3: 3 of 4 passed" class="[^"]*bg-warning/);
   assert.match(html, /data-status="down"[^>]*class="[^"]*bg-destructive/);
   assert.deepEqual(
     [
