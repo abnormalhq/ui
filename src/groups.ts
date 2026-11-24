@@ -114,6 +114,7 @@ export const groups = [
       "language-picker",
       "turnstile",
       "json-ld",
+      "not-found",
     ],
   },
   {

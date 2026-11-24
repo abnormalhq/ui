@@ -486,6 +486,20 @@
       ]
     },
     {
+      "name": "not-found",
+      "type": "registry:ui",
+      "title": "Not Found",
+      "description": "The page a product shows for an address it does not have: the brand mark, the status code, a title, a sentence, the way back, and where else to go or the same words in the other language.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/brand-mark", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/not-found.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "expandable-text",
       "type": "registry:ui",
       "title": "Expandable Text",
