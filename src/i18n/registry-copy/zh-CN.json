@@ -19,6 +19,10 @@
     "title": "模板",
     "description": "fillTemplate 函数与 Template 类型：复制带有 {name} 占位符的字符串，编译器会根据组件传入的值检查占位符名称。"
   },
+  "eslint-plugin": {
+    "title": "ESLint 插件",
+    "description": "让类名和 CSS 中不再出现手写的颜色、字号、间距、圆角、阴影和层级，并指出应改用的主题名称。"
+  },
   "brand-mark": {
     "title": "品牌标记",
     "description": "Abnormal 方块、文字标志，以及标记中的箭头。"

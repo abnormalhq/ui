@@ -740,6 +740,11 @@
       "tags": "标签",
       "readOnly": "只读"
     },
+    "eslint-plugin": {
+      "instead": "不要写",
+      "use": "改用",
+      "reported": "会报告"
+    },
     "template": {
       "notice": "请求受{terms}和{privacy}约束。",
       "terms": "服务条款",

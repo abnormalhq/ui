@@ -27,6 +27,7 @@
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
     "@eslint/compat": "^2.1.1",
+    "@eslint/css": "^2.0.1",
     "@happy-dom/global-registrator": "^21.0.4",
     "@shikijs/langs": "^4.6.0",
     "@tailwindcss/postcss": "^4.3.5",

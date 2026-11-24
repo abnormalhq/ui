@@ -71,6 +71,20 @@
       ]
     },
     {
+      "name": "eslint-plugin",
+      "type": "registry:item",
+      "title": "ESLint Plugin",
+      "description": "Lint rules that keep hand-picked colors, font sizes, spacing, radii, shadows and layers out of classes and CSS, pointing at the theme's names instead.",
+      "devDependencies": ["@eslint/css@^2.0.1"],
+      "files": [
+        {
+          "path": "registry/lib/eslint-plugin-abnormal.mjs",
+          "type": "registry:file",
+          "target": "eslint/eslint-plugin-abnormal.mjs"
+        }
+      ]
+    },
+    {
       "name": "brand-mark",
       "type": "registry:ui",
       "title": "Brand Mark",

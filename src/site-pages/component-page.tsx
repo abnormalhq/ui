@@ -163,7 +163,7 @@ export default async function ComponentPage({ name, locale }: { name: string; lo
               </span>
             </DisclosureTrigger>
             <DisclosureContent>
-              <CodeBlock code={code} lang={extname(path).slice(1) as CodeLang} />
+              <CodeBlock code={code} lang={(extname(path) === ".mjs" ? "ts" : extname(path).slice(1)) as CodeLang} />
             </DisclosureContent>
           </Disclosure>
         ))}

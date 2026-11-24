@@ -11,6 +11,7 @@ const AvatarContext = React.createContext<{
 }>({ status: "none", setStatus: () => {} });
 
 const AVATAR_SIZES = {
+  // eslint-disable-next-line abnormal/no-hardcoded-classes -- two initials have to fit a 20px circle, below the 11px meta size.
   xs: "size-5 text-[9px]",
   sm: "size-6 text-2xs",
   default: "size-8 text-xs",

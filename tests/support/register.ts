@@ -23,8 +23,9 @@ const resolveAlias = (specifier: string) => {
     if (!specifier.startsWith(prefix)) continue;
     const rest = specifier.slice(prefix.length);
     for (const folder of folders) {
-      // Imports leave the extension out, as Next allows.
-      for (const extension of [".tsx", ".ts"]) {
+      // Imports usually leave the extension out, as Next allows; a plain module (.mjs) keeps it.
+      for (const extension of ["", ".tsx", ".ts"]) {
+        if (extension === "" && !/\.m?js$/.test(rest)) continue;
         const candidate = new URL(rest + extension, folder);
         if (existsSync(candidate)) return candidate.href;
       }
