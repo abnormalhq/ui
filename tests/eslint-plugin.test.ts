@@ -91,6 +91,8 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
     ".k { font: 16PX sans-serif; margin: max(12px, 1vw); }",
     ".l { font: clamp(0.75rem, calc(var(--text-sm) + 1vw), 1rem) system-ui; line-height: 1; }",
     '.m { font: var(--text-xs)/calc(1em + 2px) monospace; background: url("a\\").png") #fff; }',
+    ".n { background: url(a\\'b.png), linear-gradient(#fff, #000), url('c.png'); }",
+    '.o { content: "\\\n#fff"; }',
   ].join("\n");
   const messages = linter.verify(
     source,
@@ -123,6 +125,7 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
       [14, "font"],
       [14, "margin"],
       [16, "background"],
+      [17, "background"],
     ],
   );
 });
