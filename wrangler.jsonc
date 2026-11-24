@@ -4,6 +4,7 @@
   "compatibility_date": "2026-09-01",
   // Everything is a static asset. The Worker only picks a file for the pages, and renders nothing.
   "main": "src/worker.ts",
+  // The Worker bundle is small and its own source, so source maps stay on (the Wrangler default): a stack trace leads to src/worker.ts.
   "assets": {
     "directory": "out",
     "binding": "ASSETS",
@@ -21,8 +22,19 @@
       "!/zh/components/*.txt",
     ],
   },
-  "workers_dev": true,
-  "routes": [{ "pattern": "ui.abnormalhq.com", "custom_domain": true }],
+  // Only the custom domains serve the site, as on mail's WebMail Worker: a *.workers.dev copy would answer outside the zone's WAF and
+  // rate limiting rules, and nothing uses per-version preview URLs since deploys moved to GitHub Actions. Both are written out so the
+  // deploy sets them instead of leaving them to the dashboard.
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "ui.abnormalhq.com",
+      "custom_domain": true,
+      "enabled": true,
+      "previews_enabled": false,
+    },
+  ],
   // Observability: logs and traces sample 10% of requests. Issues must be written here, or the next deploy turns off a switch enabled in the dashboard.
   "observability": {
     "enabled": true,
