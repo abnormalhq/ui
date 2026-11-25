@@ -89,6 +89,22 @@ test("a DateTimePicker submits a day and a time as datetime-local text, and only
   assert.deepEqual(onValueChange.mock.calls.at(-1)?.arguments, [""]);
 });
 
+test("a DateTimePicker takes its time from the theme's list as well as from the keyboard", async () => {
+  const { container } = await mount(
+    <form>
+      <DateTimePicker {...dateTimeProps} name="start" defaultValue="2026-11-12T09:00" timeListLabel="Choose a time" />
+    </form>,
+  );
+  const form = one<HTMLFormElement>("form", container);
+  const clock = one<HTMLButtonElement>('[data-slot="time-picker-trigger"]');
+  assert.equal(clock.getAttribute("aria-label"), "Choose a time");
+  await click(clock);
+  assert.equal(one('[role="listbox"]').getAttribute("aria-label"), "Choose a time");
+  await click(one('[role="option"][data-value="10:30"]'));
+  assert.equal(new FormData(form).get("start"), "2026-11-12T10:30");
+  assert.equal(timeInput().value, "10:30");
+});
+
 test("a DateTimePicker fills its default time, keeps the time to min and max on their days, and follows a reset", async () => {
   const { container } = await mount(
     <form>

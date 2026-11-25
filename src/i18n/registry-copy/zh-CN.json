@@ -335,6 +335,10 @@
     "title": "主题脚本",
     "description": "ThemeScript 是内联在 head 中的脚本，会在首次绘制前应用已保存或系统主题，并将偏好保存在浏览器中；useThemePreference 为 ThemePicker 提供该偏好。"
   },
+  "time-picker": {
+    "title": "时间选择器",
+    "description": "当日时间：可直接输入的浏览器时间框，配合主题弹出层中的时间列表替代浏览器自带的选择器；值为 09:30 格式，支持表单重置。"
+  },
   "timeline": {
     "title": "时间线",
     "description": "沿轨道按顺序展示事件，每项由带色调的圆点或图标标记，并包含标题、时间与消息。"

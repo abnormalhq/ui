@@ -136,6 +136,11 @@
       "time": "开始时间",
       "timeZone": "时间采用 Europe/London 时区。"
     },
+    "time-picker": {
+      "label": "免打扰开始时间",
+      "listLabel": "选择时间",
+      "hint": "从这个时间到 08:00 暂停通知。"
+    },
     "table": {
       "sortDescending": "按降序排序",
       "sortAscending": "按升序排序",

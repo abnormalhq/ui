@@ -22,6 +22,7 @@ import CopyButtonDemo, { defaultCopy as copyButtonCopy } from "@/site/demos/copy
 import DatePickerDemo, { defaultCopy as datePickerCopy } from "@/site/demos/date-picker";
 import DateRangePickerDemo, { defaultCopy as dateRangeCopy } from "@/site/demos/date-range-picker";
 import DateTimePickerDemo, { defaultCopy as dateTimeCopy } from "@/site/demos/date-time-picker";
+import TimePickerDemo, { defaultCopy as timeCopy } from "@/site/demos/time-picker";
 import DescriptionListDemo, { defaultCopy as descriptionListCopy } from "@/site/demos/description-list";
 import DisclosureDemo, { defaultCopy as disclosureCopy } from "@/site/demos/disclosure";
 import DialogDemo, { defaultCopy as dialogCopy } from "@/site/demos/dialog";
@@ -62,6 +63,7 @@ const defaults: Record<string, Record<string, string>> = {
   "date-picker": datePickerCopy,
   "date-range-picker": dateRangeCopy,
   "date-time-picker": dateTimeCopy,
+  "time-picker": timeCopy,
   dialog: dialogCopy,
   "description-list": descriptionListCopy,
   disclosure: disclosureCopy,
@@ -163,6 +165,9 @@ test("translated demos show Chinese button, dialog, calendar, table, confirm and
       </section>
       <section data-demo="date-time">
         <DateTimePickerDemo copy={demoMessages["date-time-picker"]} locale="zh-CN" />
+      </section>
+      <section data-demo="time">
+        <TimePickerDemo copy={demoMessages["time-picker"]} locale="zh-CN" />
       </section>
       <section data-demo="table">
         <TableDemo copy={demoMessages.table} />
