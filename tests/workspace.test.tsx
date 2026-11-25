@@ -139,14 +139,19 @@ test("a toggle group item takes the page's own corners and pressed surface over 
   assert.doesNotMatch(plain, /rounded-none|rounded-l-control|rounded-r-control/);
   const segment = renderToStaticMarkup(
     <ToggleGroup type="single" variant="outline" defaultValue="a">
-      <ToggleGroupItem value="a" className="rounded-control data-[state=on]:bg-control">
+      {/* As with a plain Toggle, a page that recolors the pressed state names its hover too. */}
+      <ToggleGroupItem
+        value="a"
+        className="rounded-control data-[state=on]:bg-control data-[state=on]:hover:bg-control"
+      >
         A
       </ToggleGroupItem>
     </ToggleGroup>,
   );
   assert.match(segment, /rounded-control/);
   assert.match(segment, /data-\[state=on\]:bg-control/);
-  assert.doesNotMatch(segment, /rounded-chip|data-\[state=on\]:bg-popover/);
+  assert.match(segment, /data-\[state=on\]:hover:bg-control/);
+  assert.doesNotMatch(segment, /rounded-chip|data-\[state=on\]:bg-popover|data-\[state=on\]:hover:bg-popover/);
 });
 
 test("a filter chip shows its field and value, and the add chip has no chevron", () => {
