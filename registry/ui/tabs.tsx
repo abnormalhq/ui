@@ -13,6 +13,8 @@ import { Tabs as TabsPrimitive } from "radix-ui";
  * Name the list with aria-label or aria-labelledby. For pages with their own URLs use links (NavTabs), not tabs.
  * `variant="pill"` on the list draws the tabs as pills with the current one in the highlighter, without the hairline:
  * the sections of a settings panel, or tabs inside a card, where a line under them would be one line too many.
+ * `variant="chip"` draws small 24px outlined chips with the current one filled gray: the quick filters above a list
+ * (All, Unread, Starred), where the tabs narrow the same list rather than swap a section.
  */
 function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
   return (
@@ -24,7 +26,7 @@ function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive
   );
 }
 
-type TabsVariant = "underline" | "pill";
+type TabsVariant = "underline" | "pill" | "chip";
 
 /** What the list sets for its triggers: the look, so every trigger matches without repeating it, and whether arrows wrap. */
 const TabsListContext = React.createContext<{ variant: TabsVariant; loop: boolean }>({
@@ -36,6 +38,7 @@ const TABS_LIST_VARIANTS = {
   underline:
     "data-[orientation=horizontal]:items-end data-[orientation=horizontal]:gap-1 data-[orientation=horizontal]:border-b data-[orientation=horizontal]:border-border data-[orientation=vertical]:gap-0.5 data-[orientation=vertical]:border-l data-[orientation=vertical]:border-border",
   pill: "gap-2 data-[orientation=horizontal]:items-center data-[orientation=horizontal]:py-0.5 data-[orientation=vertical]:gap-0.5",
+  chip: "gap-1 data-[orientation=horizontal]:items-center data-[orientation=vertical]:gap-0.5",
 };
 
 const TABS_TRIGGER_VARIANTS = {
@@ -43,6 +46,7 @@ const TABS_TRIGGER_VARIANTS = {
   underline:
     "h-9 px-2.5 font-medium after:absolute after:bg-signal after:opacity-0 after:transition-opacity after:duration-150 data-[orientation=horizontal]:after:inset-x-0 data-[orientation=horizontal]:after:bottom-0 data-[orientation=horizontal]:after:h-0.5 data-[orientation=vertical]:px-3.5 data-[orientation=vertical]:after:inset-y-0 data-[orientation=vertical]:after:left-0 data-[orientation=vertical]:after:w-0.5 data-[state=active]:after:opacity-100",
   pill: "h-8 rounded-control px-3 font-semibold data-[state=active]:bg-highlight data-[state=active]:text-highlight-foreground data-[state=active]:hover:text-highlight-foreground",
+  chip: "h-6 rounded-chip border border-input px-2 text-xs font-medium data-[state=active]:border-transparent data-[state=active]:bg-secondary data-[state=active]:text-foreground",
 };
 
 /** The row scrolls sideways when the tabs do not fit, without a scrollbar of its own: arrow keys bring a tab into view. */
@@ -53,7 +57,7 @@ function TabsList({
   children,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.List> & {
-  /** `underline` (a hairline with the signal bar) or `pill` (highlighted pills). */
+  /** `underline` (a hairline with the signal bar), `pill` (highlighted pills) or `chip` (small outlined filters). */
   variant?: TabsVariant;
 }) {
   return (

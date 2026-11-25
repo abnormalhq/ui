@@ -55,7 +55,7 @@ const Toaster = ({ className, style, icons, toastOptions, ...props }: ToasterPro
           "--normal-bg": "var(--popover-bg)",
           "--normal-text": "var(--text)",
           "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius-panel)",
+          "--border-radius": "var(--radius-mark)",
           ...style,
         } as React.CSSProperties
       }

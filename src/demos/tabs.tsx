@@ -16,6 +16,13 @@ export const defaultCopy = {
   namePicture: "The name and picture people see.",
   noReply: "No reply is scheduled.",
   storageUsed: "2.1 GB of 10 GB used.",
+  inboxFilters: "Inbox filters",
+  all: "All",
+  unread: "Unread",
+  starred: "Starred",
+  allMessages: "Twelve conversations.",
+  unreadMessages: "Four unread conversations.",
+  starredMessages: "Two starred conversations.",
 };
 
 export default function TabsDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
@@ -55,6 +62,22 @@ export default function TabsDemo({ copy: overrides = {} }: { copy?: Partial<type
         </TabsContent>
         <TabsContent value="storage" className="text-muted-foreground">
           {copy.storageUsed}
+        </TabsContent>
+      </Tabs>
+      <Tabs defaultValue="all">
+        <TabsList variant="chip" aria-label={copy.inboxFilters}>
+          <TabsTrigger value="all">{copy.all}</TabsTrigger>
+          <TabsTrigger value="unread">{copy.unread}</TabsTrigger>
+          <TabsTrigger value="starred">{copy.starred}</TabsTrigger>
+        </TabsList>
+        <TabsContent value="all" className="text-muted-foreground">
+          {copy.allMessages}
+        </TabsContent>
+        <TabsContent value="unread" className="text-muted-foreground">
+          {copy.unreadMessages}
+        </TabsContent>
+        <TabsContent value="starred" className="text-muted-foreground">
+          {copy.starredMessages}
         </TabsContent>
       </Tabs>
     </div>

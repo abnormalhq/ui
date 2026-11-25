@@ -108,6 +108,8 @@
   /* Focus outline: 3.3:1 against the paper background, meeting the non-text contrast requirement. */
   --focus: #8a8a80;
   --panel-shadow: 0 0 #0000;
+  /* A raised control (an outline button, a select, the pressed segment of a segmented control): one soft pixel below. */
+  --control-shadow: 0 1px 2px #14141214;
   --popover-shadow: 0 4px 12px #1414120d, 0 16px 40px #14141217;
   /* Categorical chart colors, fixed order. The last two are below 3:1, so charts always carry a legend. */
   --chart-1: #2a78d6;
@@ -172,6 +174,7 @@
   /* 3.6:1 against #141412. */
   --focus: #6f6f66;
   --popover-shadow: 0 0 0 1px #f0f0ea08, 0 16px 48px #00000080;
+  --control-shadow: 0 1px 2px #00000066;
   --chart-1: #3987e5;
   --chart-2: #d95926;
   --chart-3: #199e70;
@@ -229,6 +232,7 @@
     --ink: #0f0f0d;
     --focus: #6f6f66;
     --popover-shadow: 0 0 0 1px #f0f0ea08, 0 16px 48px #00000080;
+    --control-shadow: 0 1px 2px #00000066;
     --chart-1: #3987e5;
     --chart-2: #d95926;
     --chart-3: #199e70;
@@ -309,6 +313,7 @@
   --destructive: #ff8a96;
   --popover-bg: #1c1c19;
   --focus: #6f6f66;
+  --control-shadow: 0 1px 2px #00000066;
   --category-gray: #8f8f85;
   --category-gray-soft: #33332e;
   --category-gray-ink: #d6d6cc;
@@ -511,6 +516,7 @@
   --color-category-purple: var(--category-purple);
   --color-category-purple-soft: var(--category-purple-soft);
   --color-category-purple-ink: var(--category-purple-ink);
+  --shadow-control: var(--control-shadow);
   --shadow-panel: var(--panel-shadow);
   --shadow-popover: var(--popover-shadow);
 
@@ -540,8 +546,9 @@
    * Enter and exit animations use transform rather than translate: Tailwind's -translate-x-1/2 sets the CSS translate
    * property, and an animation that also sets translate would override the centering of a dialog.
    */
-  --animate-arrive: arrive 0.15s ease-out both;
-  --animate-leave: leave 0.12s ease-in both;
+  /* Floating layers arrive quickly and travel 2px: they should feel like they were already there. */
+  --animate-arrive: arrive 0.12s ease-out both;
+  --animate-leave: leave 0.1s ease-in both;
   --animate-fade-in: fade-in 0.15s ease-out both;
   --animate-fade-out: fade-out 0.12s ease-in both;
   --animate-slide-in-right: slide-in-right 0.22s cubic-bezier(0.32, 0.72, 0, 1) both;
@@ -561,7 +568,7 @@
   @keyframes arrive {
     from {
       opacity: 0;
-      transform: translateY(4px);
+      transform: translateY(2px);
     }
     to {
       opacity: 1;
@@ -575,7 +582,7 @@
     }
     to {
       opacity: 0;
-      transform: translateY(3px);
+      transform: translateY(2px);
     }
   }
   @keyframes fade-in {

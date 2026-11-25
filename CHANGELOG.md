@@ -25,6 +25,13 @@ Each entry names the items it touches, because a project installs items one by o
 
 ### Changed
 
+- `theme`: `--control-shadow` and `shadow-control`, one soft pixel under a raised control, registered in `cn` (`utils`) and named by `eslint-plugin` next to `shadow-panel` and `shadow-popover`. Floating layers arrive in 0.12s and travel 2px instead of 0.15s and 4px, and leave in 0.1s.
+- `button`: `outline` is a raised surface (the popover color, the input border, `shadow-control`, full-strength text) whose shadow flattens while pressed. No variant scales when pressed any more; `default`, `highlight` and `secondary` deepen their fill instead.
+- `dropdown-menu`, `context-menu`, `select`, `command`: 28px rows of 13px text with a 4px radius inside a popover with 4px of padding; group labels in the 11px text; shortcuts in the 11px mono face. The `select` trigger is raised like an `outline` button.
+- `tooltip`: a small ink label in both themes, using the `.ink` values.
+- `toggle-group`: `variant="outline"` is a segmented control, a sunken track at the control height with the pressed segment raised on it in the popover color.
+- `tabs`: `variant="chip"`, small 24px outlined chips with the current one filled gray, for the quick filters above a list.
+- `dialog`: no backdrop blur, 20px of padding and a 16px gap. `sonner`: toasts take the menu radius.
 - Reinstall `theme` and `utils` together with any item below: the components now use utilities (`bg-overlay`, `z-overlay`, `text-warning`, `tracking-heading` and the rest) that only this theme defines, and that only this `utils` merges, so a component reinstalled over an older theme loses its backdrop and its layer.
 - `utils`: `cn` knows the letter spacing names and the stacking layers, so `cn("z-overlay", "z-40")` keeps the caller's `z-40` and `cn("tracking-heading", "tracking-tight")` the caller's spacing.
 - `timeline`, `prose`: the dot's offset and the heading margin are spacing steps (`1.75`, `13`), the same sizes in the default density.

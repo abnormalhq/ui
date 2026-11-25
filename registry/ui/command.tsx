@@ -201,7 +201,7 @@ function CommandList({ className, ...props }: React.ComponentProps<"div">) {
       role="listbox"
       data-slot="command-list"
       className={cn(
-        "max-h-72 min-h-0 scroll-py-1.5 overflow-x-hidden overflow-y-auto p-1.5 not-has-[[role=option]]:hidden",
+        "max-h-72 min-h-0 scroll-py-1 overflow-x-hidden overflow-y-auto p-1 not-has-[[role=option]]:hidden",
         className,
       )}
       {...props}
@@ -263,7 +263,7 @@ function CommandGroup({
           id={headingId}
           aria-hidden="true"
           data-slot="command-group-heading"
-          className="px-2 py-1 text-xs text-muted-foreground"
+          className="px-2 pt-1.5 pb-1 text-2xs font-medium text-muted-foreground"
         >
           {heading}
         </div>
@@ -321,7 +321,7 @@ function CommandItem({
       data-slot="command-item"
       data-active={active || undefined}
       className={cn(
-        "relative flex cursor-default items-center gap-2 rounded-control px-2.5 py-2 text-base select-none aria-disabled:pointer-events-none aria-disabled:opacity-50 data-active:bg-accent data-active:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+        "relative flex cursor-default items-center gap-2 min-h-7 rounded-chip px-2 py-1 text-sm select-none aria-disabled:pointer-events-none aria-disabled:opacity-50 data-active:bg-accent data-active:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
         className,
       )}
       // The highlight follows the pointer only when it moves, so a list scrolling under a resting pointer keeps it.
@@ -358,7 +358,7 @@ function CommandShortcut({ className, ...props }: React.ComponentProps<"span">) 
     <span
       data-slot="command-shortcut"
       aria-hidden="true"
-      className={cn("ml-auto font-mono text-xs tracking-wide text-muted-foreground", className)}
+      className={cn("ml-auto font-mono text-2xs tracking-wide text-muted-foreground", className)}
       {...props}
     />
   );

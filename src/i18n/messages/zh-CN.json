@@ -732,7 +732,14 @@
       "storage": "存储",
       "namePicture": "他人看到的名称和头像。",
       "noReply": "未安排自动回复。",
-      "storageUsed": "已使用 2.1 / 10 GB。"
+      "storageUsed": "已使用 2.1 / 10 GB。",
+      "inboxFilters": "收件箱筛选",
+      "all": "全部",
+      "unread": "未读",
+      "starred": "星标",
+      "allMessages": "12 个会话。",
+      "unreadMessages": "4 个未读会话。",
+      "starredMessages": "2 个星标会话。"
     },
     "tag": {
       "domainsChosen": "已选择 {count} 个域名",
