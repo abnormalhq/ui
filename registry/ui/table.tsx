@@ -4,6 +4,7 @@ import * as React from "react";
 import { ArrowDownIcon, ArrowUpIcon, ChevronsUpDownIcon } from "lucide-react";
 import { Slot } from "radix-ui";
 import { cn } from "@/lib/utils";
+import { usePointerFocus } from "@/components/ui/use-scroll-fade";
 
 type TableVariant = "default" | "plain";
 type TableDensity = "default" | "compact";
@@ -18,7 +19,10 @@ const TableDensityContext = React.createContext<TableDensity>("default");
  * When there is content to the right of the container not yet revealed it carries `data-overflow="end"`, from which `pinned` columns draw a shadow separator on their left.
  * When the container has a limited height (ListSection on list pages) it is also the vertical scroll container: the plain header sticks to the top, and after scrolling down it carries `data-scrolled`, drawing a thin line under the header.
  * While the container scrolls either way it takes keyboard focus, so the arrow keys can scroll it in browsers that
- * do not focus a scroller by themselves (Safari); a table that fits adds no tab stop. A focusable region needs a
+ * do not focus a scroller by themselves (Safari); a table that fits adds no tab stop. Its focus ring is the keyboard's:
+ * a click on a row focuses the container too, and draws no ring, even after a key such as J or Escape (usePointerFocus).
+ * The ring is drawn over the visible part of the table, above the sticky header and the pinned columns, which would
+ * cover an outline of the container itself. A focusable region needs a
  * name, and the words are the page's: name the table with `aria-label` or `aria-labelledby` and the container
  * becomes a region with the same name.
  * `density="compact"` makes the rows shorter and the cells closer, in the smaller text, for a dense list that sits
@@ -38,6 +42,7 @@ function Table({
   const [scrolled, setScrolled] = React.useState(false);
   const [scrollable, setScrollable] = React.useState(false);
   const named = ariaLabel !== undefined || ariaLabelledby !== undefined;
+  usePointerFocus(containerRef);
 
   React.useEffect(() => {
     const container = containerRef.current;
@@ -48,6 +53,8 @@ function Table({
       setScrollable(
         container.scrollWidth > container.clientWidth + 1 || container.scrollHeight > container.clientHeight + 1,
       );
+      // The focus ring covers the visible part of the table, which a scroller's children cannot size themselves to.
+      container.style.setProperty("--table-viewport-height", `${container.clientHeight}px`);
     };
     update();
     const observer = new ResizeObserver(update);
@@ -72,8 +79,9 @@ function Table({
           role={scrollable && named ? "region" : undefined}
           aria-label={scrollable ? ariaLabel : undefined}
           aria-labelledby={scrollable ? ariaLabelledby : undefined}
-          // The focus ring is drawn inside the edge: outside it, a panel that clips its content would cut it off.
-          className="relative min-h-0 w-full overflow-x-auto focus-visible:-outline-offset-2"
+          // The container draws no outline of its own: the sticky header and pinned cells are painted over it. The ring
+          // below takes its place.
+          className="group/table relative min-h-0 w-full overflow-x-auto focus-visible:outline-none"
         >
           <table
             aria-label={ariaLabel}
@@ -89,6 +97,18 @@ function Table({
             )}
             {...props}
           />
+          {scrollable && (
+            // The focus ring of the container, laid over the part of the table in view: a block of no height that sticks
+            // to the visible bottom and start, holding a box as tall as the view. It is drawn inside the edge (outside
+            // it, a panel that clips its content would cut it off) and on top of the sticky header and pinned columns.
+            <div
+              aria-hidden="true"
+              data-slot="table-focus-ring"
+              className="pointer-events-none sticky start-0 bottom-0 z-[4] h-0"
+            >
+              <div className="absolute inset-x-0 bottom-0 hidden h-(--table-viewport-height) outline-2 -outline-offset-2 outline-(--focus) group-[:focus-visible:not([data-pointer-focus])]/table:block" />
+            </div>
+          )}
         </div>
       </TableDensityContext.Provider>
     </TableVariantContext.Provider>

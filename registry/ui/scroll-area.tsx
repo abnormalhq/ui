@@ -3,14 +3,15 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
-import { type ScrollAxis, useScrollFade, useWheelSideways } from "@/components/ui/use-scroll-fade";
+import { type ScrollAxis, usePointerFocus, useScrollFade, useWheelSideways } from "@/components/ui/use-scroll-fade";
 
 /**
  * A box that scrolls its content under thin bars of its own, the same in every browser and system: a long list in a
  * panel, a message thread, a code sample. The scrolling is the browser's; only the bars are drawn, and they appear
  * while the pointer is over the area or it is scrolling. Give it a height (or a max-height) with a class.
  * A keyboard user must be able to scroll it too. While the content overflows, the viewport is a tab stop, so arrow
- * keys, Page Up, Page Down and Space scroll it; an area that fits adds none. Name it with aria-label or
+ * keys, Page Up, Page Down and Space scroll it; an area that fits adds none. Its focus ring is the keyboard's: a click
+ * that focuses it draws none, even after a key is pressed (usePointerFocus). Name it with aria-label or
  * aria-labelledby and it also becomes a region to assistive technology; the component has no words to name it with.
  * `orientation` picks the bars: vertical, horizontal or both.
  * `fade` fades an edge while there is more content past it, so a cut-off row does not look as if it ended there. It
@@ -44,6 +45,7 @@ function ScrollArea({
     !fade ? null : orientation === "vertical" ? "y" : orientation === "horizontal" ? "x" : "both",
   );
   useWheelSideways(viewport, strip);
+  usePointerFocus(viewport);
   const [scrollable, setScrollable] = React.useState(false);
 
   React.useEffect(() => {
@@ -79,7 +81,7 @@ function ScrollArea({
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledby}
         className={cn(
-          "size-full rounded-[inherit] focus-visible:-outline-offset-2",
+          "size-full rounded-[inherit] focus-visible:-outline-offset-2 data-pointer-focus:outline-none",
           // Radix wraps the content in a table as wide as the viewport; a strip's is as wide as its content.
           strip && "[&>div]:w-max",
           viewportClassName,

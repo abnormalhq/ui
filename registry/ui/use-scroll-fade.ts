@@ -2,7 +2,8 @@ import { useEffect, type RefObject } from "react";
 
 /*
  * The edge fade and the sideways wheel of a scrolling row, for ScrollArea's `fade` and `strip` and for the row of
- * NavTabs. They live in a file without "use client", so another item, or a project's own row, can call them too.
+ * NavTabs, and the pointer focus of a box that scrolls, for ScrollArea and Table. They live in a file without
+ * "use client", so another item, or a project's own row, can call them too.
  */
 
 /** Which way a box scrolls, for the fade: sideways, up and down, or both. */
@@ -134,4 +135,38 @@ function scrollIntoRow(container: HTMLElement, item: HTMLElement, behavior: Scro
   container.scrollTo({ left: container.scrollLeft + offset, behavior });
 }
 
-export { useScrollFade, useWheelSideways, scrollIntoRow, type ScrollAxis };
+/**
+ * Tells focus that came from the pointer apart from the keyboard's, in a scrolling box and the rows inside it. A box
+ * that scrolls is a tab stop, so the arrow keys can scroll it, and so a click inside it that lands on no control
+ * focuses the box; a click on a row's button focuses that button. Chrome then matches `:focus-visible` from the next
+ * key pressed, whatever the key: in a list that takes single keys (J, K, Escape), a click on a row and then Escape drew
+ * a ring around the whole box, or around the row just closed. While the box, or an element inside it, holds focus that
+ * did not start focus-visible (a click), that element carries `data-pointer-focus`, so its ring can be hidden
+ * (`data-pointer-focus:outline-none`, or `:focus-visible:not([data-pointer-focus])` where a row draws it). Focus from
+ * Tab, or moved by a script after a key, as J and K do, keeps the ring. The attribute goes with the focus.
+ */
+function usePointerFocus(ref: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    const onFocusIn = (event: FocusEvent) => {
+      if (!(event.target instanceof Element)) return;
+      if (event.target.matches(":focus-visible")) event.target.removeAttribute("data-pointer-focus");
+      else event.target.setAttribute("data-pointer-focus", "");
+    };
+    const onFocusOut = (event: FocusEvent) => {
+      if (event.target instanceof Element) event.target.removeAttribute("data-pointer-focus");
+    };
+    element.addEventListener("focusin", onFocusIn);
+    element.addEventListener("focusout", onFocusOut);
+    return () => {
+      element.removeEventListener("focusin", onFocusIn);
+      element.removeEventListener("focusout", onFocusOut);
+      for (const marked of element.querySelectorAll("[data-pointer-focus]"))
+        marked.removeAttribute("data-pointer-focus");
+      element.removeAttribute("data-pointer-focus");
+    };
+  }, [ref]);
+}
+
+export { useScrollFade, useWheelSideways, usePointerFocus, scrollIntoRow, type ScrollAxis };
