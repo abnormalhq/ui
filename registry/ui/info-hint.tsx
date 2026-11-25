@@ -49,7 +49,7 @@ function InfoHint({
             setOpen(event.detail === 0 ? !open : !openAtPress.current);
           }}
           className={cn(
-            "grid size-6 min-h-[24px] min-w-[24px] shrink-0 place-items-center rounded-control text-muted-foreground transition-colors duration-150 hover:bg-control hover:text-foreground",
+            "grid size-6 min-h-[24px] min-w-[24px] shrink-0 place-items-center rounded-control text-muted-foreground transition-colors duration-100 hover:bg-control hover:text-foreground",
             className,
           )}
           {...props}

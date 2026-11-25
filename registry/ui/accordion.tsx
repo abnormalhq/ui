@@ -57,9 +57,9 @@ function AccordionTrigger({
         >
           <span className="min-w-0 flex-1">{children}</span>
           {indicator ?? (
-            <span className="grid size-7 shrink-0 place-items-center rounded-control text-muted-foreground transition-[background-color,color] duration-150 group-hover/trigger:bg-control group-hover/trigger:text-foreground group-data-[state=open]/trigger:bg-control group-data-[state=open]/trigger:text-foreground">
+            <span className="grid size-7 shrink-0 place-items-center rounded-control text-muted-foreground transition-[background-color,color] duration-100 group-hover/trigger:bg-control group-hover/trigger:text-foreground group-data-[state=open]/trigger:bg-control group-data-[state=open]/trigger:text-foreground">
               <PlusIcon
-                className="size-4 transition-transform duration-150 group-data-[state=open]/trigger:rotate-45"
+                className="size-4 transition-transform duration-100 group-data-[state=open]/trigger:rotate-45"
                 aria-hidden="true"
               />
             </span>

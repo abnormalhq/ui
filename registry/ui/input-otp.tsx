@@ -94,7 +94,7 @@ function InputOTP({
             data-active={(focused && index === active) || undefined}
             data-filled={index < value.length || undefined}
             className={cn(
-              "relative grid h-10 w-9 place-items-center rounded-control border border-input bg-control font-mono text-lg font-medium text-foreground transition-[border-color] duration-150 group-has-[[aria-invalid=true]]/otp:border-destructive data-active:border-input-hover data-active:outline-2 data-active:-outline-offset-1 data-active:outline-ring",
+              "relative grid h-10 w-9 place-items-center rounded-control border border-input bg-popover font-mono text-lg font-medium text-foreground transition-[border-color] duration-100 group-has-[[aria-invalid=true]]/otp:border-destructive data-active:border-input-hover data-active:outline-2 data-active:-outline-offset-1 data-active:outline-ring",
               groupSize && index > 0 && index % groupSize === 0 && "ml-2",
             )}
           >

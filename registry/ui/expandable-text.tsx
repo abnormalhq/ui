@@ -72,7 +72,7 @@ function ExpandableText({
           aria-controls={id}
           onClick={() => setExpanded(!expanded)}
         >
-          <ChevronDownIcon className={cn("transition-transform duration-150", expanded && "rotate-180")} />
+          <ChevronDownIcon className={cn("transition-transform duration-100", expanded && "rotate-180")} />
           {expanded ? lessLabel : moreLabel}
         </Button>
       )}

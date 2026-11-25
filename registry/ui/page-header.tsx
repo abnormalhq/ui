@@ -118,7 +118,7 @@ function PageHeaderBack({
     <Comp
       data-slot="page-header-back"
       className={cn(
-        "-ml-0.5 flex w-fit items-center gap-1.5 rounded-control text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground",
+        "-ml-0.5 flex w-fit items-center gap-1.5 rounded-control text-sm text-muted-foreground transition-colors duration-100 hover:text-foreground",
         className,
       )}
       {...props}

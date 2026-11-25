@@ -15,12 +15,12 @@ const NAV_TABS_LISTS = {
 
 /** The current tab is the one with aria-current, which NavTab sets from `current`. */
 const navTabVariants = cva(
-  "relative inline-flex items-center justify-center gap-1.5 whitespace-nowrap text-muted-foreground transition-colors duration-150 select-none hover:text-foreground focus-visible:-outline-offset-2 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "relative inline-flex items-center justify-center gap-1.5 whitespace-nowrap text-muted-foreground transition-colors duration-100 select-none hover:text-foreground focus-visible:-outline-offset-2 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         underline:
-          "h-9 px-2.5 text-base font-medium after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-signal after:opacity-0 after:transition-opacity after:duration-150 aria-[current]:text-foreground aria-[current]:after:opacity-100",
+          "h-9 px-2.5 text-base font-medium after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-signal after:opacity-0 after:transition-opacity after:duration-100 aria-[current]:text-foreground aria-[current]:after:opacity-100",
         pill: "h-8 rounded-control px-3 text-base font-semibold aria-[current]:bg-highlight aria-[current]:text-highlight-foreground aria-[current]:hover:text-highlight-foreground",
         segmented:
           "h-7 rounded-chip px-3 text-sm aria-[current]:bg-popover aria-[current]:font-medium aria-[current]:text-foreground aria-[current]:shadow-control",

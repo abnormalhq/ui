@@ -91,7 +91,7 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sheet-header"
-      className={cn("flex shrink-0 flex-col gap-1.5 border-b border-border px-6 py-5 pr-14", className)}
+      className={cn("flex shrink-0 flex-col gap-1.5 border-b border-border px-5 py-4 pr-14", className)}
       {...props}
     />
   );
@@ -99,7 +99,7 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
 
 function SheetBody({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div data-slot="sheet-body" className={cn("min-h-0 flex-1 overflow-y-auto px-6 py-5", className)} {...props} />
+    <div data-slot="sheet-body" className={cn("min-h-0 flex-1 overflow-y-auto px-5 py-4", className)} {...props} />
   );
 }
 
@@ -108,7 +108,7 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="sheet-footer"
       className={cn(
-        "flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-border px-6 py-4",
+        "flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-border px-5 py-3",
         className,
       )}
       {...props}

@@ -105,7 +105,7 @@ function SearchInput({
           title={clearLabel}
           onClick={clear}
           className={cn(
-            "absolute top-1/2 right-1 grid -translate-y-1/2 place-items-center rounded-chip text-muted-foreground transition-[color,background-color] duration-150 hover:bg-control hover:text-foreground focus-visible:outline-offset-0",
+            "absolute top-1/2 right-1 grid -translate-y-1/2 place-items-center rounded-chip text-muted-foreground transition-[color,background-color] duration-100 hover:bg-control hover:text-foreground focus-visible:outline-offset-0",
             sizes.clear,
           )}
         >

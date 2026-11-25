@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
  * `outline` gives it the input border, for a toggle standing alone in a toolbar of outline buttons.
  */
 const toggleVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-control border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-[background-color,border-color,color] duration-150 select-none hover:bg-control hover:text-foreground disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive data-[state=on]:bg-highlight-muted data-[state=on]:text-foreground data-[state=on]:hover:bg-highlight-muted [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-control border border-transparent font-medium whitespace-nowrap text-muted-foreground transition-[background-color,border-color,color] duration-100 select-none hover:bg-control hover:text-foreground disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive data-[state=on]:bg-highlight-muted data-[state=on]:text-foreground data-[state=on]:hover:bg-highlight-muted [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {

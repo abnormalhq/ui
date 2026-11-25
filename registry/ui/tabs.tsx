@@ -44,7 +44,7 @@ const TABS_LIST_VARIANTS = {
 const TABS_TRIGGER_VARIANTS = {
   // The bar is the trigger's own edge laid over the list's hairline, so nothing moves when the tab changes.
   underline:
-    "h-9 px-2.5 font-medium after:absolute after:bg-signal after:opacity-0 after:transition-opacity after:duration-150 data-[orientation=horizontal]:after:inset-x-0 data-[orientation=horizontal]:after:bottom-0 data-[orientation=horizontal]:after:h-0.5 data-[orientation=vertical]:px-3.5 data-[orientation=vertical]:after:inset-y-0 data-[orientation=vertical]:after:left-0 data-[orientation=vertical]:after:w-0.5 data-[state=active]:after:opacity-100",
+    "h-9 px-2.5 font-medium after:absolute after:bg-signal after:opacity-0 after:transition-opacity after:duration-100 data-[orientation=horizontal]:after:inset-x-0 data-[orientation=horizontal]:after:bottom-0 data-[orientation=horizontal]:after:h-0.5 data-[orientation=vertical]:px-3.5 data-[orientation=vertical]:after:inset-y-0 data-[orientation=vertical]:after:left-0 data-[orientation=vertical]:after:w-0.5 data-[state=active]:after:opacity-100",
   pill: "h-8 rounded-control px-3 font-semibold data-[state=active]:bg-highlight data-[state=active]:text-highlight-foreground data-[state=active]:hover:text-highlight-foreground",
   chip: "h-6 min-h-[24px] rounded-chip border border-input px-2 text-xs font-medium data-[state=active]:border-transparent data-[state=active]:bg-secondary data-[state=active]:text-foreground",
 };
@@ -166,7 +166,7 @@ function TabsTrigger({
         }
       }}
       className={cn(
-        "relative inline-flex shrink-0 items-center justify-center gap-1.5 text-base whitespace-nowrap text-muted-foreground transition-colors duration-150 select-none hover:text-foreground focus-visible:-outline-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[orientation=vertical]:justify-start data-[state=active]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative inline-flex shrink-0 items-center justify-center gap-1.5 text-base whitespace-nowrap text-muted-foreground transition-colors duration-100 select-none hover:text-foreground focus-visible:-outline-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[orientation=vertical]:justify-start data-[state=active]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         TABS_TRIGGER_VARIANTS[variant],
         className,
       )}
