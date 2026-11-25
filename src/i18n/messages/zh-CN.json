@@ -435,6 +435,7 @@
     },
     "card-list": {
       "label": "会话",
+      "unread": "未读",
       "renewalFrom": "Cloudflare",
       "renewalTime": "09:41",
       "renewalSubject": "你的域名已续费",
@@ -963,6 +964,7 @@
       "starred": "已加星标",
       "sent": "已发送",
       "conversations": "会话",
+      "unread": "未读",
       "reviewFrom": "林舒",
       "reviewTime": "09:12",
       "reviewSubject": "周三的评审改到下午 3 点",

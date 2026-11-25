@@ -15,6 +15,7 @@ import {
 
 export const defaultCopy = {
   label: "Conversations",
+  unread: "Unread",
   renewalFrom: "Cloudflare",
   renewalTime: "09:41",
   renewalSubject: "Your domain renewed",
@@ -72,7 +73,7 @@ export default function CardListDemo({ copy: overrides = {} }: { copy?: Partial<
                 }}
               >
                 <CardListHeader>
-                  <CardListDot />
+                  <CardListDot label={copy.unread} />
                   <CardListTitle>{card.from}</CardListTitle>
                   <CardListMeta>{card.time}</CardListMeta>
                 </CardListHeader>

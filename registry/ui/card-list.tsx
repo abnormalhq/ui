@@ -9,7 +9,8 @@ import { cn } from "@/lib/utils";
  * the sheet beside it, open. For rows in a bordered box use ItemList; for columns that line up use Table.
  */
 function CardList({ className, ...props }: React.ComponentProps<"ul">) {
-  return <ul data-slot="card-list" className={cn("flex min-w-0 flex-col gap-0.5", className)} {...props} />;
+  // The list has no markers, and Safari stops announcing such a list unless the role says so.
+  return <ul role="list" data-slot="card-list" className={cn("flex min-w-0 flex-col gap-0.5", className)} {...props} />;
 }
 
 function CardListItem({ className, ...props }: React.ComponentProps<"li">) {
@@ -19,7 +20,7 @@ function CardListItem({ className, ...props }: React.ComponentProps<"li">) {
 /**
  * The card. As a link or a button (`asChild`) the whole card takes the pointer and the focus. `selected` lifts it and
  * draws the bar; it is visual only, so the page gives aria-current on a link or aria-pressed on a button. `unread`
- * sets the first line in bold and lights its dot (CardListDot).
+ * sets the first line in bold and lights its dot (CardListDot), whose `label` says so to a screen reader.
  */
 function CardListCard({
   className,
@@ -63,15 +64,28 @@ function CardListTitle({ className, ...props }: React.ComponentProps<"span">) {
   );
 }
 
-/** A small dot before the title, in the signal color while the card is unread and hidden once it is read. */
-function CardListDot({ className, ...props }: Omit<React.ComponentProps<"span">, "children">) {
+/**
+ * A small dot before the title, in the signal color while the card is unread and hidden once it is read. The dot is
+ * decoration; `label` ("Unread") is read out in its place while the card is unread, so the state is not only a look.
+ */
+function CardListDot({
+  label,
+  className,
+  ...props
+}: Omit<React.ComponentProps<"span">, "children"> & {
+  /** Read out while the card is unread, such as "Unread", in the page's language. */
+  label?: string;
+}) {
   return (
-    <span
-      aria-hidden="true"
-      data-slot="card-list-dot"
-      className={cn("hidden size-1.5 shrink-0 rounded-full bg-signal group-data-unread/card:inline-block", className)}
-      {...props}
-    />
+    <>
+      <span
+        aria-hidden="true"
+        data-slot="card-list-dot"
+        className={cn("hidden size-1.5 shrink-0 rounded-full bg-signal group-data-unread/card:inline-block", className)}
+        {...props}
+      />
+      {label && <span className="sr-only hidden group-data-unread/card:inline">{label}</span>}
+    </>
   );
 }
 

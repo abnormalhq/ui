@@ -39,6 +39,7 @@ export const defaultCopy = {
   starred: "Starred",
   sent: "Sent",
   conversations: "Conversations",
+  unread: "Unread",
   reviewFrom: "Lin Shu",
   reviewTime: "09:12",
   reviewSubject: "Wednesday's review moves to 3 PM",
@@ -73,7 +74,7 @@ export default function AppFrameDemo({ copy: overrides = {} }: { copy?: Partial<
   return (
     <AppFrame className="@container h-[30rem] w-full overflow-hidden rounded-panel border border-border">
       <AppFrameBody className="ps-0">
-        <Sidebar className="h-auto py-1.5">
+        <Sidebar className="h-auto w-48 py-1.5">
           <SidebarHeader className="pb-2">
             <SidebarSwitcher icon={<BrandMark className="size-5" />} label={copy.mail} />
           </SidebarHeader>
@@ -84,7 +85,7 @@ export default function AppFrameDemo({ copy: overrides = {} }: { copy?: Partial<
             <SidebarItem icon={<SendIcon />} label={copy.sent} />
           </SidebarNav>
         </Sidebar>
-        <AppFrameColumn asChild className="hidden w-64 overflow-y-auto @4xl:flex">
+        <AppFrameColumn asChild className="hidden w-56 overflow-y-auto @3xl:flex">
           <section aria-label={copy.conversations}>
             <CardList>
               <CardListItem>
@@ -103,7 +104,7 @@ export default function AppFrameDemo({ copy: overrides = {} }: { copy?: Partial<
                 <CardListCard asChild unread>
                   <a href="#renewal">
                     <CardListHeader>
-                      <CardListDot />
+                      <CardListDot label={copy.unread} />
                       <CardListTitle>{copy.renewalFrom}</CardListTitle>
                       <CardListMeta>{copy.renewalTime}</CardListMeta>
                     </CardListHeader>
