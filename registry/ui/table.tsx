@@ -59,7 +59,9 @@ function Table({
     update();
     const observer = new ResizeObserver(update);
     observer.observe(container);
-    if (container.firstElementChild) observer.observe(container.firstElementChild);
+    // The table itself, not the focus ring that comes before it while the container scrolls.
+    const table = container.querySelector(":scope > table");
+    if (table) observer.observe(table);
     container.addEventListener("scroll", update, { passive: true });
     return () => {
       observer.disconnect();
@@ -83,6 +85,19 @@ function Table({
           // below takes its place.
           className="group/table relative min-h-0 w-full overflow-x-auto focus-visible:outline-none"
         >
+          {scrollable && (
+            // The focus ring of the container, laid over the part of the table in view: a block of no height before the
+            // table that sticks to the visible top and start, holding a box as tall as the view, which also covers the
+            // empty part of a box taller than its rows. It is drawn inside the edge (outside it, a panel that clips its
+            // content would cut it off) and on top of the sticky header and pinned columns.
+            <div
+              aria-hidden="true"
+              data-slot="table-focus-ring"
+              className="pointer-events-none sticky start-0 top-0 z-[4] h-0"
+            >
+              <div className="absolute inset-x-0 top-0 hidden h-(--table-viewport-height) outline-2 -outline-offset-2 outline-(--focus) group-[:focus-visible:not([data-pointer-focus])]/table:block" />
+            </div>
+          )}
           <table
             aria-label={ariaLabel}
             aria-labelledby={ariaLabelledby}
@@ -97,18 +112,6 @@ function Table({
             )}
             {...props}
           />
-          {scrollable && (
-            // The focus ring of the container, laid over the part of the table in view: a block of no height that sticks
-            // to the visible bottom and start, holding a box as tall as the view. It is drawn inside the edge (outside
-            // it, a panel that clips its content would cut it off) and on top of the sticky header and pinned columns.
-            <div
-              aria-hidden="true"
-              data-slot="table-focus-ring"
-              className="pointer-events-none sticky start-0 bottom-0 z-[4] h-0"
-            >
-              <div className="absolute inset-x-0 bottom-0 hidden h-(--table-viewport-height) outline-2 -outline-offset-2 outline-(--focus) group-[:focus-visible:not([data-pointer-focus])]/table:block" />
-            </div>
-          )}
         </div>
       </TableDensityContext.Provider>
     </TableVariantContext.Provider>
