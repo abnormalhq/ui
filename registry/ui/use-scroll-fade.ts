@@ -144,7 +144,8 @@ function scrollIntoRow(container: HTMLElement, item: HTMLElement, behavior: Scro
  * did not start focus-visible (a click), that element carries `data-pointer-focus`, so its ring can be hidden
  * (`data-pointer-focus:outline-none`, or `:focus-visible:not([data-pointer-focus])` where a row draws it). Focus from
  * Tab, or moved by a script after a key, as J and K do, keeps the ring. A click that leaves the focus where it was
- * (on the box Tab had reached) marks it too, so the ring goes with the click. The attribute goes with the focus.
+ * (on the box Tab had reached) marks it too, so the ring goes with the click; a touch that only pans the box does
+ * not. The attribute goes with the focus.
  */
 function usePointerFocus(ref: RefObject<HTMLElement | null>) {
   useEffect(() => {
@@ -158,24 +159,22 @@ function usePointerFocus(ref: RefObject<HTMLElement | null>) {
     const onFocusOut = (event: FocusEvent) => {
       if (event.target instanceof Element) event.target.removeAttribute("data-pointer-focus");
     };
-    // A click on what already holds focus moves nothing, so no focusin follows: once the browser has done what the
-    // press does (focusing, or not), whatever holds focus inside the box is the pointer's.
-    let pending = 0;
-    const onPointerDown = () => {
-      clearTimeout(pending);
-      pending = window.setTimeout(() => {
-        const active = document.activeElement;
-        if (active && element.contains(active)) active.setAttribute("data-pointer-focus", "");
-      });
+    // A click on what already holds focus moves nothing, so no focusin follows: whatever holds focus inside the box
+    // after a click is the pointer's. A click, not a press: a touch that pans the list is no click, and leaves a
+    // keyboard ring alone. One from the keyboard (Enter or Space on a button) has no clicks to count, detail 0.
+    const onClick = (event: MouseEvent) => {
+      if (event.detail === 0) return;
+      const active = document.activeElement;
+      if (active && element.contains(active)) active.setAttribute("data-pointer-focus", "");
     };
     element.addEventListener("focusin", onFocusIn);
     element.addEventListener("focusout", onFocusOut);
-    element.addEventListener("pointerdown", onPointerDown);
+    // Captured, so a handler inside that stops the click's propagation still lets the box see it.
+    element.addEventListener("click", onClick, true);
     return () => {
-      clearTimeout(pending);
       element.removeEventListener("focusin", onFocusIn);
       element.removeEventListener("focusout", onFocusOut);
-      element.removeEventListener("pointerdown", onPointerDown);
+      element.removeEventListener("click", onClick, true);
       for (const marked of element.querySelectorAll("[data-pointer-focus]"))
         marked.removeAttribute("data-pointer-focus");
       element.removeAttribute("data-pointer-focus");
