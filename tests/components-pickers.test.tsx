@@ -2002,12 +2002,22 @@ test("a TimePicker whose range falls between two times in its list still offers 
 
 test("a TimePicker given a list step or step that is not a number keeps its defaults", async () => {
   await mount(
-    <TimePicker locale="en-GB" aria-label="At" listLabel="Choose a time" listStep={Number.NaN} step={Infinity} />,
+    <TimePicker
+      locale="en-GB"
+      aria-label="At"
+      listLabel="Choose a time"
+      listStep={Number.NaN}
+      step={Infinity}
+      min="09:07"
+    />,
   );
   await click(clock());
   const values = [...document.querySelectorAll<HTMLElement>('[role="option"]')].map((option) => option.dataset.value);
   assert.deepEqual(values.slice(0, 2), ["00:00", "00:15"]);
   assert.equal(values.length, 96);
+  // The default one-minute step puts 09:07 on the step, so the list stays on the quarter hours.
+  assert.equal(one('[data-value="09:00"]').getAttribute("aria-disabled"), "true");
+  assert.equal(one('[data-value="09:15"]').getAttribute("aria-disabled"), null);
 });
 
 test("a TimePicker with a fractional step never offers 24:00", async () => {
