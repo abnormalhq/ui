@@ -4,7 +4,7 @@ import { test } from "node:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { NextIntlClientProvider } from "next-intl";
 import { AppFrame, AppFrameBody, AppFrameColumn, AppFrameSheet } from "@/components/ui/app-frame";
-import { CardListCard, CardListDot } from "@/components/ui/card-list";
+import { CardList, CardListCard, CardListDot } from "@/components/ui/card-list";
 import { ItemListRow } from "@/components/ui/item-list";
 import { ListToolbarFilter } from "@/components/ui/list-toolbar";
 import { Sidebar, SidebarGroup, SidebarItem, SidebarMore, SidebarNav } from "@/components/ui/sidebar";
@@ -115,6 +115,11 @@ test("a selected card is lifted with the bar and an unread one lights its dot, w
   );
   assert.match(html, /before:bg-highlight/);
   assert.match(html, /group-data-unread\/card:inline-block/);
+  const labelled = renderToStaticMarkup(<CardListDot label="Unread" />);
+  // The label is visually hidden and shows (to a screen reader) only while the card above it is unread.
+  assert.match(labelled, /<span class="sr-only hidden group-data-unread\/card:inline">Unread<\/span>$/);
+  assert.doesNotMatch(renderToStaticMarkup(<CardListDot />), /sr-only/);
+  assert.match(renderToStaticMarkup(<CardList />), /^<ul role="list"/);
   const plain = renderToStaticMarkup(<CardListCard>Plain</CardListCard>);
   assert.doesNotMatch(plain, /data-selected|data-unread|aria-/);
 });
