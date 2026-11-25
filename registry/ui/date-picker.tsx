@@ -151,7 +151,8 @@ function DatePicker({
           <span data-slot="date-picker-value" className="min-w-0 flex-1 truncate">
             {text ?? placeholder}
           </span>
-          {submits && <input type="hidden" name={name} value={value ?? ""} form={form} />}
+          {/* A day that does not exist submits as no day, as a date input sanitizes it. */}
+          {submits && <input type="hidden" name={name} value={(chosen && value) || ""} form={form} />}
         </button>
       </PopoverTrigger>
       <PopoverContent

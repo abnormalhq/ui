@@ -43,21 +43,27 @@ const listGap = (step: number, wanted = 900) => {
 // Each time in the list, as the field holds it and in seconds since midnight.
 type TimeOption = { text: string; seconds: number };
 
+// Places a time among the options in order, unless it is one of them already.
+const placeTime = (options: TimeOption[], text: string, seconds: number) => {
+  if (options.some((option) => Math.abs(option.seconds - seconds) < 0.0005)) return;
+  const at = options.findIndex((option) => option.seconds > seconds);
+  options.splice(at === -1 ? options.length : at, 0, { text, seconds });
+};
+
 // The open list's options, with the field's own time placed among them when it falls between two. They count from
 // `base`: midnight, or `min` when the native input measures its step from a `min` off the clock's grid, so each one
 // is a time it accepts.
 const timeOptions = (gap: number, base: number, withSeconds: boolean, current: string) => {
   const options: TimeOption[] = [];
   const first = Math.round((base % gap) * 1000) / 1000;
-  for (let index = 0; first + index * gap < DAY; index += 1) {
+  for (let index = 0; ; index += 1) {
     const seconds = Math.round((first + index * gap) * 1000) / 1000;
+    // Checked after rounding, so a fractional step never offers 24:00, which the input would read as no time.
+    if (seconds >= DAY) break;
     options.push({ text: textOf(seconds, withSeconds), seconds });
   }
   const chosen = secondsOf(current);
-  if (chosen !== null && !options.some((option) => Math.abs(option.seconds - chosen) < 0.0005)) {
-    const at = options.findIndex((option) => option.seconds > chosen);
-    options.splice(at === -1 ? options.length : at, 0, { text: current, seconds: chosen });
-  }
+  if (chosen !== null) placeTime(options, current, chosen);
   return options;
 };
 
@@ -169,12 +175,19 @@ function TimePicker({
   const unit = step && step > 0 ? step : 60;
   const offStep = low !== null && Math.min(low % unit, unit - (low % unit)) > 0.0005;
   const base = offStep ? low : 0;
-  const options = React.useMemo(() => timeOptions(gap, base, withSeconds, value), [gap, base, withSeconds, value]);
   // A `min` later than `max` is a range across midnight, as the native input reads it (22:00 to 06:00).
   const outOfRange = ({ seconds }: TimeOption) =>
     low !== null && high !== null && low > high
       ? seconds > high && seconds < low
       : (low !== null && seconds < low) || (high !== null && seconds > high);
+  const options = React.useMemo(() => {
+    const list = timeOptions(gap, base, withSeconds, value);
+    // A range narrower than the list's gap, such as 23:50 to midnight, still offers its first time.
+    if (low !== null && list.every(outOfRange)) placeTime(list, textOf(low, withSeconds), low);
+    return list;
+    // `outOfRange` reads only `low` and `high`.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gap, base, withSeconds, value, low, high]);
   const labels = React.useMemo(() => {
     // A 24-hour clock writes the hour in two digits, as the time input does ("09:30"); a 12-hour one does not ("9:30 AM").
     const cycle = new Intl.DateTimeFormat(locale, { hour: "numeric" }).resolvedOptions().hourCycle;
@@ -240,13 +253,14 @@ function TimePicker({
    */
   const moveFrom = (from: number, by: number) => {
     const direction = Math.sign(by) || 1;
-    let target = Math.min(Math.max(from + by, 0), options.length - 1);
-    while (target >= 0 && target < options.length && !enabled(target)) target += direction;
-    if (enabled(target)) return target;
-    for (target = Math.min(Math.max(from + by, 0), options.length - 1); target !== from; target -= direction) {
+    const last = options.length - 1;
+    const start = Math.min(Math.max(from + by, 0), last);
+    for (let target = start; target >= 0 && target <= last; target += direction) if (enabled(target)) return target;
+    for (let target = start - direction; target >= 0 && target <= last; target -= direction) {
       if (enabled(target)) return target;
     }
-    return from;
+    // Nothing can be chosen: stay on a row of the list.
+    return Math.min(Math.max(from, 0), last);
   };
 
   // The active option stays in sight as the keys move it.

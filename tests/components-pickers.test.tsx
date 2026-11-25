@@ -1988,6 +1988,25 @@ test("a TimePicker whose min is any whole minute keeps its list on the quarter h
   assert.equal(one('[data-value="09:15"]').getAttribute("aria-disabled"), null);
 });
 
+test("a TimePicker whose range falls between two times in its list still offers its first time", async () => {
+  await mount(<TimePicker locale="en-GB" aria-label="Last call" listLabel="Choose a time" min="23:50" />);
+  await click(clock());
+  assert.equal(one('[data-value="23:50"]').getAttribute("aria-disabled"), null);
+  await press(timeList(), "End");
+  assert.equal(activeTime(), "23:50");
+  await press(timeList(), "ArrowDown");
+  assert.equal(activeTime(), "23:50", "past the last time it can take, the list stays on it");
+  await press(timeList(), "Home");
+  assert.equal(activeTime(), "23:50");
+});
+
+test("a TimePicker with a fractional step never offers 24:00", async () => {
+  await mount(<TimePicker locale="en-GB" aria-label="At" listLabel="Choose a time" min="04:52" step={22.4} />);
+  await click(clock());
+  const values = [...document.querySelectorAll<HTMLElement>('[role="option"]')].map((option) => option.dataset.value);
+  assert.ok(values.every((value) => value! < "24"));
+});
+
 test("a TimePicker whose min is later than its max offers the times across midnight", async () => {
   await mount(<TimePicker locale="en-GB" aria-label="Quiet" listLabel="Choose a time" min="22:00" max="06:00" />);
   await click(clock());
@@ -2057,8 +2076,13 @@ test("a DatePicker given an empty value, as an empty date input submits, opens o
   assert.equal(caption(), "November 2026");
 });
 
-test("a DatePicker given a day that does not exist opens on today's month as no day", async () => {
-  await mount(<DatePicker {...datePickerProps} name="from" defaultValue="2026-13-10" />);
+test("a DatePicker given a day that does not exist opens on today's month as no day, and submits none", async () => {
+  const { container } = await mount(
+    <form>
+      <DatePicker {...datePickerProps} name="from" defaultValue="2026-13-10" />
+    </form>,
+  );
+  assert.equal(new FormData(container.querySelector("form")!).get("from"), "");
   assert.equal(dateTrigger().textContent, "Choose a date");
   await click(dateTrigger());
   assert.equal(caption(), "November 2026");
