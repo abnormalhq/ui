@@ -18,29 +18,40 @@ const secondsOf = (time: string | null | undefined): number | null => {
   return hours * 3600 + minutes * 60 + seconds + Number(`0.${match[4] ?? 0}`);
 };
 
-// Seconds since midnight as the time input writes them, with seconds only when asked or when they are not zero.
+// Seconds since midnight as the time input writes them: seconds when asked or when they are not zero, and
+// milliseconds when there are any.
 const textOf = (total: number, withSeconds: boolean) => {
-  const whole = Math.floor(total);
-  const pad = (n: number) => String(n).padStart(2, "0");
+  const millis = Math.round(total * 1000);
+  const whole = Math.floor(millis / 1000);
+  const fraction = millis % 1000;
+  const pad = (n: number, width = 2) => String(n).padStart(width, "0");
   const hhmm = `${pad(Math.floor(whole / 3600))}:${pad(Math.floor(whole / 60) % 60)}`;
+  if (fraction) return `${hhmm}:${pad(whole % 60)}.${pad(fraction, 3)}`;
   return withSeconds || whole % 60 ? `${hhmm}:${pad(whole % 60)}` : hhmm;
 };
 
-// The gap between the times in the list: a quarter of an hour unless the step is longer, rounded up to a whole number
-// of steps so every time in the list is one the field accepts. A time between them is typed.
-const listGap = (step: number) => {
+// The gap between the times in the list: a quarter of an hour (or the page's `listStep`, at least a minute) unless the
+// step is longer, rounded up to a whole number of steps so every time in the list is one the field accepts. A time
+// between them is typed.
+const listGap = (step: number, wanted = 900) => {
   const unit = step > 0 ? step : 60;
-  if (unit >= 900) return unit;
-  return Math.round(unit * Math.ceil(900 / unit - 1e-9) * 1000) / 1000;
+  const target = Math.max(wanted, 60);
+  if (unit >= target) return unit;
+  return Math.round(unit * Math.ceil(target / unit - 1e-9) * 1000) / 1000;
 };
 
 // Each time in the list, as the field holds it and in seconds since midnight.
 type TimeOption = { text: string; seconds: number };
 
-// The open list's options, with the field's own time placed among them when it falls between two.
-const timeOptions = (gap: number, withSeconds: boolean, current: string) => {
+// The open list's options, with the field's own time placed among them when it falls between two. They count from
+// `base`, the time the native input measures its step from (`min`, else midnight), so each one is a time it accepts.
+const timeOptions = (gap: number, base: number, withSeconds: boolean, current: string) => {
   const options: TimeOption[] = [];
-  for (let seconds = 0; seconds < DAY; seconds += gap) options.push({ text: textOf(seconds, withSeconds), seconds });
+  const first = Math.round((base % gap) * 1000) / 1000;
+  for (let index = 0; first + index * gap < DAY; index += 1) {
+    const seconds = Math.round((first + index * gap) * 1000) / 1000;
+    options.push({ text: textOf(seconds, withSeconds), seconds });
+  }
   const chosen = secondsOf(current);
   if (chosen !== null && !options.some((option) => Math.abs(option.seconds - chosen) < 0.0005)) {
     const at = options.findIndex((option) => option.seconds > chosen);
@@ -56,12 +67,19 @@ const TIME_PICKER_SIZES = { sm: "px-2 text-sm", default: "px-3", lg: "px-3.5" };
  * system gray, whatever the theme), and color the segment being typed in system blue too. The button goes, since
  * the theme's list replaces it, and the segment takes the highlighter, as a chosen day does in Calendar.
  */
+// Written out in full, since Tailwind finds classes by reading the source and would miss one put together here.
 const NATIVE_TIME_PARTS = [
   "[&::-webkit-calendar-picker-indicator]:hidden",
-  ...["hour", "minute", "second", "millisecond", "ampm"].flatMap((part) => [
-    `[&::-webkit-datetime-edit-${part}-field:focus]:bg-highlight`,
-    `[&::-webkit-datetime-edit-${part}-field:focus]:text-highlight-foreground`,
-  ]),
+  "[&::-webkit-datetime-edit-hour-field:focus]:bg-highlight",
+  "[&::-webkit-datetime-edit-hour-field:focus]:text-highlight-foreground",
+  "[&::-webkit-datetime-edit-minute-field:focus]:bg-highlight",
+  "[&::-webkit-datetime-edit-minute-field:focus]:text-highlight-foreground",
+  "[&::-webkit-datetime-edit-second-field:focus]:bg-highlight",
+  "[&::-webkit-datetime-edit-second-field:focus]:text-highlight-foreground",
+  "[&::-webkit-datetime-edit-millisecond-field:focus]:bg-highlight",
+  "[&::-webkit-datetime-edit-millisecond-field:focus]:text-highlight-foreground",
+  "[&::-webkit-datetime-edit-ampm-field:focus]:bg-highlight",
+  "[&::-webkit-datetime-edit-ampm-field:focus]:text-highlight-foreground",
 ].join(" ");
 
 /**
@@ -93,6 +111,7 @@ function TimePicker({
   listLabel,
   size = "default",
   disabled,
+  readOnly,
   open: openProp,
   onOpenChange,
   className,
@@ -115,7 +134,10 @@ function TimePicker({
   max?: string;
   /** The input's step in seconds: 60 by default, 900 for quarter hours, under 60 for seconds. */
   step?: number;
-  /** The gap between the times in the list, in seconds; a quarter of an hour unless `step` is longer. */
+  /**
+   * The gap between the times in the list, in seconds and at least a minute; a quarter of an hour unless `step` is
+   * longer. It is rounded up to a whole number of steps.
+   */
   listStep?: number;
   /** The accessible name of the list and of the clock button that opens it, such as "Choose a time". */
   listLabel: string;
@@ -138,12 +160,16 @@ function TimePicker({
   };
 
   const withSeconds = step !== undefined && step < 60;
-  const gap = Math.max(listStep ?? listGap(step ?? 60), 60);
-  const options = React.useMemo(() => timeOptions(gap, withSeconds, value), [gap, withSeconds, value]);
+  const gap = listGap(step ?? 60, listStep);
   const low = secondsOf(min);
   const high = secondsOf(max);
-  const outOfRange = (option: TimeOption) =>
-    (low !== null && option.seconds < low) || (high !== null && option.seconds > high);
+  const base = low ?? 0;
+  const options = React.useMemo(() => timeOptions(gap, base, withSeconds, value), [gap, base, withSeconds, value]);
+  // A `min` later than `max` is a range across midnight, as the native input reads it (22:00 to 06:00).
+  const outOfRange = ({ seconds }: TimeOption) =>
+    low !== null && high !== null && low > high
+      ? seconds > high && seconds < low
+      : (low !== null && seconds < low) || (high !== null && seconds > high);
   const labels = React.useMemo(() => {
     // A 24-hour clock writes the hour in two digits, as the time input does ("09:30"); a 12-hour one does not ("9:30 AM").
     const cycle = new Intl.DateTimeFormat(locale, { hour: "numeric" }).resolvedOptions().hourCycle;
@@ -165,7 +191,9 @@ function TimePicker({
   const listRef = React.useRef<HTMLDivElement>(null);
   const [active, setActive] = React.useState(0);
   const [innerOpen, setInnerOpen] = React.useState(false);
-  const open = (openProp ?? innerOpen) && !disabled;
+  // A read-only field shows its time but takes none from the list, as a read-only native input takes no typing.
+  const locked = Boolean(disabled || readOnly);
+  const open = (openProp ?? innerOpen) && !locked;
   // Whether the list closed because the pointer went elsewhere: focus then stays where the pointer put it.
   const leftOutside = React.useRef(false);
 
@@ -184,25 +212,36 @@ function TimePicker({
       0,
     );
   };
+  // The list starts at the chosen time each time it opens, whether the clock button, a key or the page's `open` opened it.
+  const [wasOpen, setWasOpen] = React.useState(false);
+  if (open !== wasOpen) {
+    setWasOpen(open);
+    if (open) setActive(startIndex());
+  }
   const setOpen = (next: boolean) => {
-    if (next) {
-      setActive(startIndex());
-      leftOutside.current = false;
-    }
+    if (next && locked) return;
+    if (next) leftOutside.current = false;
     if (openProp === undefined) setInnerOpen(next);
     onOpenChange?.(next);
   };
   const choose = (index: number) => {
-    if (!enabled(index)) return;
+    if (locked || !enabled(index)) return;
     change(options[index]!.text);
     setOpen(false);
   };
-  /** The next option that can be chosen, `by` places from the active one, or the active one at either end. */
+  /**
+   * The option `by` places from `from`, or the next one that can be chosen beyond it; past the last one that can be
+   * chosen in that direction, that last one, so Page Up and Page Down stop at the edge of the range.
+   */
   const moveFrom = (from: number, by: number) => {
     const direction = Math.sign(by) || 1;
     let target = Math.min(Math.max(from + by, 0), options.length - 1);
     while (target >= 0 && target < options.length && !enabled(target)) target += direction;
-    return enabled(target) ? target : from;
+    if (enabled(target)) return target;
+    for (target = Math.min(Math.max(from + by, 0), options.length - 1); target !== from; target -= direction) {
+      if (enabled(target)) return target;
+    }
+    return from;
   };
 
   // The active option stays in sight as the keys move it.
@@ -250,11 +289,14 @@ function TimePicker({
             max={max}
             step={step}
             disabled={disabled}
+            readOnly={readOnly}
             aria-keyshortcuts="Alt+ArrowDown"
             onKeyDown={(event) => {
               onKeyDown?.(event);
               if (event.defaultPrevented) return;
-              if ((event.altKey && (event.key === "ArrowDown" || event.key === "ArrowUp")) || event.key === "F4") {
+              const opens =
+                (event.altKey && (event.key === "ArrowDown" || event.key === "ArrowUp")) || event.key === "F4";
+              if (opens && !locked) {
                 // The browser's own picker would open on these keys: the theme's list opens instead.
                 event.preventDefault();
                 setOpen(true);
@@ -274,7 +316,7 @@ function TimePicker({
               type="button"
               tabIndex={-1}
               aria-label={listLabel}
-              disabled={disabled}
+              disabled={locked}
               data-slot="time-picker-trigger"
               className="mx-1 inline-flex size-6 shrink-0 items-center justify-center rounded-chip text-muted-foreground transition-[color,background-color] duration-100 hover:bg-control hover:text-foreground disabled:pointer-events-none aria-expanded:bg-control aria-expanded:text-foreground in-data-[size=sm]:size-5 [&_svg]:pointer-events-none [&_svg]:size-3.5"
             >
@@ -284,8 +326,9 @@ function TimePicker({
         </InputGroup>
       </PopoverAnchor>
       <PopoverContent
+        aria-label={listLabel}
         align="end"
-        className="max-h-64 w-auto min-w-(--radix-popover-trigger-width) p-1"
+        className="max-h-[min(16rem,var(--radix-popover-content-available-height))] w-auto min-w-(--radix-popover-trigger-width) p-1"
         onOpenAutoFocus={(event) => {
           // The list takes focus and shows the active time in the middle, not at the top of the day.
           event.preventDefault();
