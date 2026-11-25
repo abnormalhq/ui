@@ -2047,3 +2047,11 @@ test("a DatePicker given an empty value, as an empty date input submits, opens o
   await click(dateTrigger());
   assert.equal(caption(), "November 2026");
 });
+
+test("a DatePicker given a day that does not exist opens on today's month as no day", async () => {
+  await mount(<DatePicker {...datePickerProps} name="from" defaultValue="2026-13-10" />);
+  assert.equal(dateTrigger().textContent, "Choose a date");
+  await click(dateTrigger());
+  assert.equal(caption(), "November 2026");
+  assert.equal(focusedDay(), "2026-11-10");
+});

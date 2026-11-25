@@ -171,7 +171,8 @@ function DatePicker({
       >
         <Calendar
           locale={locale}
-          value={value}
+          // A day that is no day, such as "2026-13-10" from a hand-edited link, opens on today as no day does.
+          value={chosen ? value : null}
           today={today}
           min={min}
           max={max}
