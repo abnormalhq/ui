@@ -53,11 +53,13 @@ function ToggleGroupItem({
       data-size={resolved.size}
       className={cn(
         toggleVariants(resolved),
+        "min-w-0 flex-1 focus-visible:z-raised",
         // Plain items join squared where they meet. In the outline track each item is a segment 4px shorter than the size,
-        // so the track keeps the control height, and the pressed one is raised on it.
-        "min-w-0 flex-1 focus-visible:z-raised not-data-[variant=outline]:rounded-none not-data-[variant=outline]:first:rounded-l-control not-data-[variant=outline]:last:rounded-r-control",
-        "data-[variant=outline]:rounded-chip data-[variant=outline]:border-0 data-[variant=outline]:bg-transparent data-[variant=outline]:hover:bg-transparent data-[variant=outline]:data-[size=default]:h-7 data-[variant=outline]:data-[size=lg]:h-9 data-[variant=outline]:data-[size=sm]:h-6 data-[variant=outline]:data-[size=sm]:min-h-[24px]",
-        "data-[variant=outline]:data-[state=on]:bg-popover data-[variant=outline]:data-[state=on]:shadow-control data-[variant=outline]:data-[state=on]:hover:bg-popover",
+        // so the track keeps the control height, and the pressed one is raised on it. Picked here rather than with
+        // data-variant selectors, so that a page's own corners or pressed surface on an item still win over these.
+        resolved.variant === "outline"
+          ? "rounded-chip border-0 bg-transparent hover:bg-transparent data-[size=default]:h-7 data-[size=lg]:h-9 data-[size=sm]:h-6 data-[size=sm]:min-h-[24px] data-[state=on]:bg-popover data-[state=on]:shadow-control data-[state=on]:hover:bg-popover"
+          : "rounded-none first:rounded-l-control last:rounded-r-control",
         className,
       )}
       {...props}
