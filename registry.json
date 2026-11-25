@@ -1152,7 +1152,7 @@
       "title": "Table",
       "description": "Tables with plain and bordered variants, pinned columns and link-based sortable headers. table-row.ts holds the row action class and row click helper, usable from Server Components.",
       "dependencies": ["lucide-react", "radix-ui"],
-      "registryDependencies": ["@abnormal/utils"],
+      "registryDependencies": ["@abnormal/scroll-area", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/table.tsx",
