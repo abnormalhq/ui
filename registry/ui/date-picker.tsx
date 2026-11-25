@@ -96,7 +96,8 @@ function DatePicker({
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
   }) {
-  const [innerValue, setInnerValue] = React.useState(defaultValue ?? null);
+  // An empty value is no day, as an empty <input type="date"> is: "" reaches the calendar as null.
+  const [innerValue, setInnerValue] = React.useState(defaultValue || null);
   // A form reset (a reset button, form.reset(), or the reset React runs after a form action) puts an uncontrolled
   // field back on its default, as it does a native one, unless the page cancels the reset. A controlled field follows
   // its value prop.
@@ -104,8 +105,8 @@ function DatePicker({
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   React.useImperativeHandle(ref, () => buttonRef.current as HTMLButtonElement, []);
   const submits = name !== undefined && !disabled;
-  useFormReset(buttonRef, () => setInnerValue(defaultValue ?? null));
-  const value = valueProp === undefined ? innerValue : valueProp;
+  useFormReset(buttonRef, () => setInnerValue(defaultValue || null));
+  const value = (valueProp === undefined ? innerValue : valueProp) || null;
   const [innerOpen, setInnerOpen] = React.useState(false);
   const open = openProp ?? innerOpen;
   const setOpen = (next: boolean) => {
@@ -150,7 +151,8 @@ function DatePicker({
           <span data-slot="date-picker-value" className="min-w-0 flex-1 truncate">
             {text ?? placeholder}
           </span>
-          {submits && <input type="hidden" name={name} value={value ?? ""} form={form} />}
+          {/* A day that does not exist submits as no day, as a date input sanitizes it. */}
+          {submits && <input type="hidden" name={name} value={(chosen && value) || ""} form={form} />}
         </button>
       </PopoverTrigger>
       <PopoverContent
@@ -170,7 +172,8 @@ function DatePicker({
       >
         <Calendar
           locale={locale}
-          value={value}
+          // A day that is no day, such as "2026-13-10" from a hand-edited link, opens on today as no day does.
+          value={chosen ? value : null}
           today={today}
           min={min}
           max={max}

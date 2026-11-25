@@ -19,6 +19,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { InputOTP } from "@/components/ui/input-otp";
 import { Slider } from "@/components/ui/slider";
+import { TimePicker } from "@/components/ui/time-picker";
 
 const mounted: { unmount: () => Promise<void> }[] = [];
 const mount = async (ui: React.ReactNode) => {
@@ -1853,4 +1854,257 @@ test("a DateRangePicker given formatValue writes each end the page's way, with i
   await rerender(open(null));
   assert.equal(rangeTrigger().textContent, "Choose a period");
   assert.equal(rangeTrigger().hasAttribute("data-placeholder"), true);
+});
+
+const timeInput = () => one<HTMLInputElement>('[data-slot="time-picker"] input[type="time"]');
+const clock = () => one<HTMLButtonElement>('[data-slot="time-picker-trigger"]');
+const timeList = () => one<HTMLElement>('[role="listbox"]');
+const activeTime = () => document.getElementById(timeList().getAttribute("aria-activedescendant")!)?.dataset.value;
+
+test("a TimePicker keeps the browser's input and opens the theme's list of times in place of its picker", async () => {
+  const onValueChange = mock.fn();
+  const { container } = await mount(
+    <form>
+      <TimePicker
+        locale="en-GB"
+        name="quietFrom"
+        aria-label="Quiet hours start"
+        listLabel="Choose a time"
+        defaultValue="22:00"
+        onValueChange={onValueChange}
+      />
+    </form>,
+  );
+  const form = one<HTMLFormElement>("form", container);
+  assert.equal(timeInput().getAttribute("aria-label"), "Quiet hours start");
+  assert.equal(new FormData(form).get("quietFrom"), "22:00");
+  assert.equal(clock().getAttribute("aria-label"), "Choose a time");
+  assert.equal(clock().tabIndex, -1, "the keyboard types the time or opens the list from the input");
+
+  await click(clock());
+  assert.equal(timeList().getAttribute("aria-label"), "Choose a time");
+  assert.equal(document.activeElement, timeList());
+  const options = texts('[role="option"]');
+  assert.equal(options.length, 96, "a time every quarter of an hour");
+  assert.deepEqual(options.slice(0, 3), ["00:00", "00:15", "00:30"]);
+  assert.equal(activeTime(), "22:00", "the list opens at the chosen time");
+  assert.equal(one('[role="option"][aria-selected="true"]').dataset.value, "22:00");
+
+  await press(timeList(), "ArrowDown");
+  assert.equal(activeTime(), "22:15");
+  await press(timeList(), "Enter");
+  await settle();
+  assert.equal(document.querySelector('[role="listbox"]'), null);
+  assert.equal(document.activeElement, timeInput(), "focus goes back to the input");
+  assert.equal(new FormData(form).get("quietFrom"), "22:15");
+  assert.deepEqual(onValueChange.mock.calls.at(-1)?.arguments, ["22:15"]);
+
+  // Alt+Arrow Down opens the list from the input, as it opens a native picker, and Escape closes it.
+  assert.equal(await press(timeInput(), "ArrowDown", { altKey: true }), true);
+  assert.equal(activeTime(), "22:15");
+  await press(timeList(), "Escape");
+  await settle();
+  assert.equal(document.querySelector('[role="listbox"]'), null);
+  assert.equal(document.activeElement, timeInput());
+
+  await type(timeInput(), "07:05");
+  assert.equal(new FormData(form).get("quietFrom"), "07:05");
+  await act(async () => form.reset());
+  await settle();
+  assert.equal(timeInput().value, "22:00", "a reset puts the default back");
+});
+
+test("a TimePicker lists its own time between two, dims the times out of range, and writes them the locale's way", async () => {
+  const onValueChange = mock.fn();
+  await mount(
+    <TimePicker
+      locale="en-US"
+      aria-label="Start"
+      listLabel="Choose a time"
+      defaultValue="09:07"
+      min="08:00"
+      max="18:00"
+      step={1800}
+      onValueChange={onValueChange}
+    />,
+  );
+  assert.equal(timeInput().min, "08:00");
+  assert.equal(timeInput().step, "1800");
+  await click(clock());
+  const options = [...document.querySelectorAll<HTMLElement>('[role="option"]')];
+  assert.equal(options.length, 49, "every half hour, and the field's own time");
+  const values = options.map((option) => option.dataset.value);
+  assert.deepEqual(values.slice(18, 21), ["09:00", "09:07", "09:30"]);
+  assert.equal(options[18]!.textContent, "9:00 AM");
+  assert.equal(activeTime(), "09:07");
+  assert.equal(one('[data-value="07:30"]').getAttribute("aria-disabled"), "true");
+  assert.equal(one('[data-value="18:30"]').getAttribute("aria-disabled"), "true");
+  assert.equal(one('[data-value="18:00"]').getAttribute("aria-disabled"), null);
+
+  await click(one('[data-value="07:30"]'));
+  assert.equal(onValueChange.mock.callCount(), 0, "a time out of range cannot be chosen");
+  await press(timeList(), "Home");
+  assert.equal(activeTime(), "08:00", "Home stops at the first time in range");
+  await press(timeList(), "End");
+  assert.equal(activeTime(), "18:00");
+  await click(one('[data-value="17:30"]'));
+  assert.deepEqual(onValueChange.mock.calls.at(-1)?.arguments, ["17:30"]);
+  assert.equal(timeInput().value, "17:30");
+});
+
+test("a TimePicker lists times from its min, as the native input counts its step, and stops Page keys at the range", async () => {
+  await mount(
+    <TimePicker
+      locale="en-GB"
+      aria-label="At"
+      listLabel="Choose a time"
+      min="09:05"
+      max="17:00"
+      step={900}
+      defaultValue="09:20"
+    />,
+  );
+  await click(clock());
+  assert.equal(one('[role="dialog"]').getAttribute("aria-label"), "Choose a time");
+  const values = [...document.querySelectorAll<HTMLElement>('[role="option"]')].map((option) => option.dataset.value);
+  assert.deepEqual(values.slice(0, 2), ["00:05", "00:20"]);
+  assert.ok(values.includes("09:05") && !values.includes("09:15"));
+  assert.equal(activeTime(), "09:20");
+  await press(timeList(), "PageUp");
+  assert.equal(activeTime(), "09:05", "Page Up past the first time in range stops on it");
+  await press(timeList(), "PageDown");
+  await press(timeList(), "End");
+  assert.equal(activeTime(), "16:50");
+  await press(timeList(), "PageDown");
+  assert.equal(activeTime(), "16:50");
+});
+
+test("a TimePicker whose min is any whole minute keeps its list on the quarter hours", async () => {
+  await mount(<TimePicker locale="en-GB" aria-label="Send at" listLabel="Choose a time" min="09:07" />);
+  await click(clock());
+  const values = [...document.querySelectorAll<HTMLElement>('[role="option"]')].map((option) => option.dataset.value);
+  assert.ok(values.includes("09:15") && values.includes("09:30") && !values.includes("09:22"));
+  assert.equal(one('[data-value="09:00"]').getAttribute("aria-disabled"), "true");
+  assert.equal(one('[data-value="09:15"]').getAttribute("aria-disabled"), null);
+});
+
+test("a TimePicker whose range falls between two times in its list still offers its first time", async () => {
+  await mount(<TimePicker locale="en-GB" aria-label="Last call" listLabel="Choose a time" min="23:50" />);
+  await click(clock());
+  assert.equal(one('[data-value="23:50"]').getAttribute("aria-disabled"), null);
+  await press(timeList(), "End");
+  assert.equal(activeTime(), "23:50");
+  await press(timeList(), "ArrowDown");
+  assert.equal(activeTime(), "23:50", "past the last time it can take, the list stays on it");
+  await press(timeList(), "Home");
+  assert.equal(activeTime(), "23:50");
+});
+
+test("a TimePicker given a list step or step that is not a number keeps its defaults", async () => {
+  await mount(
+    <TimePicker
+      locale="en-GB"
+      aria-label="At"
+      listLabel="Choose a time"
+      listStep={Number.NaN}
+      step={Infinity}
+      min="09:07"
+    />,
+  );
+  await click(clock());
+  const values = [...document.querySelectorAll<HTMLElement>('[role="option"]')].map((option) => option.dataset.value);
+  assert.deepEqual(values.slice(0, 2), ["00:00", "00:15"]);
+  assert.equal(values.length, 96);
+  // The default one-minute step puts 09:07 on the step, so the list stays on the quarter hours.
+  assert.equal(one('[data-value="09:00"]').getAttribute("aria-disabled"), "true");
+  assert.equal(one('[data-value="09:15"]').getAttribute("aria-disabled"), null);
+});
+
+test("a TimePicker with a fractional step never offers 24:00", async () => {
+  await mount(<TimePicker locale="en-GB" aria-label="At" listLabel="Choose a time" min="04:52" step={22.4} />);
+  await click(clock());
+  const values = [...document.querySelectorAll<HTMLElement>('[role="option"]')].map((option) => option.dataset.value);
+  assert.ok(values.every((value) => value! < "24"));
+});
+
+test("a TimePicker whose min is later than its max offers the times across midnight", async () => {
+  await mount(<TimePicker locale="en-GB" aria-label="Quiet" listLabel="Choose a time" min="22:00" max="06:00" />);
+  await click(clock());
+  assert.equal(one('[data-value="23:00"]').getAttribute("aria-disabled"), null);
+  assert.equal(one('[data-value="05:45"]').getAttribute("aria-disabled"), null);
+  assert.equal(one('[data-value="12:00"]').getAttribute("aria-disabled"), "true");
+});
+
+test("a read-only TimePicker does not open its list", async () => {
+  const onValueChange = mock.fn();
+  await mount(
+    <TimePicker
+      aria-label="At"
+      listLabel="Choose a time"
+      readOnly
+      defaultValue="09:00"
+      onValueChange={onValueChange}
+    />,
+  );
+  assert.equal(timeInput().readOnly, true);
+  assert.equal(clock().disabled, true);
+  assert.equal(await press(timeInput(), "ArrowDown", { altKey: true }), false);
+  assert.equal(document.querySelector('[role="listbox"]'), null);
+});
+
+test("a TimePicker its page opens starts at the chosen time", async () => {
+  const onValueChange = mock.fn();
+  await mount(
+    <TimePicker
+      locale="en-GB"
+      aria-label="At"
+      listLabel="Choose a time"
+      open
+      value="09:30"
+      onValueChange={onValueChange}
+    />,
+  );
+  assert.equal(activeTime(), "09:30");
+  await press(timeList(), "Enter");
+  assert.equal(onValueChange.mock.callCount(), 0, "Enter on the chosen time changes nothing");
+});
+
+test("a TimePicker with a step under a minute lists times with seconds", async () => {
+  await mount(<TimePicker locale="en-GB" aria-label="At" listLabel="Choose a time" step={1} defaultValue="10:00:05" />);
+  await click(clock());
+  const values = [...document.querySelectorAll<HTMLElement>('[role="option"]')].map((option) => option.dataset.value);
+  assert.deepEqual(values.slice(0, 2), ["00:00:00", "00:15:00"]);
+  assert.ok(values.includes("10:00:05"));
+  assert.equal(one('[data-value="10:00:05"]').textContent, "10:00:05");
+  assert.equal(one('[data-value="00:15:00"]').textContent, "00:15", "a whole minute reads without its seconds");
+});
+
+test("a TimePicker keeps the milliseconds of a step with a fraction", async () => {
+  const onValueChange = mock.fn();
+  await mount(
+    <TimePicker locale="en-GB" aria-label="At" listLabel="Choose a time" step={900.5} onValueChange={onValueChange} />,
+  );
+  await click(clock());
+  await click(one('[data-value="00:15:00.500"]'));
+  assert.deepEqual(onValueChange.mock.calls.at(-1)?.arguments, ["00:15:00.500"]);
+});
+
+test("a DatePicker given an empty value, as an empty date input submits, opens on today's month", async () => {
+  await mount(<DatePicker {...datePickerProps} name="from" defaultValue="" />);
+  assert.equal(dateTrigger().textContent, "Choose a date");
+  await click(dateTrigger());
+  assert.equal(caption(), "November 2026");
+});
+
+test("a DatePicker given a day that does not exist opens on today's month as no day, and submits none", async () => {
+  const { container } = await mount(
+    <form>
+      <DatePicker {...datePickerProps} name="from" defaultValue="2026-13-10" />
+    </form>,
+  );
+  assert.equal(new FormData(container.querySelector("form")!).get("from"), "");
+  assert.equal(dateTrigger().textContent, "Choose a date");
+  await click(dateTrigger());
+  assert.equal(caption(), "November 2026");
+  assert.equal(focusedDay(), "2026-11-10");
 });

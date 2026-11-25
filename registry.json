@@ -422,7 +422,12 @@
       "type": "registry:ui",
       "title": "Date Time Picker",
       "description": "A date and a time of day in one field, valued as local text like <input type=\"datetime-local\">, that follows a form reset.",
-      "registryDependencies": ["@abnormal/date-picker", "@abnormal/form-reset", "@abnormal/input", "@abnormal/utils"],
+      "registryDependencies": [
+        "@abnormal/date-picker",
+        "@abnormal/form-reset",
+        "@abnormal/time-picker",
+        "@abnormal/utils"
+      ],
       "files": [
         {
           "path": "registry/ui/date-time-picker.tsx",
@@ -1260,6 +1265,20 @@
         },
         {
           "path": "registry/ui/use-theme-preference.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "time-picker",
+      "type": "registry:ui",
+      "title": "Time Picker",
+      "description": "A time of day: the browser's time input to type into, with a list of times in the theme's popover in place of the browser's picker, valued as \"09:30\" and following a form reset.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@abnormal/form-reset", "@abnormal/input-group", "@abnormal/popover", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/time-picker.tsx",
           "type": "registry:ui"
         }
       ]

@@ -30,6 +30,7 @@ export const groups = [
       "date-picker",
       "date-range-picker",
       "date-time-picker",
+      "time-picker",
       "toolbar",
       "list-toolbar",
       "resize-handle",
