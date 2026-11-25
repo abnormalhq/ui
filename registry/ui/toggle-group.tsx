@@ -56,7 +56,7 @@ function ToggleGroupItem({
         // Plain items join squared where they meet. In the outline track each item is a segment 4px shorter than the size,
         // so the track keeps the control height, and the pressed one is raised on it.
         "min-w-0 flex-1 focus-visible:z-raised not-data-[variant=outline]:rounded-none not-data-[variant=outline]:first:rounded-l-control not-data-[variant=outline]:last:rounded-r-control",
-        "data-[variant=outline]:rounded-chip data-[variant=outline]:border-0 data-[variant=outline]:bg-transparent data-[variant=outline]:hover:bg-transparent data-[variant=outline]:data-[size=default]:h-7 data-[variant=outline]:data-[size=lg]:h-9 data-[variant=outline]:data-[size=sm]:h-6",
+        "data-[variant=outline]:rounded-chip data-[variant=outline]:border-0 data-[variant=outline]:bg-transparent data-[variant=outline]:hover:bg-transparent data-[variant=outline]:data-[size=default]:h-7 data-[variant=outline]:data-[size=lg]:h-9 data-[variant=outline]:data-[size=sm]:h-6 data-[variant=outline]:data-[size=sm]:min-h-[24px]",
         "data-[variant=outline]:data-[state=on]:bg-popover data-[variant=outline]:data-[state=on]:shadow-control data-[variant=outline]:data-[state=on]:hover:bg-popover",
         className,
       )}

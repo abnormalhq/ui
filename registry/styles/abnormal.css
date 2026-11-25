@@ -858,7 +858,7 @@
   box-shadow: var(--popover-shadow);
   font-family: inherit;
   font-size: var(--text-base);
-  border-radius: var(--radius-panel);
+  border-radius: var(--radius-mark);
 }
 
 /*
