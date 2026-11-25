@@ -2000,6 +2000,16 @@ test("a TimePicker whose range falls between two times in its list still offers 
   assert.equal(activeTime(), "23:50");
 });
 
+test("a TimePicker given a list step or step that is not a number keeps its defaults", async () => {
+  await mount(
+    <TimePicker locale="en-GB" aria-label="At" listLabel="Choose a time" listStep={Number.NaN} step={Infinity} />,
+  );
+  await click(clock());
+  const values = [...document.querySelectorAll<HTMLElement>('[role="option"]')].map((option) => option.dataset.value);
+  assert.deepEqual(values.slice(0, 2), ["00:00", "00:15"]);
+  assert.equal(values.length, 96);
+});
+
 test("a TimePicker with a fractional step never offers 24:00", async () => {
   await mount(<TimePicker locale="en-GB" aria-label="At" listLabel="Choose a time" min="04:52" step={22.4} />);
   await click(clock());

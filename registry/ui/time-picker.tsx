@@ -34,8 +34,9 @@ const textOf = (total: number, withSeconds: boolean) => {
 // step is longer, rounded up to a whole number of steps so every time in the list is one the field accepts. A time
 // between them is typed.
 const listGap = (step: number, wanted = 900) => {
-  const unit = step > 0 ? step : 60;
-  const target = Math.max(wanted, 60);
+  // A step or gap that is not a positive number (NaN from an unset setting, Infinity) falls back to the defaults.
+  const unit = Number.isFinite(step) && step > 0 ? step : 60;
+  const target = Number.isFinite(wanted) ? Math.max(wanted, 60) : 900;
   if (unit >= target) return unit;
   return Math.round(unit * Math.ceil(target / unit - 1e-9) * 1000) / 1000;
 };
@@ -59,7 +60,7 @@ const timeOptions = (gap: number, base: number, withSeconds: boolean, current: s
   for (let index = 0; ; index += 1) {
     const seconds = Math.round((first + index * gap) * 1000) / 1000;
     // Checked after rounding, so a fractional step never offers 24:00, which the input would read as no time.
-    if (seconds >= DAY) break;
+    if (!(seconds < DAY)) break;
     options.push({ text: textOf(seconds, withSeconds), seconds });
   }
   const chosen = secondsOf(current);
@@ -172,7 +173,7 @@ function TimePicker({
   const high = secondsOf(max);
   // The list keeps to the clock (09:00, 09:15) while `min` sits on the step, as any whole minute does with the
   // default step, and counts from `min` only when the native input would refuse the clock's times.
-  const unit = step && step > 0 ? step : 60;
+  const unit = step !== undefined && Number.isFinite(step) && step > 0 ? step : 60;
   const offStep = low !== null && Math.min(low % unit, unit - (low % unit)) > 0.0005;
   const base = offStep ? low : 0;
   // A `min` later than `max` is a range across midnight, as the native input reads it (22:00 to 06:00).
