@@ -1,6 +1,6 @@
 /** The sidebar and overview groups. tests/site.test.ts checks that every registry item is in exactly one. */
 export const groups = [
-  { title: "Foundation", items: ["theme", "fonts", "utils", "template", "eslint-plugin", "workspace"] },
+  { title: "Foundation", items: ["theme", "fonts", "utils", "template", "eslint-plugin", "workspace", "app-frame"] },
   { title: "Brand", items: ["brand-mark", "marker"] },
   {
     title: "Controls",
@@ -53,6 +53,7 @@ export const groups = [
       "empty-state",
       "expandable-text",
       "item-list",
+      "card-list",
       "kbd",
       "progress",
       "qr-code",

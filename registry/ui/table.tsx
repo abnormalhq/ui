@@ -249,7 +249,7 @@ function SortableHead({
       data-active={active || undefined}
       href={asChild ? undefined : href}
       title={title}
-      className="group/sort -mx-1.5 inline-flex h-6 items-center gap-1 rounded-control px-1.5 transition-colors duration-150 select-none hover:bg-accent hover:text-foreground data-active:text-foreground"
+      className="group/sort -mx-1.5 inline-flex h-6 items-center gap-1 rounded-control px-1.5 transition-colors duration-100 select-none hover:bg-accent hover:text-foreground data-active:text-foreground"
     >
       <Slot.Slottable>{children}</Slot.Slottable>
       <Icon

@@ -228,7 +228,7 @@ function DateRangePicker({
           form={form}
           ref={buttonRef}
           className={cn(
-            "flex w-64 min-w-0 items-center gap-2 rounded-control border border-input bg-control text-left text-foreground transition-[border-color,background-color] duration-150 select-none hover:bg-accent focus-visible:-outline-offset-1 disabled:cursor-not-allowed disabled:opacity-50 aria-expanded:bg-accent aria-invalid:border-destructive data-placeholder:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+            "flex w-64 min-w-0 items-center gap-2 rounded-control border border-input bg-popover text-left text-foreground shadow-control transition-[border-color,background-color,box-shadow] duration-100 select-none hover:bg-accent active:shadow-none focus-visible:-outline-offset-1 disabled:cursor-not-allowed disabled:opacity-50 aria-expanded:bg-accent aria-invalid:border-destructive data-placeholder:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
             DATE_RANGE_PICKER_SIZES[size],
             className,
           )}

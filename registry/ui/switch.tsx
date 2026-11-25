@@ -60,7 +60,7 @@ function Switch({
       data-slot="switch"
       data-state={checked ? "checked" : "unchecked"}
       className={cn(
-        "peer relative inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full border border-input bg-muted p-0.5 transition-colors duration-150 after:absolute after:-inset-x-1 after:-inset-y-2 hover:border-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 data-checked:border-foreground data-checked:bg-foreground",
+        "peer relative inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full border border-input bg-muted p-0.5 transition-colors duration-100 after:absolute after:-inset-x-1 after:-inset-y-2 hover:border-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 data-checked:border-foreground data-checked:bg-foreground",
         className,
       )}
       onClick={() => {
@@ -71,8 +71,7 @@ function Switch({
       <span
         aria-hidden="true"
         className={cn(
-          // abnormal-allow: the thumb's small lift, not a panel or a floating layer.
-          "pointer-events-none block size-4.5 rounded-full bg-muted-foreground shadow-xs transition-transform duration-150",
+          "pointer-events-none block size-4.5 rounded-full bg-muted-foreground shadow-control transition-transform duration-100",
           checked ? "translate-x-4 bg-background" : "translate-x-0",
         )}
       />

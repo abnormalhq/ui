@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * A key on the keyboard, as a small cap: in a shortcut list, a menu hint or a search box's "/".
- * `default` sits quietly on the page; `raised` is the larger cap with a control fill, for a list of shortcuts where
+ * `default` sits quietly on the page; `raised` is the larger cap on the popover color, for a list of shortcuts where
  * the keys are the point. The text is the key as it is printed ("Esc", "↵", "K"): the page passes the names of its
  * keyboard, including the modifier, which `useModifierKey` (in use-modifier-key.ts) can tell for the platform.
  * KbdCombo holds the keys pressed together, or one after another, with the page's own separator between them if any.
@@ -16,7 +16,7 @@ const kbdVariants = cva(
     variants: {
       variant: {
         default: "h-5 min-w-5 border-border bg-card px-1 text-xs",
-        raised: "h-6 min-w-6 border-input bg-control px-1.5 text-xs shadow-[inset_0_-1px_0_var(--input)]",
+        raised: "h-6 min-w-6 border-input bg-popover px-1.5 text-xs shadow-[inset_0_-1px_0_var(--input)]",
       },
     },
     defaultVariants: { variant: "default" },

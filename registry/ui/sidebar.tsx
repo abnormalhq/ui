@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { PanelLeftCloseIcon, PanelLeftOpenIcon } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, PanelLeftCloseIcon, PanelLeftOpenIcon } from "lucide-react";
 import { Slot } from "radix-ui";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -175,6 +175,125 @@ function SidebarNav({
       )}
       {...props}
     />
+  );
+}
+
+/**
+ * The product or module the sidebar belongs to, at the top of the column, as a button that opens the way to the others:
+ * pass it as the trigger of a DropdownMenu (`<DropdownMenuTrigger asChild><SidebarSwitcher … /></DropdownMenuTrigger>`)
+ * whose items carry ⌃1, ⌃2 and so on. `icon` is the module's tile or the brand mark; on the rail only the icon shows and
+ * `label` stays its accessible name.
+ */
+function SidebarSwitcher({
+  icon,
+  label,
+  className,
+  ...props
+}: Omit<React.ComponentProps<"button">, "children"> & {
+  /** The module's tile or mark, about 18px; hidden from assistive technology, which reads `label`. */
+  icon: React.ReactNode;
+  /** The module's name, such as "Mail". */
+  label: string;
+}) {
+  const { collapsed } = useSidebar();
+  return (
+    <button
+      type="button"
+      data-slot="sidebar-switcher"
+      className={cn(
+        "flex h-8 min-w-0 shrink-0 items-center gap-2 rounded-control text-left text-base font-semibold transition-colors duration-100 hover:bg-control focus-visible:-outline-offset-2 aria-expanded:bg-control motion-reduce:transition-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        collapsed ? "size-9 justify-center px-0" : "w-full px-2",
+        className,
+      )}
+      {...props}
+    >
+      <span aria-hidden="true" data-slot="sidebar-switcher-icon" className="inline-flex shrink-0">
+        {icon}
+      </span>
+      <span className={collapsed ? "sr-only" : "min-w-0 flex-1 truncate"}>{label}</span>
+      {!collapsed && <ChevronDownIcon aria-hidden="true" className="size-3.5 text-muted-foreground" />}
+    </button>
+  );
+}
+
+/**
+ * A named set of rows inside SidebarNav: the shared mailboxes, the labels, the operations pages. The name is a small
+ * label above the rows, and it names the group; on the rail the name gives way to a short hairline.
+ */
+function SidebarGroup({
+  label,
+  className,
+  children,
+  ...props
+}: Omit<React.ComponentProps<"div">, "aria-labelledby"> & {
+  /** The group's name, in the page's language. */
+  label: string;
+}) {
+  const { collapsed } = useSidebar();
+  const id = React.useId();
+  return (
+    <div
+      role="group"
+      aria-labelledby={id}
+      data-slot="sidebar-group"
+      className={cn("flex flex-col gap-0.5 pt-3", collapsed && "items-center", className)}
+      {...props}
+    >
+      <span
+        id={id}
+        data-slot="sidebar-group-label"
+        className={collapsed ? "sr-only" : "truncate px-3 pb-1 text-2xs font-medium text-muted-foreground select-none"}
+      >
+        {label}
+      </span>
+      {collapsed && <hr aria-hidden="true" className="mb-1 w-6 shrink-0 border-sidebar-border" />}
+      {children}
+    </div>
+  );
+}
+
+/**
+ * The rows used less, folded under a "More" row that turns into "Less" once open and shows them below it, so the
+ * column shows what is used every day and one row for the rest. The rows stay in the page while folded, hidden, and
+ * the toggle says whether they are shown (aria-expanded). The state is the group's own, from `defaultOpen`, unless the
+ * page passes `open`.
+ */
+function SidebarMore({
+  moreLabel,
+  lessLabel,
+  open: openProp,
+  defaultOpen = false,
+  onOpenChange,
+  children,
+}: {
+  /** The toggle's name while folded, such as "More". */
+  moreLabel: string;
+  /** The toggle's name while open, such as "Less". */
+  lessLabel: string;
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  children?: React.ReactNode;
+}) {
+  const [innerOpen, setInnerOpen] = React.useState(defaultOpen);
+  const open = openProp ?? innerOpen;
+  const id = React.useId();
+  return (
+    <>
+      <SidebarItem
+        icon={open ? <ChevronUpIcon /> : <ChevronDownIcon />}
+        label={open ? lessLabel : moreLabel}
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => {
+          if (openProp === undefined) setInnerOpen(!open);
+          onOpenChange?.(!open);
+        }}
+      />
+      <div id={id} data-slot="sidebar-more" hidden={!open} className="contents">
+        {children}
+      </div>
+    </>
   );
 }
 
@@ -370,7 +489,10 @@ export {
   Sidebar,
   SidebarProvider,
   SidebarHeader,
+  SidebarSwitcher,
   SidebarNav,
+  SidebarGroup,
+  SidebarMore,
   SidebarSeparator,
   SidebarFooter,
   SidebarItem,

@@ -1,14 +1,34 @@
 "use client";
 
-import { ArchiveIcon, InboxIcon, SendIcon, SettingsIcon, UsersIcon } from "lucide-react";
+import {
+  ArchiveIcon,
+  ClockIcon,
+  FileIcon,
+  InboxIcon,
+  SendIcon,
+  SettingsIcon,
+  StarIcon,
+  TagIcon,
+  UsersIcon,
+} from "lucide-react";
 import { useState } from "react";
+import { BrandMark } from "@/components/ui/brand-mark";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarFooter,
+  SidebarGroup,
   SidebarHeader,
   SidebarItem,
+  SidebarMore,
   SidebarNav,
-  SidebarSeparator,
+  SidebarSwitcher,
   SidebarToggle,
 } from "@/components/ui/sidebar";
 import { ThemePicker, type ThemePreference } from "@/components/ui/theme-picker";
@@ -19,11 +39,22 @@ export const defaultCopy = {
   dark: "Dark",
   themeLabel: "Theme: {theme}",
   theme: "Theme",
+  mail: "Mail",
+  calendar: "Calendar",
+  contacts: "Contacts",
   main: "Main",
   inbox: "Inbox",
   unread: "12 unread",
   sent: "Sent",
   archive: "Archive",
+  snoozed: "Snoozed",
+  starred: "Starred",
+  drafts: "Drafts",
+  more: "More",
+  less: "Less",
+  team: "Team",
+  labels: "Labels",
+  work: "Work",
   members: "Members",
   settings: "Settings",
   expand: "Expand sidebar",
@@ -35,16 +66,36 @@ export const defaultCopy = {
 export default function SidebarDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
   const copy = { ...defaultCopy, ...overrides };
   const themes = { system: copy.system, light: copy.light, dark: copy.dark };
-  const [current, setCurrent] = useState<"inbox" | "sent" | "archive" | "members" | "settings">("inbox");
+  const [current, setCurrent] = useState<
+    "inbox" | "snoozed" | "starred" | "drafts" | "sent" | "archive" | "work" | "members" | "settings"
+  >("inbox");
   const [theme, setTheme] = useState<ThemePreference>();
   const row = (id: typeof current) => ({ current: current === id, onClick: () => setCurrent(id) });
   const currentSection = overrides.pageFor ? copy[current] : current;
 
   return (
-    <div className="flex h-96 w-full max-w-xl overflow-hidden rounded-panel border border-border">
+    <div className="flex h-[30rem] w-full max-w-xl overflow-hidden rounded-panel border border-border">
       <Sidebar cookieName="sidebar" shortcut="b" className="ink">
         <SidebarHeader>
-          <span className="truncate px-3 font-heading text-lg font-semibold">abnormal</span>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarSwitcher icon={<BrandMark className="size-5" />} label={copy.mail} />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-48">
+              <DropdownMenuItem>
+                {copy.mail}
+                <DropdownMenuShortcut>⌃1</DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                {copy.calendar}
+                <DropdownMenuShortcut>⌃2</DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                {copy.contacts}
+                <DropdownMenuShortcut>⌃3</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </SidebarHeader>
         <SidebarNav label={copy.main}>
           <SidebarItem
@@ -55,11 +106,20 @@ export default function SidebarDemo({ copy: overrides = {} }: { copy?: Partial<t
             attention
             {...row("inbox")}
           />
-          <SidebarItem icon={<SendIcon />} label={copy.sent} {...row("sent")} />
-          <SidebarItem icon={<ArchiveIcon />} label={copy.archive} count={1280} {...row("archive")} />
-          <SidebarSeparator />
-          <SidebarItem icon={<UsersIcon />} label={copy.members} dot {...row("members")} />
-          <SidebarItem icon={<SettingsIcon />} label={copy.settings} {...row("settings")} />
+          <SidebarItem icon={<ClockIcon />} label={copy.snoozed} count={3} {...row("snoozed")} />
+          <SidebarItem icon={<StarIcon />} label={copy.starred} {...row("starred")} />
+          <SidebarMore moreLabel={copy.more} lessLabel={copy.less}>
+            <SidebarItem icon={<FileIcon />} label={copy.drafts} count={2} {...row("drafts")} />
+            <SidebarItem icon={<SendIcon />} label={copy.sent} {...row("sent")} />
+            <SidebarItem icon={<ArchiveIcon />} label={copy.archive} count={1280} {...row("archive")} />
+          </SidebarMore>
+          <SidebarGroup label={copy.labels}>
+            <SidebarItem icon={<TagIcon />} label={copy.work} {...row("work")} />
+          </SidebarGroup>
+          <SidebarGroup label={copy.team}>
+            <SidebarItem icon={<UsersIcon />} label={copy.members} dot {...row("members")} />
+            <SidebarItem icon={<SettingsIcon />} label={copy.settings} {...row("settings")} />
+          </SidebarGroup>
         </SidebarNav>
         <SidebarFooter>
           <ThemePicker

@@ -133,7 +133,7 @@ function ResizeHandle({
       <span
         aria-hidden="true"
         className={cn(
-          "absolute bg-transparent transition-colors duration-150 group-hover/resize:bg-ring group-focus-visible/resize:bg-ring group-data-dragging/resize:bg-ring",
+          "absolute bg-transparent transition-colors duration-100 group-hover/resize:bg-ring group-focus-visible/resize:bg-ring group-data-dragging/resize:bg-ring",
           vertical
             ? "inset-y-0 left-1 w-px group-focus-visible/resize:left-[3.5px] group-focus-visible/resize:w-0.5"
             : "inset-x-0 top-1 h-px group-focus-visible/resize:top-[3.5px] group-focus-visible/resize:h-0.5",

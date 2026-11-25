@@ -7,11 +7,19 @@ import {
   ListToolbar,
   ListToolbarActions,
   ListToolbarChips,
+  ListToolbarFilter,
   ListToolbarGroup,
   ListToolbarSearch,
 } from "@/components/ui/list-toolbar";
 import { SearchInput } from "@/components/ui/search-input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Tag } from "@/components/ui/tag";
 
 export const defaultCopy = {
@@ -21,6 +29,9 @@ export const defaultCopy = {
   allStatuses: "All statuses",
   open: "Open",
   closed: "Closed",
+  addFilter: "Add filter",
+  assignee: "Assignee",
+  priority: "Priority",
   export: "Export",
   add: "New ticket",
   statusChip: "Status: {value}",
@@ -47,16 +58,32 @@ export default function ListToolbarDemo({ copy: overrides = {} }: { copy?: Parti
             />
           </ListToolbarSearch>
           <ListToolbarGroup>
-            <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger aria-label={copy.status} className="w-36">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{copy.allStatuses}</SelectItem>
-                <SelectItem value="open">{copy.open}</SelectItem>
-                <SelectItem value="closed">{copy.closed}</SelectItem>
-              </SelectContent>
-            </Select>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <ListToolbarFilter
+                  label={copy.status}
+                  value={status === "all" ? copy.allStatuses : status === "open" ? copy.open : copy.closed}
+                />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuRadioGroup value={status} onValueChange={setStatus}>
+                  <DropdownMenuRadioItem value="all">{copy.allStatuses}</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="open">{copy.open}</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="closed">{copy.closed}</DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <ListToolbarFilter add label={copy.addFilter}>
+                  <PlusIcon aria-hidden="true" />
+                </ListToolbarFilter>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem>{copy.assignee}</DropdownMenuItem>
+                <DropdownMenuItem>{copy.priority}</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </ListToolbarGroup>
           <ListToolbarActions>
             <Button type="button" variant="outline">

@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 import { ContextMenu as ContextMenuPrimitive } from "radix-ui";
 import { ChevronRightIcon } from "lucide-react";
 
-/** Context menu: same look as DropdownMenu (a separate paper-like popover, menu items with the control radius), just popping up at the pointer. */
+/** Context menu: same look as DropdownMenu (a separate paper-like popover, 28px rows with a 4px radius), just popping up
+ * at the pointer. */
 function ContextMenu({ ...props }: React.ComponentProps<typeof ContextMenuPrimitive.Root>) {
   return <ContextMenuPrimitive.Root data-slot="context-menu" {...props} />;
 }
@@ -20,7 +21,7 @@ function ContextMenuContent({ className, ...props }: React.ComponentProps<typeof
       <ContextMenuPrimitive.Content
         data-slot="context-menu-content"
         className={cn(
-          "z-overlay max-h-(--radix-context-menu-content-available-height) min-w-44 origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-mark border border-border bg-popover p-1.5 text-popover-foreground shadow-popover data-open:animate-arrive data-closed:animate-leave data-[state=closed]:overflow-hidden",
+          "z-overlay max-h-(--radix-context-menu-content-available-height) min-w-44 origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-mark border border-border bg-popover p-1 text-popover-foreground shadow-popover data-open:animate-arrive data-closed:animate-leave data-[state=closed]:overflow-hidden",
           className,
         )}
         {...props}
@@ -30,7 +31,7 @@ function ContextMenuContent({ className, ...props }: React.ComponentProps<typeof
 }
 
 const itemClassName =
-  "relative flex cursor-default items-center gap-2 rounded-control px-2.5 py-2 text-base outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5";
+  "relative flex cursor-default items-center gap-2 min-h-7 rounded-chip px-2 py-1 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5";
 
 function ContextMenuItem({
   className,
@@ -57,7 +58,7 @@ function ContextMenuLabel({ className, ...props }: React.ComponentProps<typeof C
   return (
     <ContextMenuPrimitive.Label
       data-slot="context-menu-label"
-      className={cn("px-2 py-1 text-xs font-medium text-muted-foreground", className)}
+      className={cn("px-2 pt-1.5 pb-1 text-2xs font-medium text-muted-foreground", className)}
       {...props}
     />
   );
@@ -101,7 +102,7 @@ function ContextMenuSubContent({ className, ...props }: React.ComponentProps<typ
       <ContextMenuPrimitive.SubContent
         data-slot="context-menu-sub-content"
         className={cn(
-          "z-overlay max-h-(--radix-context-menu-content-available-height) min-w-40 origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-mark border border-border bg-popover p-1.5 text-popover-foreground shadow-popover data-open:animate-arrive data-closed:animate-leave",
+          "z-overlay max-h-(--radix-context-menu-content-available-height) min-w-40 origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-mark border border-border bg-popover p-1 text-popover-foreground shadow-popover data-open:animate-arrive data-closed:animate-leave",
           className,
         )}
         {...props}

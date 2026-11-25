@@ -11,7 +11,7 @@ import type { MouseEvent } from "react";
  * touch screens have no hover, so they are always shown. The row must carry `group/row`, which TableRow does.
  */
 const rowActionClassName =
-  "opacity-0 transition-opacity duration-150 group-hover/row:opacity-100 group-focus-within/row:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100 data-[feedback=copied]:opacity-100 [@media(hover:none)]:opacity-100";
+  "opacity-0 transition-opacity duration-100 group-hover/row:opacity-100 group-focus-within/row:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100 data-[feedback=copied]:opacity-100 [@media(hover:none)]:opacity-100";
 
 /** The click targets that open the details do not include these: buttons, links and inputs in the row keep handling their own clicks. */
 const ROW_IGNORE =

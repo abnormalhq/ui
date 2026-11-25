@@ -18,6 +18,20 @@
       ]
     },
     {
+      "name": "app-frame",
+      "type": "registry:ui",
+      "title": "App Frame",
+      "description": "A product window as one canvas: navigation, lists and a tool rail on it, the work in hand on a single inset sheet with a two-row header and a docked box at its foot.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/app-frame.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "theme",
       "type": "registry:style",
       "title": "Abnormal Theme",
@@ -983,7 +997,7 @@
       "name": "sidebar",
       "type": "registry:ui",
       "title": "Sidebar",
-      "description": "An app's column that collapses to an icon rail, with nav rows that carry a count or a dot, and useSidebar for rows of a project's own.",
+      "description": "An app's column that collapses to an icon rail: a module switcher, nav rows that carry a count or a dot, named groups, a More row for the rest, and useSidebar for rows of a project's own.",
       "dependencies": ["lucide-react", "radix-ui"],
       "registryDependencies": ["@abnormal/button", "@abnormal/tooltip", "@abnormal/utils"],
       "files": [
@@ -1102,6 +1116,20 @@
       "files": [
         {
           "path": "registry/ui/status-label.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "card-list",
+      "type": "registry:ui",
+      "title": "Card List",
+      "description": "Small cards on the canvas, one per conversation or ticket: a first line with a time, a line or two under it, and a lifted selected card with a highlighter bar.",
+      "dependencies": ["radix-ui"],
+      "registryDependencies": ["@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/card-list.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1323,7 +1351,7 @@
       "name": "list-toolbar",
       "type": "registry:ui",
       "title": "List Toolbar",
-      "description": "The row over a list: the search, the filters and the actions on the whole list, in the same places on every list, and the chips of the conditions in force.",
+      "description": "The row over a list: the search, the filters and the actions on the whole list, in the same places on every list, filter chips that open their choices, and the chips of the conditions in force.",
       "dependencies": ["radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [

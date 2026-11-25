@@ -83,7 +83,7 @@ function Slider<const Values extends number[] = number[]>({
           aria-labelledby={thumbLabels?.[index] === undefined ? ariaLabelledby : undefined}
           aria-describedby={ariaDescribedby}
           aria-valuetext={getValueText && shown[index] !== undefined ? getValueText(shown[index]) : undefined}
-          className="relative block size-4 shrink-0 rounded-full border-[1.5px] border-foreground bg-background transition-[box-shadow,transform] duration-150 after:absolute after:-inset-1 hover:shadow-[0_0_0_4px_var(--control)] active:scale-110 data-disabled:pointer-events-none"
+          className="relative block size-4 shrink-0 rounded-full border-[1.5px] border-foreground bg-background transition-[box-shadow,transform] duration-100 after:absolute after:-inset-1 hover:shadow-[0_0_0_4px_var(--control)] data-disabled:pointer-events-none"
         />
       ))}
     </SliderPrimitive.Root>

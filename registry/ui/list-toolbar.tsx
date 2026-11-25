@@ -76,4 +76,63 @@ function ListToolbarChips({ className, ...props }: React.ComponentProps<"div">) 
   );
 }
 
-export { ListToolbar, ListToolbarSearch, ListToolbarGroup, ListToolbarActions, ListToolbarChips };
+/**
+ * One condition as a chip that opens its choices: the field in quiet text, then the value in force and a chevron,
+ * 32px like the controls beside it. Pass it as the trigger of a DropdownMenu or Popover (`asChild` there).
+ * `value` left out shows the field alone; `add` draws the dashed chip that adds a condition ("Add filter"), without a
+ * chevron.
+ */
+function ListToolbarFilter({
+  label,
+  value,
+  add = false,
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"button"> & {
+  /** The field the condition is on, such as "Status". */
+  label?: React.ReactNode;
+  /** The value in force, such as "Active". */
+  value?: React.ReactNode;
+  /** The chip that adds a condition. */
+  add?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      data-slot="list-toolbar-filter"
+      data-add={add || undefined}
+      className={cn(
+        "inline-flex h-8 max-w-full min-w-0 shrink-0 items-center gap-1.5 rounded-control border px-2.5 text-sm whitespace-nowrap transition-[background-color,border-color,box-shadow] duration-100 select-none focus-visible:-outline-offset-1 disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+        add
+          ? "border-dashed border-input text-muted-foreground hover:border-input-hover hover:text-foreground"
+          : "border-input bg-popover text-foreground shadow-control hover:bg-accent active:shadow-none aria-expanded:bg-accent",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+      {label !== undefined && (
+        <span className={cn("truncate", value !== undefined && "text-muted-foreground")}>{label}</span>
+      )}
+      {value !== undefined && <span className="truncate font-medium">{value}</span>}
+      {!add && (
+        // lucide's chevron-down, drawn inline: lucide-react's icon is a client module, and the row renders on the server.
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          className="size-3 text-muted-foreground"
+        >
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
+export { ListToolbar, ListToolbarSearch, ListToolbarGroup, ListToolbarActions, ListToolbarChips, ListToolbarFilter };
