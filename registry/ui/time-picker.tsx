@@ -44,7 +44,8 @@ const listGap = (step: number, wanted = 900) => {
 type TimeOption = { text: string; seconds: number };
 
 // The open list's options, with the field's own time placed among them when it falls between two. They count from
-// `base`, the time the native input measures its step from (`min`, else midnight), so each one is a time it accepts.
+// `base`: midnight, or `min` when the native input measures its step from a `min` off the clock's grid, so each one
+// is a time it accepts.
 const timeOptions = (gap: number, base: number, withSeconds: boolean, current: string) => {
   const options: TimeOption[] = [];
   const first = Math.round((base % gap) * 1000) / 1000;
@@ -163,7 +164,11 @@ function TimePicker({
   const gap = listGap(step ?? 60, listStep);
   const low = secondsOf(min);
   const high = secondsOf(max);
-  const base = low ?? 0;
+  // The list keeps to the clock (09:00, 09:15) while `min` sits on the step, as any whole minute does with the
+  // default step, and counts from `min` only when the native input would refuse the clock's times.
+  const unit = step && step > 0 ? step : 60;
+  const offStep = low !== null && Math.min(low % unit, unit - (low % unit)) > 0.0005;
+  const base = offStep ? low : 0;
   const options = React.useMemo(() => timeOptions(gap, base, withSeconds, value), [gap, base, withSeconds, value]);
   // A `min` later than `max` is a range across midnight, as the native input reads it (22:00 to 06:00).
   const outOfRange = ({ seconds }: TimeOption) =>

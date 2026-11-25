@@ -1979,6 +1979,15 @@ test("a TimePicker lists times from its min, as the native input counts its step
   assert.equal(activeTime(), "16:50");
 });
 
+test("a TimePicker whose min is any whole minute keeps its list on the quarter hours", async () => {
+  await mount(<TimePicker locale="en-GB" aria-label="Send at" listLabel="Choose a time" min="09:07" />);
+  await click(clock());
+  const values = [...document.querySelectorAll<HTMLElement>('[role="option"]')].map((option) => option.dataset.value);
+  assert.ok(values.includes("09:15") && values.includes("09:30") && !values.includes("09:22"));
+  assert.equal(one('[data-value="09:00"]').getAttribute("aria-disabled"), "true");
+  assert.equal(one('[data-value="09:15"]').getAttribute("aria-disabled"), null);
+});
+
 test("a TimePicker whose min is later than its max offers the times across midnight", async () => {
   await mount(<TimePicker locale="en-GB" aria-label="Quiet" listLabel="Choose a time" min="22:00" max="06:00" />);
   await click(clock());
