@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { NextIntlClientProvider } from "next-intl";
 import { AppFrame, AppFrameBody, AppFrameColumn, AppFrameSheet } from "@/components/ui/app-frame";
 import { CardList, CardListCard, CardListDot } from "@/components/ui/card-list";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ItemListRow } from "@/components/ui/item-list";
 import { ListToolbarFilter } from "@/components/ui/list-toolbar";
 import { Sidebar, SidebarGroup, SidebarItem, SidebarMore, SidebarNav } from "@/components/ui/sidebar";
@@ -114,6 +115,8 @@ test("a selected card is lifted with the bar and an unread one lights its dot, w
     /^<a href="#one" aria-current="true" data-slot="card-list-card" data-selected="true" data-unread="true"/,
   );
   assert.match(html, /before:bg-highlight/);
+  // The card names its group, or the dot and the bold title inside it would never see data-unread.
+  assert.match(html, /class="group\/card /);
   assert.match(html, /group-data-unread\/card:inline-block/);
   const labelled = renderToStaticMarkup(<CardListDot label="Unread" />);
   // The label is visually hidden and shows (to a screen reader) only while the card above it is unread.
@@ -122,6 +125,28 @@ test("a selected card is lifted with the bar and an unread one lights its dot, w
   assert.match(renderToStaticMarkup(<CardList />), /^<ul role="list"/);
   const plain = renderToStaticMarkup(<CardListCard>Plain</CardListCard>);
   assert.doesNotMatch(plain, /data-selected|data-unread|aria-/);
+});
+
+test("a toggle group item takes the page's own corners and pressed surface over its variant's", () => {
+  const plain = renderToStaticMarkup(
+    <ToggleGroup type="single" defaultValue="a">
+      <ToggleGroupItem value="a" className="rounded-full first:rounded-full last:rounded-full">
+        A
+      </ToggleGroupItem>
+    </ToggleGroup>,
+  );
+  assert.match(plain, /rounded-full first:rounded-full last:rounded-full/);
+  assert.doesNotMatch(plain, /rounded-none|rounded-l-control|rounded-r-control/);
+  const segment = renderToStaticMarkup(
+    <ToggleGroup type="single" variant="outline" defaultValue="a">
+      <ToggleGroupItem value="a" className="rounded-control data-[state=on]:bg-control">
+        A
+      </ToggleGroupItem>
+    </ToggleGroup>,
+  );
+  assert.match(segment, /rounded-control/);
+  assert.match(segment, /data-\[state=on\]:bg-control/);
+  assert.doesNotMatch(segment, /rounded-chip|data-\[state=on\]:bg-popover/);
 });
 
 test("a filter chip shows its field and value, and the add chip has no chevron", () => {
