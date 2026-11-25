@@ -155,10 +155,11 @@ function TimePicker({
     // The day is 1 January 1970 in UTC, so the date's own clock reads the time of day.
     return (option: TimeOption) => {
       const date = new Date(Math.round(option.seconds * 1000));
+      // Whole minutes read as minutes even when the field carries seconds: "00:15", not "00:15:00".
       if (option.seconds % 1) return fractions.format(date);
-      return (withSeconds || option.seconds % 60 ? seconds : minutes).format(date);
+      return (option.seconds % 60 ? seconds : minutes).format(date);
     };
-  }, [locale, withSeconds]);
+  }, [locale]);
 
   const listId = React.useId();
   const listRef = React.useRef<HTMLDivElement>(null);

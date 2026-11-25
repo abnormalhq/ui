@@ -1959,4 +1959,12 @@ test("a TimePicker with a step under a minute lists times with seconds", async (
   assert.deepEqual(values.slice(0, 2), ["00:00:00", "00:15:00"]);
   assert.ok(values.includes("10:00:05"));
   assert.equal(one('[data-value="10:00:05"]').textContent, "10:00:05");
+  assert.equal(one('[data-value="00:15:00"]').textContent, "00:15", "a whole minute reads without its seconds");
+});
+
+test("a DatePicker given an empty value, as an empty date input submits, opens on today's month", async () => {
+  await mount(<DatePicker {...datePickerProps} name="from" defaultValue="" />);
+  assert.equal(dateTrigger().textContent, "Choose a date");
+  await click(dateTrigger());
+  assert.equal(caption(), "November 2026");
 });

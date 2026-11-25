@@ -96,7 +96,8 @@ function DatePicker({
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
   }) {
-  const [innerValue, setInnerValue] = React.useState(defaultValue ?? null);
+  // An empty value is no day, as an empty <input type="date"> is: "" reaches the calendar as null.
+  const [innerValue, setInnerValue] = React.useState(defaultValue || null);
   // A form reset (a reset button, form.reset(), or the reset React runs after a form action) puts an uncontrolled
   // field back on its default, as it does a native one, unless the page cancels the reset. A controlled field follows
   // its value prop.
@@ -104,8 +105,8 @@ function DatePicker({
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   React.useImperativeHandle(ref, () => buttonRef.current as HTMLButtonElement, []);
   const submits = name !== undefined && !disabled;
-  useFormReset(buttonRef, () => setInnerValue(defaultValue ?? null));
-  const value = valueProp === undefined ? innerValue : valueProp;
+  useFormReset(buttonRef, () => setInnerValue(defaultValue || null));
+  const value = (valueProp === undefined ? innerValue : valueProp) || null;
   const [innerOpen, setInnerOpen] = React.useState(false);
   const open = openProp ?? innerOpen;
   const setOpen = (next: boolean) => {
