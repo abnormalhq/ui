@@ -64,13 +64,14 @@ export const defaultCopy = {
 
 /*
  * The frame of a product: the sidebar and the list sit on the canvas, the open conversation is the one sheet, a tool
- * rail runs down the right and the status bar along the bottom. A page gives the frame h-dvh; here it has a fixed height.
+ * rail runs down the right and the status bar along the bottom. A page gives the frame h-dvh; here it has a fixed height,
+ * and the list and the rail show only when the frame itself is wide enough to leave the sheet room.
  */
 export default function AppFrameDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
   const copy = { ...defaultCopy, ...overrides };
   const [tool, setTool] = useState<"calendar" | "tasks" | null>(null);
   return (
-    <AppFrame className="h-[30rem] w-full overflow-hidden rounded-panel border border-border">
+    <AppFrame className="@container h-[30rem] w-full overflow-hidden rounded-panel border border-border">
       <AppFrameBody className="ps-0">
         <Sidebar className="h-auto py-1.5">
           <SidebarHeader className="pb-2">
@@ -83,7 +84,7 @@ export default function AppFrameDemo({ copy: overrides = {} }: { copy?: Partial<
             <SidebarItem icon={<SendIcon />} label={copy.sent} />
           </SidebarNav>
         </Sidebar>
-        <AppFrameColumn asChild className="hidden w-64 overflow-y-auto lg:flex">
+        <AppFrameColumn asChild className="hidden w-64 overflow-y-auto @4xl:flex">
           <section aria-label={copy.conversations}>
             <CardList>
               <CardListItem>
@@ -140,7 +141,7 @@ export default function AppFrameDemo({ copy: overrides = {} }: { copy?: Partial<
             </AppFrameDock>
           </article>
         </AppFrameSheet>
-        <AppFrameColumn className="hidden md:flex">
+        <AppFrameColumn className="hidden @2xl:flex">
           <Toolbar label={copy.tools} orientation="vertical">
             <ToolbarButton
               aria-label={copy.calendar}

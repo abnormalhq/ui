@@ -253,9 +253,10 @@ function SidebarGroup({
 }
 
 /**
- * The rows used less, folded under a "More" row that turns into "Less" once open, so the column shows what is used
- * every day and one row for the rest. The rows stay in the page while folded, hidden, and the toggle says whether
- * they are shown (aria-expanded). The state is the group's own, from `defaultOpen`, unless the page passes `open`.
+ * The rows used less, folded under a "More" row that turns into "Less" once open and shows them below it, so the
+ * column shows what is used every day and one row for the rest. The rows stay in the page while folded, hidden, and
+ * the toggle says whether they are shown (aria-expanded). The state is the group's own, from `defaultOpen`, unless the
+ * page passes `open`.
  */
 function SidebarMore({
   moreLabel,
@@ -279,9 +280,6 @@ function SidebarMore({
   const id = React.useId();
   return (
     <>
-      <div id={id} data-slot="sidebar-more" hidden={!open} className="contents">
-        {children}
-      </div>
       <SidebarItem
         icon={open ? <ChevronUpIcon /> : <ChevronDownIcon />}
         label={open ? lessLabel : moreLabel}
@@ -292,6 +290,9 @@ function SidebarMore({
           onOpenChange?.(!open);
         }}
       />
+      <div id={id} data-slot="sidebar-more" hidden={!open} className="contents">
+        {children}
+      </div>
     </>
   );
 }

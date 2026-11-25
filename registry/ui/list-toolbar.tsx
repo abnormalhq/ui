@@ -78,7 +78,7 @@ function ListToolbarChips({ className, ...props }: React.ComponentProps<"div">) 
 
 /**
  * One condition as a chip that opens its choices: the field in quiet text, then the value in force and a chevron,
- * 32px like the controls beside it. Pass it as the trigger of a DropdownMenu, Popover or Select (`asChild` there).
+ * 32px like the controls beside it. Pass it as the trigger of a DropdownMenu or Popover (`asChild` there).
  * `value` left out shows the field alone; `add` draws the dashed chip that adds a condition ("Add filter"), without a
  * chevron.
  */
