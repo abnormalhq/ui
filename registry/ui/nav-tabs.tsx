@@ -10,7 +10,7 @@ import { scrollIntoRow, useScrollFade, useWheelSideways } from "@/components/ui/
 const NAV_TABS_LISTS = {
   underline: "items-end gap-1 border-b border-border",
   pill: "items-center gap-2 py-0.5",
-  segmented: "w-fit max-w-full items-center rounded-control border border-border bg-card p-0.5",
+  segmented: "w-fit max-w-full items-center gap-0.5 rounded-control bg-control p-0.5",
 };
 
 /** The current tab is the one with aria-current, which NavTab sets from `current`. */
@@ -23,7 +23,7 @@ const navTabVariants = cva(
           "h-9 px-2.5 text-base font-medium after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-signal after:opacity-0 after:transition-opacity after:duration-150 aria-[current]:text-foreground aria-[current]:after:opacity-100",
         pill: "h-8 rounded-control px-3 text-base font-semibold aria-[current]:bg-highlight aria-[current]:text-highlight-foreground aria-[current]:hover:text-highlight-foreground",
         segmented:
-          "h-7 rounded-[calc(var(--radius-control)-2px)] px-3 text-sm aria-[current]:bg-accent aria-[current]:font-medium aria-[current]:text-foreground",
+          "h-7 rounded-chip px-3 text-sm aria-[current]:bg-popover aria-[current]:font-medium aria-[current]:text-foreground aria-[current]:shadow-control",
       },
     },
     defaultVariants: { variant: "underline" },
@@ -40,7 +40,7 @@ const NavTabsContext = React.createContext<NavTabsVariant>("underline");
  * by `label`, and the current one carries aria-current, "page" or, for a section of the same page, "location";
  * a screen reader reads it as the current link, not as a selected tab. For views that swap in place use Tabs.
  * Three looks: `underline`, Tabs' hairline with the signal bar; `pill`, highlighted pills for the sections under a
- * page title; `segmented`, a small bordered control for a period or a mode beside a chart.
+ * page title; `segmented`, a sunken track whose current tab is raised, for a period or a mode beside a chart.
  * The row stays one line and scrolls sideways without a scrollbar of its own: its edges fade where tabs are cut off,
  * a vertical mouse wheel scrolls it, and the current tab is brought into view whenever it changes, without moving the
  * page. It renders on the server, links and all, and works before any script runs.

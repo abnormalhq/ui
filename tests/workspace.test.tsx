@@ -3,7 +3,11 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { NextIntlClientProvider } from "next-intl";
+import { AppFrame, AppFrameBody, AppFrameColumn, AppFrameSheet } from "@/components/ui/app-frame";
+import { CardListCard, CardListDot } from "@/components/ui/card-list";
 import { ItemListRow } from "@/components/ui/item-list";
+import { ListToolbarFilter } from "@/components/ui/list-toolbar";
+import { Sidebar, SidebarGroup, SidebarItem, SidebarMore, SidebarNav } from "@/components/ui/sidebar";
 import { Workspace, WorkspaceNavigation, WorkspacePane } from "@/components/ui/workspace";
 import { ReadingPreview } from "@/site/components/reading-preview";
 import { click, render } from "./support/render.tsx";
@@ -69,6 +73,89 @@ test("reading selection updates the controlled pane and keeps exactly one presse
       rows.map((row) => row.hasAttribute("data-selected")),
       [false, true, false],
     );
+  } finally {
+    await view.unmount();
+  }
+});
+
+test("the canvas frame keeps the sheet out of the ink scope and clips without scrolling", () => {
+  const html = renderToStaticMarkup(
+    <AppFrame>
+      <AppFrameBody>
+        <AppFrameColumn asChild>
+          <nav aria-label="Folders">Navigation</nav>
+        </AppFrameColumn>
+        <AppFrameSheet asChild>
+          <article aria-label="Message">Paper</article>
+        </AppFrameSheet>
+      </AppFrameBody>
+    </AppFrame>,
+  );
+  assert.match(html, /^<div data-slot="app-frame" class="[^"]*\bbg-canvas\b/);
+  assert.match(html, /<nav aria-label="Folders" data-slot="app-frame-column"/);
+  const sheet = html.match(/<article[^>]*>/)![0];
+  assert.match(sheet, /bg-background/);
+  assert.match(sheet, /shadow-sheet/);
+  assert.match(sheet, /overflow-clip/);
+  assert.doesNotMatch(html, /\bink\b|overflow-hidden|overflow-auto|h-dvh/);
+});
+
+test("a selected card is lifted with the bar and an unread one lights its dot, without adding semantics", () => {
+  const html = renderToStaticMarkup(
+    <CardListCard asChild selected unread>
+      <a href="#one" aria-current="true">
+        <CardListDot />
+        Lin Shu
+      </a>
+    </CardListCard>,
+  );
+  assert.match(
+    html,
+    /^<a href="#one" aria-current="true" data-slot="card-list-card" data-selected="true" data-unread="true"/,
+  );
+  assert.match(html, /before:bg-highlight/);
+  assert.match(html, /group-data-unread\/card:inline-block/);
+  const plain = renderToStaticMarkup(<CardListCard>Plain</CardListCard>);
+  assert.doesNotMatch(plain, /data-selected|data-unread|aria-/);
+});
+
+test("a filter chip shows its field and value, and the add chip has no chevron", () => {
+  const chip = renderToStaticMarkup(<ListToolbarFilter label="Status" value="Open" />);
+  assert.match(chip, /^<button type="button" data-slot="list-toolbar-filter"/);
+  assert.match(chip, />Status<\/span><span class="truncate font-medium">Open<\/span><svg/);
+  const add = renderToStaticMarkup(<ListToolbarFilter add label="Add filter" />);
+  assert.match(add, /data-add="true"/);
+  assert.match(add, /border-dashed/);
+  assert.doesNotMatch(add, /<svg/);
+});
+
+test("sidebar groups are named by their label and More folds its rows behind aria-expanded", async () => {
+  const view = await render(
+    <Sidebar>
+      <SidebarNav label="Folders">
+        <SidebarItem icon={<span />} label="Inbox" />
+        <SidebarMore moreLabel="More" lessLabel="Less">
+          <SidebarItem icon={<span />} label="Sent" />
+        </SidebarMore>
+        <SidebarGroup label="Labels">
+          <SidebarItem icon={<span />} label="Work" />
+        </SidebarGroup>
+      </SidebarNav>
+    </Sidebar>,
+  );
+  try {
+    const group = view.container.querySelector<HTMLElement>("[data-slot='sidebar-group']")!;
+    assert.equal(group.getAttribute("role"), "group");
+    assert.equal(document.getElementById(group.getAttribute("aria-labelledby")!)?.textContent, "Labels");
+    const more = view.container.querySelector<HTMLElement>("[data-slot='sidebar-more']")!;
+    const toggle = view.container.querySelector<HTMLButtonElement>(`[aria-controls='${more.id}']`)!;
+    assert.equal(more.hidden, true);
+    assert.equal(toggle.getAttribute("aria-expanded"), "false");
+    assert.match(toggle.textContent, /More/);
+    await click(toggle);
+    assert.equal(more.hidden, false);
+    assert.equal(toggle.getAttribute("aria-expanded"), "true");
+    assert.match(toggle.textContent, /Less/);
   } finally {
     await view.unmount();
   }

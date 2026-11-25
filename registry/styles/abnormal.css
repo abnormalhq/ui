@@ -101,6 +101,8 @@
   --card: var(--bg);
   --popover-bg: #ffffff;
   --sidebar: #f2f2ee;
+  /* The canvas behind a product's navigation, lists and its one inset sheet: the surface in light, the sidebar in dark. */
+  --canvas: var(--surface);
   --sidebar-foreground: var(--text);
   --sidebar-border: var(--border);
   /* The ink shell's own color (see .ink): the brand ink on a paper page, one step darker than the page in dark mode. */
@@ -110,6 +112,8 @@
   --panel-shadow: 0 0 #0000;
   /* A raised control (an outline button, a select, the pressed segment of a segmented control): one soft pixel below. */
   --control-shadow: 0 1px 2px #14141214;
+  /* A sheet set into the canvas (Workspace frame="canvas"): a soft pixel below and a faint edge. */
+  --sheet-shadow: 0 1px 2px #1414120a, 0 0 0 1px #14141208;
   --popover-shadow: 0 4px 12px #1414120d, 0 16px 40px #14141217;
   /* Categorical chart colors, fixed order. The last two are below 3:1, so charts always carry a legend. */
   --chart-1: #2a78d6;
@@ -170,11 +174,13 @@
   --overlay: rgb(0 0 0 / 0.7);
   --popover-bg: #1c1c19;
   --sidebar: #0f0f0d;
+  --canvas: var(--sidebar);
   --ink: #0f0f0d;
   /* 3.6:1 against #141412. */
   --focus: #6f6f66;
   --popover-shadow: 0 0 0 1px #f0f0ea08, 0 16px 48px #00000080;
   --control-shadow: 0 1px 2px #00000066;
+  --sheet-shadow: 0 0 0 1px #f0f0ea0a;
   --chart-1: #3987e5;
   --chart-2: #d95926;
   --chart-3: #199e70;
@@ -229,10 +235,12 @@
     --overlay: rgb(0 0 0 / 0.7);
     --popover-bg: #1c1c19;
     --sidebar: #0f0f0d;
+    --canvas: var(--sidebar);
     --ink: #0f0f0d;
     --focus: #6f6f66;
     --popover-shadow: 0 0 0 1px #f0f0ea08, 0 16px 48px #00000080;
     --control-shadow: 0 1px 2px #00000066;
+    --sheet-shadow: 0 0 0 1px #f0f0ea0a;
     --chart-1: #3987e5;
     --chart-2: #d95926;
     --chart-3: #199e70;
@@ -314,6 +322,7 @@
   --popover-bg: #1c1c19;
   --focus: #6f6f66;
   --control-shadow: 0 1px 2px #00000066;
+  --sheet-shadow: 0 0 0 1px #f0f0ea0a;
   --category-gray: #8f8f85;
   --category-gray-soft: #33332e;
   --category-gray-ink: #d6d6cc;
@@ -340,6 +349,7 @@
   --category-purple-ink: #c9b0f2;
   --card: var(--bg);
   --sidebar: var(--bg);
+  --canvas: var(--sidebar);
   --sidebar-foreground: var(--text);
   --sidebar-border: var(--border);
   --background: var(--bg);
@@ -485,6 +495,7 @@
   --color-surface: var(--surface);
   --color-badge-ink: var(--badge-ink);
   --color-sidebar: var(--sidebar);
+  --color-canvas: var(--canvas);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-ink: var(--ink);
@@ -517,6 +528,7 @@
   --color-category-purple-soft: var(--category-purple-soft);
   --color-category-purple-ink: var(--category-purple-ink);
   --shadow-control: var(--control-shadow);
+  --shadow-sheet: var(--sheet-shadow);
   --shadow-panel: var(--panel-shadow);
   --shadow-popover: var(--popover-shadow);
 
