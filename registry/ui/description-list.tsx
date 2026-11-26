@@ -4,7 +4,9 @@ import { cn } from "@/lib/utils";
 
 /**
  * Names and their values, such as a server's connection details or a build's version: a `dl` whose names take the
- * width of the longest one and whose values take the rest, so every value starts on the same line.
+ * width of the longest one, up to 40% of the list (a longer name wraps), and whose values take the rest, so every
+ * value starts on the same line. On a phone the bare list and the `panel` put each value under its name: beside a
+ * name, a value that wraps anywhere (an address, a key) was a column a letter wide.
  * `default` is the bare list, for a card or a dialog that already frames it; `panel` frames it in a tinted box, for a
  * summary set into a form; `spread` puts each value at the far end of its row, on a line between rows, for a short
  * receipt such as an order's number and total. `lined` keeps the values in their column with a hairline between rows,
@@ -14,15 +16,19 @@ import { cn } from "@/lib/utils";
  * Each row is a `div` around a `dt` and a `dd` (DescriptionItem), which HTML allows in a `dl`, so a row can carry a
  * key and props without breaking the list.
  */
+// The two columns of the bare list and the panel, and on a phone one: each name 8px under the value before it (on the
+// row's div, or on the name itself in a list written without DescriptionItem), its value 2px under it.
+const COLUMNS =
+  "grid grid-cols-[fit-content(40%)_minmax(0,1fr)] gap-x-4 gap-y-2.5 max-sm:grid-cols-1 max-sm:gap-y-0.5 max-sm:[&>:not(:first-child)>dt]:mt-2 max-sm:[&>dt:not(:first-child)]:mt-2";
+
 const descriptionListVariants = cva("min-w-0 text-sm", {
   variants: {
     variant: {
-      default: "grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2.5",
-      panel:
-        "grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2.5 rounded-control border border-border bg-muted/40 p-4",
+      default: COLUMNS,
+      panel: cn(COLUMNS, "rounded-control border border-border bg-muted/40 p-4 max-sm:p-3"),
       spread: "grid divide-y divide-border",
       // Each row is a subgrid of the list's two columns, so a line can run under it and the values still line up.
-      lined: "grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 max-sm:grid-cols-1",
+      lined: "grid grid-cols-[fit-content(40%)_minmax(0,1fr)] gap-x-4 max-sm:grid-cols-1",
       stacked: "grid gap-y-3",
     },
   },

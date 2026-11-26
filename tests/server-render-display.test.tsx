@@ -316,7 +316,7 @@ test("a SkipLink casts its shadow only while it has the focus", () => {
 });
 
 test("a DescriptionList stacks each value under its name, or lines its rows with the values in one column", () => {
-  const list = (variant: "stacked" | "lined") =>
+  const list = (variant: "default" | "panel" | "stacked" | "lined") =>
     renderToStaticMarkup(
       <DescriptionList variant={variant}>
         <DescriptionItem label="Host">mail.example.com</DescriptionItem>
@@ -332,8 +332,15 @@ test("a DescriptionList stacks each value under its name, or lines its rows with
   const lined = list("lined");
   assert.match(
     lined,
-    /^<dl[^>]*data-variant="lined"[^>]*class="[^"]*grid-cols-\[auto_minmax\(0,1fr\)\][^"]*max-sm:grid-cols-1/,
+    /^<dl[^>]*data-variant="lined"[^>]*class="[^"]*grid-cols-\[fit-content\(40%\)_minmax\(0,1fr\)\][^"]*max-sm:grid-cols-1/,
   );
+  // The bare list and the panel cap the names' column too, and put each value under its name on a phone.
+  for (const variant of ["default", "panel"] as const) {
+    assert.match(
+      list(variant),
+      /^<dl[^>]*class="[^"]*grid-cols-\[fit-content\(40%\)_minmax\(0,1fr\)\][^"]*max-sm:grid-cols-1/,
+    );
+  }
   assert.match(lined, /group-data-\[variant=lined\]\/description-list:grid-cols-subgrid/);
   assert.match(lined, /group-data-\[variant=lined\]\/description-list:border-t/);
   assert.equal(lined.match(/<dt/g)?.length, 2);
