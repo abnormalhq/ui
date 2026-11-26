@@ -383,7 +383,7 @@
       "noFile": "未选择文件"
     },
     "fonts": {
-      "headings": "Bricolage Grotesque 用于标题",
+      "headings": "Newsreader 与 Noto Serif SC 用于对外页面的标题",
       "interface": "Inter 用于界面中的所有文字。",
       "codeAndAddresses": "JetBrains Mono 用于代码和地址"
     },
@@ -879,7 +879,7 @@
       "radii": "圆角",
       "shadows": "阴影",
       "type": "字体",
-      "headingFont": "Bricolage Grotesque 用于营销页的展示大字",
+      "headingFont": "Newsreader 与 Noto Serif SC 用于对外页面的标题",
       "interfaceFont": "Inter 用于产品里的所有文字（包括标题），并为中文配置了后备字体。",
       "codeFont": "JetBrains Mono 用于代码、标识符和时间码",
       "pangram": "敏捷的棕色狐狸",
@@ -1170,7 +1170,7 @@
       },
       {
         "title": "字号少而拉开",
-        "text": "正文 14px（紧凑密度 13px），元信息 12px；导语或卡片标题 16px，标题 20、24、32px。次要文字靠颜色和位置区分，而不是小一像素。产品里的标题用 Inter；Bricolage Grotesque 只用于营销页的展示大字；等宽字体只用于代码、标识符和时间码。"
+        "text": "正文 14px（紧凑密度 13px），元信息 12px；导语或卡片标题 16px，标题 20、24、32px。次要文字靠颜色和位置区分，而不是小一像素。产品里的标题用 Inter；对外页面（官网、开发者站、状态页）的标题用编辑排版的衬线字体 Newsreader 与 Noto Serif SC；Bricolage Grotesque 只留给字标；等宽字体只用于代码、标识符和时间码。"
       },
       {
         "title": "每项任务对应一个表面",

@@ -618,8 +618,9 @@
   --shadow-popover: var(--popover-shadow);
 
   /*
-   * Text and the headings inside a product are Inter; Bricolage Grotesque (font-heading) is kept for display lines on
-   * marketing pages, asked for with the class; JetBrains Mono is for code, identifiers and time codes only, never for a
+   * Text and the headings inside a product are Inter. Public pages (the website, the developer site, the status page)
+   * set their titles like a magazine, in the serif (font-serif): Newsreader for Latin and Noto Serif SC for Chinese,
+   * both from npm (see abnormal-fonts.css). Bricolage Grotesque (font-heading) is kept for the wordmark; JetBrains Mono is for code, identifiers and time codes only, never for a
    * name or an address. next/font projects set --font-inter and friends; projects using @abnormal/fonts fall back to the
    * family names. None of them has Chinese glyphs, so the Chinese fallbacks are chained in explicitly.
    */
@@ -629,6 +630,9 @@
   --font-heading:
     var(--font-bricolage, "Bricolage Grotesque"), var(--font-inter, "Inter"), -apple-system, BlinkMacSystemFont,
     "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --font-serif:
+    var(--font-newsreader, "Newsreader Variable"), var(--font-noto-serif-sc, "Noto Serif SC Variable"), "Songti SC",
+    "Noto Serif CJK SC", "Source Han Serif SC", "STSong", serif;
   --font-mono:
     var(--font-jetbrains-mono, "JetBrains Mono"), ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono",
     "PingFang SC", "Microsoft YaHei", monospace;

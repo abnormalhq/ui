@@ -142,7 +142,7 @@ export const defaultCopy = {
   radii: "Radii",
   shadows: "Shadows",
   type: "Type",
-  headingFont: "Bricolage Grotesque for display lines on marketing pages",
+  headingFont: "Newsreader and Noto Serif SC for the titles of the public pages",
   interfaceFont: "Inter for everything you read in a product, headings included, with Chinese fallbacks chained in.",
   codeFont: "JetBrains Mono for code, identifiers and time codes",
   pangram: "The quick brown fox",
@@ -268,14 +268,14 @@ export default function ThemeDemo({ copy: overrides = {} }: { copy?: Partial<typ
 
       <div className="grid gap-3">
         <h3 className="text-sm font-medium">{copy.type}</h3>
-        <p className="font-heading text-2xl font-semibold">{copy.headingFont}</p>
+        <p className="font-serif text-2xl font-medium">{copy.headingFont}</p>
         <p className="font-sans">{copy.interfaceFont}</p>
         <p className="font-mono text-sm">{copy.codeFont}</p>
         <div className="grid gap-1 pt-2">
           {sizes.map((size) => (
             <p
               key={size}
-              className={`${size} flex items-baseline gap-3 ${size.startsWith("text-display") ? "font-heading font-semibold" : ""}`}
+              className={`${size} flex items-baseline gap-3 ${size.startsWith("text-display") ? "font-serif font-medium" : ""}`}
             >
               <code className="w-16 shrink-0 font-mono text-xs text-muted-foreground">{size}</code>
               {copy.pangram}

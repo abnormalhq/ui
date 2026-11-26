@@ -49,14 +49,15 @@
       "name": "fonts",
       "type": "registry:item",
       "title": "Abnormal Fonts",
-      "description": "@font-face rules for projects without next/font. The woff2 files are served at /fonts.",
+      "description": "@font-face rules for projects without next/font: Inter, Bricolage Grotesque and JetBrains Mono are served at /fonts; the editorial serif (Newsreader, Noto Serif SC) comes from npm.",
       "files": [
         {
           "path": "registry/styles/abnormal-fonts.css",
           "type": "registry:file",
           "target": "styles/abnormal-fonts.css"
         }
-      ]
+      ],
+      "dependencies": ["@fontsource-variable/newsreader@5.3.0", "@fontsource-variable/noto-serif-sc@5.3.1"]
     },
     {
       "name": "utils",
@@ -1501,7 +1502,7 @@
       "name": "bento",
       "type": "registry:ui",
       "title": "Bento",
-      "description": "A wall of feature tiles for a landing page: tiles with a title, a sentence and a visual at the foot, some spanning two columns.",
+      "description": "A wall of feature tiles for a landing page: columns opened by a hairline rule, each with a title, a sentence and a visual at the foot, some spanning two columns.",
       "registryDependencies": ["@abnormal/utils"],
       "files": [
         {

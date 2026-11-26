@@ -13,7 +13,7 @@
   },
   "fonts": {
     "title": "Abnormal 字体",
-    "description": "适用于不使用 next/font 的项目的 @font-face 规则；woff2 文件由 /fonts 提供。"
+    "description": "适用于不使用 next/font 的项目的 @font-face 规则：Inter、Bricolage Grotesque 和 JetBrains Mono 由 /fonts 提供；编辑排版的衬线字体（Newsreader、Noto Serif SC）来自 npm。"
   },
   "utils": {
     "title": "工具函数",
@@ -425,7 +425,7 @@
   },
   "bento": {
     "title": "Bento 功能墙",
-    "description": "落地页的功能块墙：每块包含标题、一句说明和底部的示意图，部分可横跨两列。"
+    "description": "落地页的功能块墙：每块是以一条细线开头的一栏，包含标题、一句说明和底部的示意图，部分可横跨两列。"
   },
   "clip-track": {
     "title": "片段带",

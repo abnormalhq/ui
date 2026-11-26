@@ -24,6 +24,7 @@ const demos: Record<string, ComponentType<DemoProps>> = {
   switch: SwitchDemo,
 };
 const families = [
+  { name: "Newsreader · Noto Serif SC", utility: "font-serif", sample: "Aa" },
   { name: "Bricolage Grotesque", utility: "font-heading", sample: "Aa" },
   { name: "Inter", utility: "font-sans", sample: "Ag" },
   { name: "JetBrains Mono", utility: "font-mono", sample: "01" },
@@ -206,7 +207,7 @@ export default async function GalleryPage({ locale }: { locale: Locale }) {
               </div>
               <p
                 style={{ fontSize: size, lineHeight: leading }}
-                className={`col-start-1 row-start-2 break-words sm:col-start-2 sm:row-start-1 ${name.startsWith("text-display") ? "font-heading font-semibold" : "font-sans"}`}
+                className={`col-start-1 row-start-2 break-words sm:col-start-2 sm:row-start-1 ${name.startsWith("text-display") ? "font-serif font-medium" : "font-sans"}`}
               >
                 Abnormal UI
               </p>
