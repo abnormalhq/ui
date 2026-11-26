@@ -353,7 +353,13 @@
       "addressTaken": "此邮箱地址已被使用。"
     },
     "brand-mark": {
-      "openWebmail": "打开网页版邮箱"
+      "openWebmail": "打开网页版邮箱",
+      "mail": "邮件",
+      "console": "管理后台",
+      "developers": "开发者",
+      "status": "状态页",
+      "doppel": "Doppel",
+      "takeone": "开镜"
     },
     "code-block": {
       "copy": "复制",
