@@ -12,7 +12,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { LabelTooltip } from "@/components/ui/tooltip";
 
 /** One language the page offers. */
 type LanguageOption = {
@@ -135,14 +135,10 @@ function LanguagePicker({
   );
   return (
     <DropdownMenu modal={false} onOpenChange={onOpenChange}>
-      {hint === undefined || hint === null || hint === false ? (
-        trigger
-      ) : (
-        <Tooltip>
-          <TooltipTrigger asChild>{trigger}</TooltipTrigger>
-          <TooltipContent side={tooltipSide}>{hint}</TooltipContent>
-        </Tooltip>
-      )}
+      {/* The name sits on the button inside the menu trigger, so the default hint, the name itself, is no description. */}
+      <LabelTooltip label={hint} side={tooltipSide} describe={hint !== label}>
+        {trigger}
+      </LabelTooltip>
       <DropdownMenuContent side={side} align={align} className="min-w-40">
         <LanguageOptions options={options} value={value} onValueChange={onValueChange} />
       </DropdownMenuContent>
