@@ -107,7 +107,7 @@ const clipTrackClipVariants = cva(
   [
     "relative flex h-full w-full min-w-0 flex-col justify-between overflow-hidden rounded-chip border border-border bg-muted px-2 py-1.5 text-left text-xs text-foreground",
     "transition-colors motion-reduce:transition-none [&:is(a,button)]:cursor-pointer [&:is(a,button)]:hover:bg-accent",
-    "focus-visible:-outline-offset-2 data-[selected=true]:border-signal data-[selected=true]:bg-highlight-muted",
+    "focus-visible:-outline-offset-2 data-[selected=true]:border-signal data-[selected=true]:bg-selected",
   ],
   {
     variants: {

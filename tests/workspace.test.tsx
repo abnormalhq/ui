@@ -45,7 +45,7 @@ test("a selected compact list row keeps the child's element and state semantics"
   assert.match(html, /^<button type="button" aria-pressed="true"/);
   assert.match(html, /data-selected="true"/);
   assert.match(html, /data-density="compact"/);
-  assert.match(html, /bg-highlight-muted/);
+  assert.match(html, /bg-selected/);
   assert.doesNotMatch(html, /aria-selected|selected=""|density="compact"(?=\s*\/?>)/);
   // Existing consumers keep their spacing and do not acquire selection semantics.
   const unchanged = renderToStaticMarkup(<ItemListRow>Unchanged</ItemListRow>);

@@ -18,9 +18,19 @@ const surfaces = [
 const accents = [
   ["brand", "primaryAction"],
   ["highlight", "chromaticBrand"],
-  ["highlight-muted", "selectedRows"],
+  ["selected", "selectedRows"],
+  ["highlight-muted", "turnedOn"],
   ["signal", "dotsProgress"],
   ["focus", "focusOutline"],
+] as const;
+
+const supporting = [
+  ["indigo", "indigoRole"],
+  ["indigo-soft", "indigoSoftRole"],
+  ["clay", "clayRole"],
+  ["clay-soft", "claySoftRole"],
+  ["sage", "sageRole"],
+  ["sage-soft", "sageSoftRole"],
 ] as const;
 
 const statuses = [
@@ -88,8 +98,18 @@ export const defaultCopy = {
   inputHoverBorders: "An input's border on hover and focus.",
   dialogOverlay: "The dim behind a dialog or sheet.",
   primaryAction: "The primary action: ink in light, paper in dark.",
-  chromaticBrand: "The only chromatic brand color: current, selected or new.",
-  selectedRows: "Selected rows and the chosen option.",
+  chromaticBrand: "The loud brand color: the one new or actionable thing on a screen, and the mark on a selected row.",
+  selectedRows: "Selected rows, the current navigation item, a pressed toggle: an ink tint a step deeper than hover.",
+  turnedOn: "Something turned on or matched: an enabled mode, a search hit.",
+  supporting: "Supporting colors",
+  supportingDescription:
+    "Toned to the paper, for meaning and for pages that tell a story, not for decorating controls. Each has a -soft fill and an -ink text color for that fill.",
+  indigoRole: "Information, links in reading text and the keyboard focus.",
+  indigoSoftRole: "An information callout or a cool band.",
+  clayRole: "An editorial accent on marketing pages and in illustrations.",
+  claySoftRole: "A warm band or a quote.",
+  sageRole: "A calm counterweight in illustrations.",
+  sageSoftRole: "A quiet band behind a section.",
   dotsProgress: "Dots, progress and numbering: ink in light, yellow in dark.",
   focusOutline: "The keyboard focus outline.",
   enabledSent: "Enabled, sent, connected.",
@@ -122,9 +142,9 @@ export const defaultCopy = {
   radii: "Radii",
   shadows: "Shadows",
   type: "Type",
-  headingFont: "Bricolage Grotesque for headings",
-  interfaceFont: "Inter for everything you read in the interface, with Chinese fallbacks chained in.",
-  codeFont: "JetBrains Mono for code and addresses",
+  headingFont: "Bricolage Grotesque for display lines on marketing pages",
+  interfaceFont: "Inter for everything you read in a product, headings included, with Chinese fallbacks chained in.",
+  codeFont: "JetBrains Mono for code, identifiers and time codes",
   pangram: "The quick brown fox",
   motion: "Motion",
   motionStart: "Enter and exit animations run on ",
@@ -163,6 +183,10 @@ export default function ThemeDemo({ copy: overrides = {} }: { copy?: Partial<typ
     <div className="grid w-full gap-10">
       <Swatches title={copy.surfaces} tokens={surfaces} copy={copy} />
       <Swatches title={copy.accents} tokens={accents} copy={copy} />
+      <div className="grid gap-3">
+        <Swatches title={copy.supporting} tokens={supporting} copy={copy} />
+        <p className="text-xs text-muted-foreground">{copy.supportingDescription}</p>
+      </div>
       <Swatches title={copy.status} tokens={statuses} copy={copy} />
 
       <div className="grid gap-3">
@@ -174,9 +198,7 @@ export default function ThemeDemo({ copy: overrides = {} }: { copy?: Partial<typ
         </p>
         <div className="flex h-44 gap-2 rounded-panel bg-ink p-2 pl-0">
           <div className="ink flex w-40 shrink-0 flex-col gap-0.5 px-2 text-sm">
-            <span className="rounded-control bg-highlight px-3 py-1.5 font-semibold text-highlight-foreground">
-              {copy.current}
-            </span>
+            <span className="rounded-control bg-selected px-3 py-1.5 font-medium text-foreground">{copy.current}</span>
             <span className="rounded-control px-3 py-1.5 text-muted-foreground">{copy.anotherPage}</span>
             <span className="mt-auto rounded-control bg-primary px-3 py-1.5 text-center font-semibold text-primary-foreground">
               {copy.primary}

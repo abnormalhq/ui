@@ -11,7 +11,7 @@ import { Tabs as TabsPrimitive } from "radix-ui";
  * Arrow keys move between tabs and Home and End jump to the ends; a tab opens as it takes focus. Pass
  * activationMode="manual" when showing a panel costs a request, so it opens on Enter or Space instead.
  * Name the list with aria-label or aria-labelledby. For pages with their own URLs use links (NavTabs), not tabs.
- * `variant="pill"` on the list draws the tabs as pills with the current one in the highlighter, without the hairline:
+ * `variant="pill"` on the list draws the tabs as pills with the current one in ink, without the hairline:
  * the sections of a settings panel, or tabs inside a card, where a line under them would be one line too many.
  * `variant="chip"` draws small 24px outlined chips with the current one filled gray: the quick filters above a list
  * (All, Unread, Starred), where the tabs narrow the same list rather than swap a section.
@@ -45,7 +45,7 @@ const TABS_TRIGGER_VARIANTS = {
   // The bar is the trigger's own edge laid over the list's hairline, so nothing moves when the tab changes.
   underline:
     "h-9 px-2.5 font-medium after:absolute after:bg-signal after:opacity-0 after:transition-opacity after:duration-100 data-[orientation=horizontal]:after:inset-x-0 data-[orientation=horizontal]:after:bottom-0 data-[orientation=horizontal]:after:h-0.5 data-[orientation=vertical]:px-3.5 data-[orientation=vertical]:after:inset-y-0 data-[orientation=vertical]:after:left-0 data-[orientation=vertical]:after:w-0.5 data-[state=active]:after:opacity-100",
-  pill: "h-8 rounded-control px-3 font-semibold data-[state=active]:bg-highlight data-[state=active]:text-highlight-foreground data-[state=active]:hover:text-highlight-foreground",
+  pill: "h-8 rounded-control px-3 font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:hover:text-primary-foreground",
   chip: "h-6 min-h-[24px] rounded-chip border border-input px-2 text-xs font-medium data-[state=active]:border-transparent data-[state=active]:bg-secondary data-[state=active]:text-foreground",
 };
 

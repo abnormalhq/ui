@@ -21,7 +21,7 @@ const navTabVariants = cva(
       variant: {
         underline:
           "h-9 px-2.5 text-base font-medium after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-signal after:opacity-0 after:transition-opacity after:duration-100 aria-[current]:text-foreground aria-[current]:after:opacity-100",
-        pill: "h-8 rounded-control px-3 text-base font-semibold aria-[current]:bg-highlight aria-[current]:text-highlight-foreground aria-[current]:hover:text-highlight-foreground",
+        pill: "h-8 rounded-control px-3 text-base font-semibold aria-[current]:bg-primary aria-[current]:text-primary-foreground aria-[current]:hover:text-primary-foreground",
         segmented:
           "h-7 rounded-chip px-3 text-sm aria-[current]:bg-popover aria-[current]:font-medium aria-[current]:text-foreground aria-[current]:shadow-control",
       },
@@ -39,7 +39,7 @@ const NavTabsContext = React.createContext<NavTabsVariant>("underline");
  * so the choice survives a reload, a shared link and the back button. They are a navigation landmark of links, named
  * by `label`, and the current one carries aria-current, "page" or, for a section of the same page, "location";
  * a screen reader reads it as the current link, not as a selected tab. For views that swap in place use Tabs.
- * Three looks: `underline`, Tabs' hairline with the signal bar; `pill`, highlighted pills for the sections under a
+ * Three looks: `underline`, Tabs' hairline with the signal bar; `pill`, ink pills for the sections under a
  * page title; `segmented`, a sunken track whose current tab is raised, for a period or a mode beside a chart.
  * The row stays one line and scrolls sideways without a scrollbar of its own: its edges fade where tabs are cut off,
  * a vertical mouse wheel scrolls it, and the current tab is brought into view whenever it changes, without moving the

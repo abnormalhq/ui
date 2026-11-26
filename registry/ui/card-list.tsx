@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 /**
  * A list of small cards on the canvas, one per thing, with a little air between them instead of lines: conversations,
  * tickets, tasks. Each card has a first line (who or what, and a time at the end), and under it a line or two in the
- * page's words. The selected card is lifted onto the page color with a highlighter bar at its start, so it reads as
- * the sheet beside it, open. For rows in a bordered box use ItemList; for columns that line up use Table.
+ * page's words. The selected card takes the paper of the sheet beside it, with a highlighter mark at its start: no
+ * border and no shadow, so the list stays one quiet column. For rows in a bordered box use ItemList; for columns that line up use Table.
  */
 function CardList({ className, ...props }: React.ComponentProps<"ul">) {
   // The list has no markers, and Safari stops announcing such a list unless the role says so.
@@ -18,8 +18,8 @@ function CardListItem({ className, ...props }: React.ComponentProps<"li">) {
 }
 
 /**
- * The card. As a link or a button (`asChild`) the whole card takes the pointer and the focus. `selected` lifts it and
- * draws the bar; it is visual only, so the page gives aria-current on a link or aria-pressed on a button. `unread`
+ * The card. As a link or a button (`asChild`) the whole card takes the pointer and the focus. `selected` lays it on
+ * paper and draws the mark; it is visual only, so the page gives aria-current on a link or aria-pressed on a button. `unread`
  * sets the first line in bold and lights its dot (CardListDot), whose `label` says so to a screen reader.
  */
 function CardListCard({
@@ -39,7 +39,7 @@ function CardListCard({
         "group/card relative grid w-full min-w-0 gap-0.5 rounded-mark border border-transparent px-2.5 py-2 text-left text-sm",
         "[&:is(a,button)]:cursor-pointer [&:is(a,button)]:transition-[background-color,border-color,box-shadow] [&:is(a,button)]:duration-100 motion-reduce:transition-none [&:is(a,button)]:focus-visible:-outline-offset-2 [&:is(a,button)]:disabled:pointer-events-none [&:is(a,button)]:disabled:opacity-50",
         selected
-          ? "border-input bg-background shadow-sheet before:absolute before:inset-y-2 before:start-0 before:w-0.5 before:rounded-full before:bg-highlight"
+          ? "bg-background before:absolute before:inset-y-2 before:start-0 before:w-0.5 before:rounded-full before:bg-highlight"
           : "[&:is(a,button)]:hover:bg-control",
         className,
       )}

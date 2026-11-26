@@ -537,10 +537,19 @@ test("the ink shell carries the dark values and maps every semantic name again",
     new Map([...block.matchAll(/(--[a-z0-9-]+): ([^;]+);/g)].map(([, name, value]) => [name!, value!]));
   const dark = declarations(theme.match(/:root\[data-theme="dark"\] \{([\s\S]*?)\n\}/)![1]!);
   const ink = declarations(theme.match(/\n\.ink \{([\s\S]*?)\n\}/)![1]!);
-  // Its own surface is --ink, so bg and sidebar point there; control is a step stronger on purpose; a shadow falls on
-  // the page, so it keeps the page's; charts are not for a shell, and neither is the overlay, which dims the page behind
-  // a dialog portaled to <body>.
-  const own = new Set(["--bg", "--sidebar", "--control", "--ink", "--popover-shadow", "--overlay"]);
+  // Its own surface is --ink, so bg, sidebar and canvas point there; control and selected are a step stronger on
+  // purpose; a shadow falls on the page, so it keeps the page's; charts are not for a shell, and neither is the
+  // overlay, which dims the page behind a dialog portaled to <body>.
+  const own = new Set([
+    "--bg",
+    "--sidebar",
+    "--canvas",
+    "--control",
+    "--selected",
+    "--ink",
+    "--popover-shadow",
+    "--overlay",
+  ]);
   for (const [name, value] of dark) {
     if (own.has(name) || name.startsWith("--chart-")) continue;
     assert.equal(ink.get(name), value, name);
@@ -609,7 +618,7 @@ test("the selectors the list, code and page components lean on compile to what t
   });
   const css = compiler.build([
     "not-has-[[role=option]]:hidden",
-    "data-current:bg-highlight-muted",
+    "data-current:bg-selected",
     "group-has-[[aria-invalid=true]]/otp:border-destructive",
     "animate-expand",
     "animate-collapse",
@@ -618,7 +627,7 @@ test("the selectors the list, code and page components lean on compile to what t
   assert.match(read("registry/ui/command.tsx"), /not-has-\[\[role=option\]\]:hidden/);
   assert.match(css, /:not\(:has\(:is\(\[role=option\]\)\)\) \{\s*display: none;/);
   // The current page of a Pagination, by the presence of the attribute.
-  assert.match(css, /\[data-current\] \{\s*background-color: var\(--highlight-muted\);/);
+  assert.match(css, /\[data-current\] \{\s*background-color: var\(--selected\);/);
   // An invalid InputOTP reddens its boxes, which are siblings of the field, through the group.
   assert.match(
     css,

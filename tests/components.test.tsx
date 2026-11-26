@@ -801,7 +801,8 @@ test("a compact Table makes its cells closer, and a current row says so to the e
   const [current, other] = [...document.querySelectorAll("tr")];
   assert.equal(current!.getAttribute("aria-current"), "true");
   assert.equal(current!.dataset.current, "true");
-  assert.match(current!.className, /--signal/);
+  assert.match(current!.className, /bg-selected/);
+  assert.match(current!.className, /--highlight/);
   assert.equal(other!.hasAttribute("aria-current"), false);
   const cell = document.querySelector("td")!;
   assert.match(cell.className, /\bpy-1\.5\b/);
