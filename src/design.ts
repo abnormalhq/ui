@@ -99,8 +99,8 @@ export const typography = [
   ],
   [
     "Marketing display",
-    "font-heading · 34px / 40px / 56px",
-    "Editorial emphasis on a website, not oversized headings in every app pane.",
+    "font-serif · 34px / 40px / 56px",
+    "Newsreader and Noto Serif SC at weight 500 on public pages (site, developer site, status), not in app panes; Bricolage stays for the wordmark.",
   ],
   [
     "Data",

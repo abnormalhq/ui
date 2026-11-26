@@ -32,7 +32,7 @@ function SectionTitle({ className, asChild = false, ...props }: React.ComponentP
     <Comp
       data-slot="section-title"
       className={cn(
-        "mt-5 font-serif text-3xl/[1.2] font-medium tracking-heading md:text-display-sm lg:text-display",
+        "mt-5 font-serif text-3xl/[1.2] font-medium tracking-heading md:text-display-sm lg:text-display [&:lang(zh)]:tracking-normal",
         className,
       )}
       {...props}
@@ -50,7 +50,7 @@ function PageTitle({ className, asChild = false, ...props }: React.ComponentProp
     <Comp
       data-slot="page-title"
       className={cn(
-        "mt-5 font-serif text-[clamp(2.25rem,4.5vw,3.5rem)] leading-[1.08] font-medium tracking-heading text-balance",
+        "mt-5 font-serif text-[clamp(2.25rem,4.5vw,3.5rem)] leading-[1.08] font-medium tracking-heading text-balance [&:lang(zh)]:tracking-normal",
         className,
       )}
       {...props}
