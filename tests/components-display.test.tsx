@@ -14,6 +14,8 @@ import { Tag, TagList } from "@/components/ui/tag";
 import { TruncatedText } from "@/components/ui/truncated-text";
 import { IconButton } from "@/components/ui/icon-button";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { SortableHead } from "@/components/ui/table";
+import { Toolbar, ToolbarButton } from "@/components/ui/toolbar";
 import { LabelTooltip, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const mounted: { unmount: () => Promise<void> }[] = [];
@@ -437,4 +439,114 @@ test("a LabelTooltip inside a trigger's asChild passes the trigger's click and r
   assert.equal(button.getAttribute("aria-haspopup"), "dialog");
   await click(button);
   assert.ok(document.querySelector('[data-slot="dialog-content"]'));
+  // The dialog hands focus back through the trigger's ref, which only reaches the button if the tooltip passed it on.
+  await act(async () => {
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  });
+  await act(async () => new Promise((resolve) => setTimeout(resolve, 50)));
+  assert.equal(document.querySelector('[data-slot="dialog-content"]'), null);
+  assert.equal(document.activeElement, button);
+});
+
+const hover = async (element: Element) => {
+  await act(async () => {
+    element.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, pointerType: "mouse" }));
+  });
+  await act(async () => new Promise((resolve) => setTimeout(resolve, 350)));
+};
+
+test("a disabled child's tooltip describes the child, not the box it listens on, unless told not to", async () => {
+  const { container } = await mount(
+    <>
+      <LabelTooltip label="Generate the shots first">
+        <button type="button" disabled data-testid="export">
+          Export
+        </button>
+      </LabelTooltip>
+      <LabelTooltip label="Delete" describe={false}>
+        <button type="button" disabled aria-label="Delete" data-testid="delete">
+          <svg aria-hidden="true" />
+        </button>
+      </LabelTooltip>
+    </>,
+  );
+  const [exportBox, deleteBox] = container.querySelectorAll('[data-slot="tooltip-disabled-trigger"]');
+  await hover(exportBox!);
+  const exportButton = container.querySelector('[data-testid="export"]')!;
+  const id = exportButton.getAttribute("aria-describedby");
+  assert.ok(id);
+  assert.equal(exportBox!.hasAttribute("aria-describedby"), false);
+  assert.equal(document.getElementById(id)?.textContent, "Generate the shots first");
+  await hover(deleteBox!);
+  assert.equal(container.querySelector('[data-testid="delete"]')!.hasAttribute("aria-describedby"), false);
+});
+
+test("a LabelTooltip that repeats the name keeps an aria-describedby passed to it", async () => {
+  const { container } = await mount(
+    <LabelTooltip label="Archive" aria-describedby="shortcut">
+      <button type="button" aria-label="Archive">
+        <svg aria-hidden="true" />
+      </button>
+    </LabelTooltip>,
+  );
+  const button = container.querySelector("button")!;
+  await hover(button);
+  assert.equal(button.getAttribute("aria-describedby"), "shortcut");
+});
+
+test("a tooltip mounted before the page went full screen opens inside the full-screen element", async () => {
+  const { container } = await mount(
+    <div data-testid="player">
+      <LabelTooltip label="Mute">
+        <button type="button" aria-label="Mute">
+          <svg aria-hidden="true" />
+        </button>
+      </LabelTooltip>
+    </div>,
+  );
+  const player = container.querySelector('[data-testid="player"]')!;
+  Object.defineProperty(document, "fullscreenElement", { configurable: true, get: () => player });
+  try {
+    await hover(container.querySelector("button")!);
+    const content = document.querySelector('[data-slot="tooltip-content"]');
+    assert.ok(content);
+    assert.equal(player.contains(content), true);
+  } finally {
+    delete (document as { fullscreenElement?: unknown }).fullscreenElement;
+  }
+});
+
+test("an icon-sized ToolbarButton and a SortableHead show their words in the theme's tooltip, not a native title", async () => {
+  const { container } = await mount(
+    <>
+      <Toolbar label="Formatting">
+        <ToolbarButton aria-label="Bold">
+          <svg aria-hidden="true" />
+        </ToolbarButton>
+      </Toolbar>
+      <table>
+        <thead>
+          <tr>
+            <SortableHead href="?sort=-name" direction="asc" title="Sort descending">
+              Name
+            </SortableHead>
+          </tr>
+        </thead>
+      </table>
+    </>,
+  );
+  const bold = container.querySelector('[data-slot="toolbar-button"]')!;
+  await hover(bold);
+  assert.equal(document.querySelector('[data-slot="tooltip-content"]')?.textContent?.includes("Bold"), true);
+  // The tooltip repeats the name, so it is not a description too.
+  assert.equal(bold.hasAttribute("aria-describedby"), false);
+  const link = container.querySelector('[data-slot="sortable-head-link"]')!;
+  assert.equal(link.hasAttribute("title"), false);
+  await hover(link);
+  assert.equal(
+    [...document.querySelectorAll('[data-slot="tooltip-content"]')].some((content) =>
+      content.textContent?.includes("Sort descending"),
+    ),
+    true,
+  );
 });

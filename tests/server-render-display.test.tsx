@@ -83,6 +83,22 @@ test("an UptimeBar is one named image of titled bars, colored by status, with no
     hints.map((classes) => ["left-0", "right-0", "left-1/2"].find((place) => classes.split(" ").includes(place))),
     ["left-0", "left-1/2", "right-0"],
   );
+  // In a strip of two the last bar is past neither third, so the ends are anchored first.
+  const two = renderToStaticMarkup(
+    <UptimeBar
+      label="Last 2 days"
+      buckets={[
+        { status: "up", title: "Day 1" },
+        { status: "up", title: "Day 2" },
+      ]}
+    />,
+  );
+  assert.deepEqual(
+    [...two.matchAll(/data-slot="uptime-bar-hint" class="([^"]*)"/g)].map(([, classes]) =>
+      ["left-0", "right-0", "left-1/2"].find((place) => (classes ?? "").split(" ").includes(place)),
+    ),
+    ["left-0", "right-0"],
+  );
   assert.match(html, /data-status="down"[^>]*class="[^"]*bg-destructive/);
   assert.deepEqual(
     [
@@ -130,7 +146,9 @@ test("a SortableHead marks its column's sort and links to the other direction", 
         </TableHeader>
       </Table>,
     );
-  assert.match(head("asc"), /<th[^>]*aria-sort="ascending"><a[^>]*href="\?sort=name" title="Sort"[^>]*>Name<svg/);
+  assert.match(head("asc"), /<th[^>]*aria-sort="ascending"><a[^>]*href="\?sort=name"[^>]*>Name<svg/);
+  // The words on what the click does are the theme's tooltip, not a native title.
+  assert.doesNotMatch(head("asc"), /title=/);
   assert.match(head("desc"), /aria-sort="descending"/);
   assert.match(head(), /aria-sort="none"/);
   assert.match(head("asc"), /lucide-arrow-up/);

@@ -31,8 +31,9 @@ const BUCKET_HINT =
   "pointer-events-none invisible absolute bottom-full z-overlay mb-1.5 w-max max-w-64 ink rounded-control px-2 py-1 text-xs font-medium whitespace-pre-line opacity-0 shadow-popover transition-opacity duration-100 group-hover/bucket:visible group-hover/bucket:opacity-100";
 
 function hintPlacement(index: number, count: number) {
-  if (index < count / 3) return "left-0";
-  if (index >= (count * 2) / 3) return "right-0";
+  // The ends first: in a strip of one or two bars, neither third alone reaches the last one.
+  if (index === 0 || index < count / 3) return "left-0";
+  if (index === count - 1 || index >= (count * 2) / 3) return "right-0";
   return "left-1/2 -translate-x-1/2";
 }
 

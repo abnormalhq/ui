@@ -4,6 +4,7 @@ import * as React from "react";
 import { Toolbar as ToolbarPrimitive } from "radix-ui";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { LabelTooltip } from "@/components/ui/tooltip";
 
 /**
  * A row of controls that act on one thing, such as the formatting buttons over an editor: one tab stop for the whole
@@ -63,7 +64,8 @@ function ToolbarSeparator({ className, ...props }: React.ComponentProps<typeof T
 
 /**
  * A Button in the toolbar's roving focus, ghost and icon-sized unless told otherwise. `pressed` makes it a toggle
- * (aria-pressed), shown with the control fill: bold, italic, a list. An icon-only button needs aria-label.
+ * (aria-pressed), shown with the control fill: bold, italic, a list. An icon-only button needs aria-label, which
+ * an icon-sized one also shows in the theme's tooltip.
  */
 function ToolbarButton({
   pressed,
@@ -76,7 +78,8 @@ function ToolbarButton({
   /** The toggle's state; leave it out for a plain button. */
   pressed?: boolean;
 }) {
-  return (
+  const name = props["aria-label"];
+  const button = (
     // The primitive reads `disabled` to pass the button over; the button itself needs it to be disabled.
     <ToolbarPrimitive.Button asChild disabled={disabled}>
       <Button
@@ -90,6 +93,14 @@ function ToolbarButton({
         {...props}
       />
     </ToolbarPrimitive.Button>
+  );
+  // The name is on the button inside the primitive, so the hint says it once rather than describe the button with it.
+  return typeof size === "string" && size.startsWith("icon") && name ? (
+    <LabelTooltip label={name} describe={false}>
+      {button}
+    </LabelTooltip>
+  ) : (
+    button
   );
 }
 

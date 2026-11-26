@@ -332,7 +332,8 @@ function TimePicker({
             )}
             {...props}
           />
-          <LabelTooltip label={listLabel}>
+          {/* The name is the button's aria-label, a level below the popover's trigger, so the hint says it once. */}
+          <LabelTooltip label={listLabel} describe={false}>
             <PopoverTrigger asChild>
               <button
                 type="button"

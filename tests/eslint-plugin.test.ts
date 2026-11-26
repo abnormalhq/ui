@@ -178,6 +178,10 @@ test("icon buttons need IconButton or a tooltip around them", () => {
       "const i = <button {...props} />;",
       'const j = <Button size="sm">Save</Button>;',
       'const k = <button type="submit" className="hidden" aria-hidden="true" tabIndex={-1} />;',
+      'const l = <button type="submit" hidden />;',
+      'const m = <button type="button" hidden={false} aria-label="Clear"><XIcon /></button>;',
+      'const n = <button type="button" hidden={collapsed} aria-label="Clear"><XIcon /></button>;',
+      'const o = <button type="button" aria-hidden="true" aria-label="Clear"><XIcon /></button>;',
     ].join("\n"),
     {
       languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
@@ -187,7 +191,7 @@ test("icon buttons need IconButton or a tooltip around them", () => {
   );
   assert.deepEqual(
     messages.map(({ line }) => line),
-    [1, 3, 4],
+    [1, 3, 4, 13, 14, 15],
   );
   assert.match(messages[0]!.message, /IconButton/);
 });

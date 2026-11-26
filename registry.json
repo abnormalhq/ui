@@ -1198,7 +1198,7 @@
       "title": "Table",
       "description": "Tables with plain and bordered variants, pinned columns and link-based sortable headers. table-row.ts holds the row action class and row click helper, usable from Server Components.",
       "dependencies": ["lucide-react", "radix-ui"],
-      "registryDependencies": ["@abnormal/scroll-area", "@abnormal/utils"],
+      "registryDependencies": ["@abnormal/scroll-area", "@abnormal/tooltip", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/table.tsx",
@@ -1377,7 +1377,7 @@
       "title": "Toolbar",
       "description": "A row of controls with one tab stop and arrow keys between them, in groups split by separators.",
       "dependencies": ["radix-ui"],
-      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/tooltip", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/toolbar.tsx",
