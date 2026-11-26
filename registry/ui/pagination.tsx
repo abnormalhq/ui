@@ -27,8 +27,8 @@ function PaginationItem({ ...props }: React.ComponentProps<"li">) {
 }
 
 /**
- * One page's link, a ghost button in looks. `current` marks the page being shown: aria-current="page" and the soft
- * highlight of a selected row. A bare number tells a screen reader little, so give each link an aria-label such as
+ * One page's link, a ghost button in looks. `current` marks the page being shown: aria-current="page" and the
+ * selected tint of a selected row. A bare number tells a screen reader little, so give each link an aria-label such as
  * "Page 3". Pass asChild with the router's link.
  * `disabled` is for Previous on the first page and Next on the last: the link loses its href, which takes it out of
  * the tab order, and is announced as a dimmed link rather than vanishing, so the row does not shift between pages.
@@ -65,7 +65,7 @@ function PaginationLink({
       href={disabled ? undefined : href}
       className={cn(
         buttonVariants({ variant: "ghost", size }),
-        "min-w-8 tabular-nums data-current:bg-highlight-muted data-current:text-foreground data-current:hover:bg-highlight-muted",
+        "min-w-8 tabular-nums data-current:bg-selected data-current:text-foreground data-current:hover:bg-selected",
         size === "icon" && "w-auto px-2",
         className,
       )}

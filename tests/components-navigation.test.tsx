@@ -532,7 +532,7 @@ test("Tabs with the pill look keep the tab keyboard and mark the current tab", a
   assert.match(list.className, /gap-2/);
   assert.doesNotMatch(list.className, /border-b/);
   const [profile, storage] = [...list.querySelectorAll<HTMLElement>('[role="tab"]')];
-  assert.match(profile!.className, /data-\[state=active\]:bg-highlight/);
+  assert.match(profile!.className, /data-\[state=active\]:bg-primary/);
   await act(async () => profile!.focus());
   await press(profile!, "ArrowRight");
   assert.equal(storage!.getAttribute("aria-selected"), "true");

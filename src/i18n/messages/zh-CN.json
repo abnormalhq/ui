@@ -353,7 +353,13 @@
       "addressTaken": "此邮箱地址已被使用。"
     },
     "brand-mark": {
-      "openWebmail": "打开网页版邮箱"
+      "openWebmail": "打开网页版邮箱",
+      "mail": "邮件",
+      "console": "管理后台",
+      "developers": "开发者",
+      "status": "状态页",
+      "doppel": "Doppel",
+      "takeone": "开镜"
     },
     "code-block": {
       "copy": "复制",
@@ -826,8 +832,17 @@
       "dialogOverlay": "对话框和抽屉背后的遮罩。",
       "inputBorders": "输入框边框与滚动条。",
       "primaryAction": "主要操作：浅色模式用墨色，深色模式用纸色。",
-      "chromaticBrand": "唯一的彩色品牌：表示当前、已选或新建状态。",
-      "selectedRows": "已选行与选中的选项。",
+      "chromaticBrand": "响亮的品牌色：一屏里唯一新出现或需要处理的东西，以及选中行开头的那道记号。",
+      "selectedRows": "选中行、按下的开关、分页器的当前页：比悬停深一级的淡墨色。",
+      "turnedOn": "已开启或已匹配的东西：开启的模式、搜索命中。",
+      "supporting": "辅助色",
+      "supportingDescription": "按纸色调过的颜色，用来表达含义、给讲故事的页面用，不用来装饰控件。每种都有 -soft 浅底和浅底上的 -ink 文字色。",
+      "indigoRole": "信息、正文里的链接与键盘焦点。",
+      "indigoSoftRole": "信息提示框或冷色色带。",
+      "clayRole": "营销页与插画里的编辑感强调色。",
+      "claySoftRole": "暖色色带或引文。",
+      "sageRole": "插画里沉静的平衡色。",
+      "sageSoftRole": "区块背后安静的色带。",
       "dotsProgress": "点、进度与编号：浅色模式用墨色，深色模式用黄色。",
       "focusOutline": "键盘焦点轮廓。",
       "enabledSent": "已启用、已发送、已连接。",
@@ -858,9 +873,9 @@
       "radii": "圆角",
       "shadows": "阴影",
       "type": "字体",
-      "headingFont": "Bricolage Grotesque 用于标题",
-      "interfaceFont": "Inter 用于界面中的所有文字，并为中文配置了后备字体。",
-      "codeFont": "JetBrains Mono 用于代码和地址",
+      "headingFont": "Bricolage Grotesque 用于营销页的展示大字",
+      "interfaceFont": "Inter 用于产品里的所有文字（包括标题），并为中文配置了后备字体。",
+      "codeFont": "JetBrains Mono 用于代码、标识符和时间码",
       "pangram": "敏捷的棕色狐狸",
       "motion": "动效",
       "motionStart": "进入和退出动画使用 ",
@@ -1145,7 +1160,11 @@
     "principles": [
       {
         "title": "纸色、墨色与一抹荧光",
-        "text": "保留温暖的纸色与墨色。饱和的黄色标记当前位置或新内容；柔和的黄色标记选中的内容行。主要操作保持墨色落在纸色上，或纸色落在墨色上。"
+        "text": "保留温暖的纸色与墨色。选中用墨色：选中行是一层淡墨色，当前导航项是画布上的一块纸色。黄色每屏大约只出现一次，标记唯一新出现或需要处理的东西，以及选中行开头 2px 的记号。靛、赭、苔三种辅助色用于表达含义和讲故事。主要操作保持墨色落在纸色上，或纸色落在墨色上。"
+      },
+      {
+        "title": "字号少而拉开",
+        "text": "正文 14px（紧凑密度 13px），元信息 12px；导语或卡片标题 16px，标题 20、24、32px。次要文字靠颜色和位置区分，而不是小一像素。产品里的标题用 Inter；Bricolage Grotesque 只用于营销页的展示大字；等宽字体只用于代码、标识符和时间码。"
       },
       {
         "title": "每项任务对应一个表面",
@@ -1164,22 +1183,26 @@
       "background": "纸色：页面与工作表面，随页面主题变化。",
       "foreground": "墨色：文字与主要操作，随页面主题变化。",
       "ink": "框架始终为墨色；比深色页面再深一阶。",
-      "highlight": "当前位置导航或新提示；始终搭配 highlight-foreground 文字。",
-      "highlight-muted": "用于选中内容，而非另一个主要操作；搭配 foreground 文字。",
+      "highlight": "一屏里唯一新出现或需要处理的东西，以及选中行开头 2px 的记号；始终搭配 highlight-foreground 文字。",
+      "selected": "选中行、按下的开关和分页器的当前页；比悬停深一级的淡墨色。当前导航项用纸色（sidebar-accent）。",
+      "highlight-muted": "已开启或已匹配的东西，比如搜索命中；搭配 foreground 文字。",
+      "indigo": "辅助色：信息、正文里的链接与键盘焦点。",
+      "clay": "辅助色：营销页与插画里的编辑感强调色。",
+      "sage": "辅助色：插画与色带里沉静的平衡色。",
       "border": "使用安静的细线，避免反复堆叠卡片与阴影。"
     },
     "typography": [
       {
         "title": "正文",
-        "description": "日常文案；长篇阅读使用 text-md 和 leading-prose。"
+        "description": "日常文案与次要文字都用这一档；长篇阅读使用 text-md 和 leading-prose。"
       },
       {
-        "title": "辅助文字",
-        "description": "用于次要元数据；仅在简短计数或时间戳中使用 11px 的 text-2xs。"
+        "title": "元信息",
+        "description": "计数、时间戳、标签与说明文字；可读文字的下限。"
       },
       {
         "title": "产品标题",
-        "description": "Bricolage Grotesque 搭配现有系统的 CJK 字体回退。"
+        "description": "Inter 600 字重，搭配现有系统的 CJK 字体回退；紧凑密度下为 28px。"
       },
       {
         "title": "营销展示",
@@ -1187,7 +1210,7 @@
       },
       {
         "title": "数据",
-        "description": "代码与标识符使用 JetBrains Mono；相近数值应对齐显示。"
+        "description": "代码、标识符和时间码使用 JetBrains Mono，人名和地址不用；相近数值应对齐显示。"
       }
     ],
     "products": [

@@ -2,7 +2,11 @@
 export const principles = [
   {
     title: "Paper, ink, one highlighter",
-    text: "Keep the warm paper and ink palette. Saturated yellow marks the current location or something new; muted yellow marks a selected content row. Primary actions remain ink on paper, or paper on ink.",
+    text: "Keep the warm paper and ink palette. Selection is ink: a selected row takes a quiet ink tint, and the current navigation item the paper on the canvas. Yellow appears about once a screen, for the one new or actionable thing and the 2px mark on the selected row. Indigo, clay and sage support it for meaning and storytelling. Primary actions remain ink on paper, or paper on ink.",
+  },
+  {
+    title: "Few sizes, far apart",
+    text: "Text is 14px (13px compact) and meta text 12px; a lead or card title is 16px and titles are 20, 24 and 32px. Tell secondary text apart by color and place, not by a size one pixel smaller. Headings in a product are Inter; Bricolage Grotesque is for display lines on marketing pages; monospace is for code, identifiers and time codes only.",
   },
   {
     title: "One surface per task",
@@ -41,13 +45,37 @@ export const palette = [
     token: "highlight",
     value: "#ffe14d",
     className: "bg-highlight",
-    role: "Current navigation or a new signal; always use highlight-foreground text.",
+    role: "The one new or actionable thing on a screen, and the 2px mark on a selected row; always use highlight-foreground text.",
+  },
+  {
+    token: "selected",
+    value: "#e8e8e3",
+    className: "bg-selected",
+    role: "Selected rows, pressed toggles and the current page of a pager; an ink tint a step deeper than hover. The current navigation item takes the paper (sidebar-accent).",
   },
   {
     token: "highlight-muted",
     value: "#fff4bf",
     className: "bg-highlight-muted",
-    role: "Selected content, not another primary action; uses foreground text.",
+    role: "Something turned on or matched, such as a search hit; uses foreground text.",
+  },
+  {
+    token: "indigo",
+    value: "#3a4c9e",
+    className: "bg-indigo",
+    role: "Supporting: information, links in reading text and the keyboard focus.",
+  },
+  {
+    token: "clay",
+    value: "#b0502a",
+    className: "bg-clay",
+    role: "Supporting: an editorial accent for marketing pages and illustrations.",
+  },
+  {
+    token: "sage",
+    value: "#47735a",
+    className: "bg-sage",
+    role: "Supporting: a calm counterweight for illustrations and bands.",
   },
   {
     token: "border",
@@ -58,19 +86,27 @@ export const palette = [
 ] as const;
 
 export const typography = [
-  ["Body", "Inter · text-base · 14px", "Everyday copy; text-md with leading-prose for long reading."],
   [
-    "Supporting text",
-    "text-sm / text-xs · 13px / 12px",
-    "Secondary metadata; reserve 11px text-2xs for short counts or timestamps.",
+    "Body",
+    "Inter · text-base / text-sm · 14px",
+    "Everyday copy and secondary text alike; text-md with leading-prose for long reading.",
   ],
-  ["Product title", "font-heading · text-3xl · 28px", "Bricolage Grotesque with the existing system CJK fallbacks."],
+  ["Meta", "text-xs / text-2xs · 12px", "Counts, timestamps, chips and captions; the floor for legible text."],
+  [
+    "Product title",
+    "Inter · text-3xl · 32px",
+    "Inter at weight 600 with the existing system CJK fallbacks; 28px in compact density.",
+  ],
   [
     "Marketing display",
     "font-heading · 34px / 40px / 56px",
     "Editorial emphasis on a website, not oversized headings in every app pane.",
   ],
-  ["Data", "font-mono · tabular-nums", "JetBrains Mono for code and identifiers; align comparable numbers."],
+  [
+    "Data",
+    "font-mono · tabular-nums",
+    "JetBrains Mono for code, identifiers and time codes, never names or addresses; align comparable numbers.",
+  ],
 ] as const;
 
 export const productGuidance = [

@@ -37,7 +37,7 @@ function FacetItem({ className, ...props }: React.ComponentProps<"li">) {
 
 /**
  * One choice, as a link or a button (`asChild`), or a plain row. `selected` marks the choice the list is filtered by
- * with the muted highlighter; it is visual only, so the page also sets `aria-current` on a link or `aria-pressed` on
+ * with the selected tint; it is visual only, so the page also sets `aria-current` on a link or `aria-pressed` on
  * a toggle button. Put a status dot or an icon first, then FacetLabel and FacetCount.
  */
 function FacetRow({
@@ -56,7 +56,7 @@ function FacetRow({
         "[&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground",
         "[&:is(a,button)]:cursor-pointer [&:is(a,button)]:transition-colors [&:is(a,button)]:duration-100 motion-reduce:transition-none [&:is(a,button)]:focus-visible:-outline-offset-2 [&:is(a,button)]:disabled:pointer-events-none [&:is(a,button)]:disabled:opacity-50",
         selected
-          ? "bg-highlight-muted font-medium text-foreground"
+          ? "bg-selected font-medium text-foreground"
           : "text-foreground/85 [&:is(a,button)]:hover:bg-accent [&:is(a,button)]:hover:text-foreground",
         className,
       )}

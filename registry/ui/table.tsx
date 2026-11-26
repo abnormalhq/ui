@@ -158,8 +158,8 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
 }
 
 /**
- * A row. `current` marks the row a list's details pane shows, the one J and K move: it takes the hover color and a
- * bar at its start edge, and `aria-current`. It is not selection (`data-state="selected"`, the checked rows).
+ * A row. `current` marks the row a list's details pane shows, the one J and K move: it takes the selected tint and a
+ * highlighter mark at its start edge, and `aria-current`. It is not selection (`data-state="selected"`, the checked rows).
  */
 function TableRow({ className, current = false, ...props }: React.ComponentProps<"tr"> & { current?: boolean }) {
   const variant = React.useContext(TableVariantContext);
@@ -173,11 +173,12 @@ function TableRow({ className, current = false, ...props }: React.ComponentProps
         // plain: the row itself draws no background or row lines (the radius is drawn on the cells); for the hover / selected / menu-open backgrounds see TableCell.
         variant === "plain"
           ? ""
-          : "border-b transition-colors duration-100 hover:bg-accent has-aria-expanded:bg-accent data-[state=selected]:bg-highlight-muted",
+          : "border-b transition-colors duration-100 hover:bg-accent has-aria-expanded:bg-accent data-[state=selected]:bg-selected",
         current &&
           (variant === "plain"
-            ? "[&>td]:bg-accent [&>td:first-child]:shadow-[inset_2px_0_0_var(--signal)]"
-            : "bg-accent shadow-[inset_2px_0_0_var(--signal)]"),
+            ? "[&>td]:bg-selected [&>td:first-child]:shadow-[inset_2px_0_0_var(--highlight)]"
+            : // The current row keeps its tint under the pointer and while its menu is open.
+              "bg-selected shadow-[inset_2px_0_0_var(--highlight)] hover:bg-selected has-aria-expanded:bg-selected"),
         props.onClick && "cursor-pointer",
         className,
       )}
@@ -274,7 +275,7 @@ function SortableHead({
 
 /** Cell background of a plain table: hover, menu-open and selected are all drawn on the cells, with the first and last cells rounded so together they form one rounded row; rows such as empty states carry `data-static` and do not respond to hover. */
 const plainCell =
-  "transition-colors duration-100 first:rounded-l-control last:rounded-r-control [tr:not([data-static]):hover>&]:bg-accent [tr:has([aria-expanded=true])>&]:bg-accent [tr[data-state=selected]>&]:bg-highlight-muted";
+  "transition-colors duration-100 first:rounded-l-control last:rounded-r-control [tr:not([data-static]):not([data-current]):hover>&]:bg-accent [tr:not([data-current]):has([aria-expanded=true])>&]:bg-accent [tr[data-state=selected]>&]:bg-selected";
 
 function TableCell({ className, pinned = false, ...props }: React.ComponentProps<"td"> & { pinned?: boolean }) {
   const plain = React.useContext(TableVariantContext) === "plain";
@@ -289,7 +290,7 @@ function TableCell({ className, pinned = false, ...props }: React.ComponentProps
         pinned &&
           plain && [
             pinnedPlain,
-            "bg-background [tr:has([aria-expanded=true])>&]:bg-accent [tr:hover>&]:bg-accent [tr[data-state=selected]>&]:bg-highlight-muted",
+            "bg-background [tr:has([aria-expanded=true])>&]:bg-accent [tr:hover>&]:bg-accent [tr[data-state=selected]>&]:bg-selected",
           ],
         pinned &&
           !plain && [
@@ -298,7 +299,7 @@ function TableCell({ className, pinned = false, ...props }: React.ComponentProps
             "shadow-[inset_0_-1px_0_var(--border)] [tr:last-child>&]:shadow-none",
             "in-data-[overflow=end]:shadow-[inset_1px_0_0_var(--border),inset_0_-1px_0_var(--border),-10px_0_12px_-10px_rgb(0_0_0/0.18)]",
             "in-data-[overflow=end]:[tr:last-child>&]:shadow-[inset_1px_0_0_var(--border),-10px_0_12px_-10px_rgb(0_0_0/0.18)]",
-            "bg-card transition-colors duration-100 [tr:has([aria-expanded=true])>&]:bg-accent [tr:hover>&]:bg-accent [tr[data-current]>&]:bg-accent [tr[data-state=selected]>&]:bg-highlight-muted",
+            "bg-card transition-colors duration-100 [tr:not([data-current]):has([aria-expanded=true])>&]:bg-accent [tr:not([data-current]):hover>&]:bg-accent [tr[data-current]>&]:bg-selected [tr[data-state=selected]>&]:bg-selected",
           ],
         className,
       )}
