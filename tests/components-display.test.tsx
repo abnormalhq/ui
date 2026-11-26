@@ -12,6 +12,8 @@ import { Progress } from "@/components/ui/progress";
 import { SelectionBar } from "@/components/ui/selection-bar";
 import { Tag, TagList } from "@/components/ui/tag";
 import { TruncatedText } from "@/components/ui/truncated-text";
+import { IconButton } from "@/components/ui/icon-button";
+import { LabelTooltip, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const mounted: { unmount: () => Promise<void> }[] = [];
 const mount = async (ui: React.ReactNode) => {
@@ -325,4 +327,74 @@ test("a SelectionBar without onSelectAll has no checkbox, and keeps its count, a
   assert.ok(button("Suspend"));
   await click(button("Clear selection"));
   assert.equal(onClear.mock.callCount(), 1);
+});
+
+test("an IconButton shows its label as the theme's tooltip, in a portal, without repeating it as a description", async () => {
+  const hover = async (element: Element) => {
+    await act(async () => {
+      element.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, pointerType: "mouse" }));
+    });
+    await act(async () => new Promise((resolve) => setTimeout(resolve, 350)));
+  };
+  const { container } = await mount(
+    <IconButton label="Archive" onClick={() => {}}>
+      <svg aria-hidden="true" />
+    </IconButton>,
+  );
+  const button = container.querySelector("button")!;
+  assert.equal(button.getAttribute("aria-label"), "Archive");
+  assert.equal(button.hasAttribute("title"), false);
+  assert.equal(button.getAttribute("data-size"), "icon");
+  await hover(button);
+  const content = document.querySelector('[data-slot="tooltip-content"]');
+  assert.equal(content?.textContent?.includes("Archive"), true);
+  // Portaled out of the button's own box, so no scrolling parent clips it.
+  assert.equal(container.contains(content), false);
+  assert.equal(button.hasAttribute("aria-describedby"), false);
+});
+
+test("a LabelTooltip describes its child when it adds words, and opens on Tab but not on a script's focus", async () => {
+  const { container } = await mount(
+    <LabelTooltip label="Archive (E)">
+      <button type="button" aria-label="Archive">
+        <svg aria-hidden="true" />
+      </button>
+    </LabelTooltip>,
+  );
+  const button = container.querySelector("button")!;
+  const content = () => document.querySelector('[data-slot="tooltip-content"]');
+  // Focus moved by a script, as a dialog does when it opens or a menu when it closes, opens nothing.
+  await act(async () => {
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    button.focus();
+  });
+  assert.equal(content(), null);
+  await act(async () => button.blur());
+  await act(async () => {
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true }));
+    button.focus();
+  });
+  assert.equal(content()?.textContent?.includes("Archive (E)"), true);
+  assert.ok(button.getAttribute("aria-describedby"));
+});
+
+test("a LabelTooltip with no label, or inside a TooltipTrigger, adds nothing", async () => {
+  const { container } = await mount(
+    <>
+      <LabelTooltip label={undefined}>
+        <span data-testid="plain">Plain</span>
+      </LabelTooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <IconButton label="Inner">
+            <svg aria-hidden="true" />
+          </IconButton>
+        </TooltipTrigger>
+        <TooltipContent>Outer</TooltipContent>
+      </Tooltip>
+    </>,
+  );
+  assert.equal(container.querySelector('[data-testid="plain"]')?.hasAttribute("data-state"), false);
+  // One trigger: the outer one's data-state, not a second tooltip of the IconButton's own.
+  assert.equal(container.querySelectorAll("[data-state]").length, 1);
 });

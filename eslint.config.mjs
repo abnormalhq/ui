@@ -69,7 +69,11 @@ const eslintConfig = defineConfig([
     // Tests spell out the classes components render, and the rule's demo the classes it reports.
     ignores: ["tests/**", "src/demos/eslint-plugin.tsx"],
     plugins: { abnormal },
-    rules: { "abnormal/no-hardcoded-classes": "error" },
+    rules: {
+      "abnormal/no-hardcoded-classes": "error",
+      "abnormal/no-native-title": "error",
+      "abnormal/icon-button-label": "error",
+    },
   },
   {
     // The theme itself is where the literal values live.

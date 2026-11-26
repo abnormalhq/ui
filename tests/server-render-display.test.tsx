@@ -70,8 +70,19 @@ test("an UptimeBar is one named image of titled bars, colored by status, with no
     />,
   );
   assert.match(html, /^<div role="img" aria-label="Last 4 days"/);
-  assert.equal([...html.matchAll(/<span /g)].length, 4);
-  assert.match(html, /data-status="degraded" title="Day 3: 3 of 4 passed" class="[^"]*bg-warning/);
+  // Four bars, and a hint inside each of the three that have words, drawn with CSS: no title, no script.
+  assert.equal([...html.matchAll(/<span data-status=/g)].length, 4);
+  assert.doesNotMatch(html, /title=/);
+  assert.match(
+    html,
+    /data-status="degraded" class="[^"]*bg-warning[^"]*"><span data-slot="uptime-bar-hint" class="[^"]*ink[^"]*">Day 3: 3 of 4 passed<\/span>/,
+  );
+  // The first third opens its hint to the right, the last third to the left, so it never runs past the strip.
+  const hints = [...html.matchAll(/data-slot="uptime-bar-hint" class="([^"]*)"/g)].map(([, classes]) => classes ?? "");
+  assert.deepEqual(
+    hints.map((classes) => ["left-0", "right-0", "left-1/2"].find((place) => classes.split(" ").includes(place))),
+    ["left-0", "left-1/2", "right-0"],
+  );
   assert.match(html, /data-status="down"[^>]*class="[^"]*bg-destructive/);
   assert.deepEqual(
     [
@@ -162,7 +173,8 @@ test("a Banner is a status unless told to interrupt, and its close button carrie
   );
   assert.match(panel, /class="[^"]*rounded-panel[^"]*bg-success\/8[^"]*border-success\/40/);
   assert.match(panel, /<span data-slot="banner-dot" aria-hidden="true"/);
-  assert.match(html, /<button[^>]*aria-label="Dismiss"[^>]*title="Dismiss"/);
+  assert.match(html, /<button[^>]*aria-label="Dismiss"/);
+  assert.doesNotMatch(html, /title=/);
   assert.match(renderToStaticMarkup(<Banner role="alert">Sending is paused</Banner>), /role="alert"/);
 });
 

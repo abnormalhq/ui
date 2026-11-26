@@ -62,11 +62,11 @@ function Tag({
     >
       <span className="min-w-0 wrap-anywhere">{children}</span>
       {removable && (
+        // abnormal-allow: a tag is a server item, and the tooltip is a client component; wrap the Tag in LabelTooltip on a client page for the hint.
         <button
           type="button"
           data-slot="tag-remove"
           aria-label={removeLabel}
-          title={removeLabel}
           disabled={disabled}
           onClick={onRemove}
           className="grid size-5 shrink-0 place-items-center rounded-chip opacity-70 transition-[opacity,background-color] duration-100 hover:bg-control hover:opacity-100 disabled:pointer-events-none disabled:opacity-40"

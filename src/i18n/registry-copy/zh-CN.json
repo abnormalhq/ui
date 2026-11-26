@@ -25,7 +25,7 @@
   },
   "eslint-plugin": {
     "title": "ESLint 插件",
-    "description": "让类名和 CSS 中不再出现手写的颜色、字号、间距、圆角、阴影和层级，并指出应改用的主题名称。"
+    "description": "让类名和 CSS 中不再出现手写的颜色、字号、间距、圆角、阴影和层级，并指出应改用的主题名称；同时让所有提示都用主题 tooltip：禁用原生 title，并要求每个图标按钮悬停时显示名称。"
   },
   "brand-mark": {
     "title": "品牌标记",
@@ -66,6 +66,10 @@
   "button": {
     "title": "按钮",
     "description": "高度为 32px 的按钮，支持 primary、outline、secondary、ghost、destructive 和 link 变体，以及加载状态。"
+  },
+  "icon-button": {
+    "title": "图标按钮",
+    "description": "只显示图标的按钮，必填的 label 同时是它的无障碍名称和 tooltip。"
   },
   "calendar": {
     "title": "日历",
@@ -361,7 +365,7 @@
   },
   "tooltip": {
     "title": "工具提示",
-    "description": "悬停或聚焦时显示的简短提示。可单独使用；TooltipProvider 可在同一区域共享延迟时间。"
+    "description": "悬停或键盘聚焦时显示的简短提示，渲染在 portal 中并自动避开窗口边缘。LabelTooltip 一行包裹单个元素；TooltipProvider 在一个区域内共享延迟。"
   },
   "turnstile": {
     "title": "Turnstile",

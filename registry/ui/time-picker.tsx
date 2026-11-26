@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { InputGroup, InputGroupInput } from "@/components/ui/input-group";
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useFormReset } from "@/components/ui/use-form-reset";
+import { LabelTooltip } from "@/components/ui/tooltip";
 
 const DAY = 24 * 60 * 60;
 
@@ -331,18 +332,20 @@ function TimePicker({
             )}
             {...props}
           />
-          <PopoverTrigger asChild>
-            <button
-              type="button"
-              tabIndex={-1}
-              aria-label={listLabel}
-              disabled={locked}
-              data-slot="time-picker-trigger"
-              className="mx-1 inline-flex size-6 shrink-0 items-center justify-center rounded-chip text-muted-foreground transition-[color,background-color] duration-100 hover:bg-control hover:text-foreground disabled:pointer-events-none aria-expanded:bg-control aria-expanded:text-foreground in-data-[size=sm]:size-5 [&_svg]:pointer-events-none [&_svg]:size-3.5"
-            >
-              <ClockIcon aria-hidden="true" />
-            </button>
-          </PopoverTrigger>
+          <LabelTooltip label={listLabel}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                tabIndex={-1}
+                aria-label={listLabel}
+                disabled={locked}
+                data-slot="time-picker-trigger"
+                className="mx-1 inline-flex size-6 shrink-0 items-center justify-center rounded-chip text-muted-foreground transition-[color,background-color] duration-100 hover:bg-control hover:text-foreground disabled:pointer-events-none aria-expanded:bg-control aria-expanded:text-foreground in-data-[size=sm]:size-5 [&_svg]:pointer-events-none [&_svg]:size-3.5"
+              >
+                <ClockIcon aria-hidden="true" />
+              </button>
+            </PopoverTrigger>
+          </LabelTooltip>
         </InputGroup>
       </PopoverAnchor>
       <PopoverContent

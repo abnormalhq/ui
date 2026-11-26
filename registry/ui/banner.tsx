@@ -125,12 +125,12 @@ function BannerClose({
   label: string;
 }) {
   return (
+    // abnormal-allow: a banner is a server item, and IconButton's tooltip is a client component; wrap BannerClose in LabelTooltip on a client page for the hint.
     <Button
       type="button"
       variant="ghost"
       size="icon-xs"
       aria-label={label}
-      title={label}
       data-slot="banner-close"
       className={cn("-my-1 shrink-0", className)}
       {...props}
