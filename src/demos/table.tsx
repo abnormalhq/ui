@@ -1,8 +1,8 @@
 import { MoreHorizontalIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { StatusLabel } from "@/components/ui/status-label";
 import { SortableHead, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { rowActionClassName } from "@/components/ui/table-row";
+import { IconButton } from "@/components/ui/icon-button";
 
 const mailboxes = [
   { address: "hello@example.com", owner: "Support", status: "Enabled", tone: "success" },
@@ -51,14 +51,14 @@ function Mailboxes({ variant, copy }: { variant: "default" | "plain"; copy: type
               <StatusLabel tone={tone}>{statusLabels[status]}</StatusLabel>
             </TableCell>
             <TableCell pinned className="w-10">
-              <Button
+              <IconButton
                 variant="ghost"
                 size="icon-sm"
                 className={rowActionClassName}
-                aria-label={copy.moreFor.replace("{address}", address)}
+                label={copy.moreFor.replace("{address}", address)}
               >
                 <MoreHorizontalIcon />
-              </Button>
+              </IconButton>
             </TableCell>
           </TableRow>
         ))}

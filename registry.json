@@ -89,7 +89,7 @@
       "name": "eslint-plugin",
       "type": "registry:item",
       "title": "ESLint Plugin",
-      "description": "Lint rules that keep hand-picked colors, font sizes, spacing, radii, shadows and layers out of classes and CSS, pointing at the theme's names instead.",
+      "description": "Lint rules that keep hand-picked colors, font sizes, spacing, radii, shadows and layers out of classes and CSS, pointing at the theme's names instead, and every hint in the theme's tooltip: no native title, and a name shown on hover for every icon button.",
       "devDependencies": ["@eslint/css@^2.0.1", "tailwind-csstree@^0.4.2"],
       "files": [
         {
@@ -237,12 +237,25 @@
       ]
     },
     {
+      "name": "icon-button",
+      "type": "registry:ui",
+      "title": "Icon Button",
+      "description": "A Button that shows only an icon, whose required label is both its accessible name and its tooltip.",
+      "registryDependencies": ["@abnormal/button", "@abnormal/tooltip", "@abnormal/utils"],
+      "files": [
+        {
+          "path": "registry/ui/icon-button.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "calendar",
       "type": "registry:ui",
       "title": "Calendar",
       "description": "A month grid for choosing a day or a range of days, with full keyboard navigation, lists that jump to a month and a year, and the caller's locale.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["@abnormal/button", "@abnormal/native-select", "@abnormal/utils"],
+      "registryDependencies": ["@abnormal/icon-button", "@abnormal/native-select", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/calendar.tsx",
@@ -370,7 +383,7 @@
       "title": "Copy Button",
       "description": "Copies a value and shows the outcome in the icon, a bubble and a status region, with every word passed in.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/tooltip", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/copy-button.tsx",
@@ -456,7 +469,7 @@
       "title": "Dialog",
       "description": "A modal dialog with a translatable close button.",
       "dependencies": ["lucide-react", "radix-ui"],
-      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/icon-button", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/dialog.tsx",
@@ -818,7 +831,7 @@
       "title": "Password Input",
       "description": "A password field with a show and hide button in its border, and room for actions such as generate.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["@abnormal/form-reset", "@abnormal/input-group", "@abnormal/utils"],
+      "registryDependencies": ["@abnormal/form-reset", "@abnormal/input-group", "@abnormal/tooltip", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/password-input.tsx",
@@ -923,7 +936,7 @@
       "title": "Search Input",
       "description": "A search box with the search icon, a clear button of its own and room for a shortcut hint.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["@abnormal/form-reset", "@abnormal/input", "@abnormal/utils"],
+      "registryDependencies": ["@abnormal/form-reset", "@abnormal/input", "@abnormal/tooltip", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/search-input.tsx",
@@ -951,7 +964,7 @@
       "title": "Selection Bar",
       "description": "The toolbar above a list that acts on the rows checked in it: a select-all checkbox, the count, actions and clear.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["@abnormal/button", "@abnormal/checkbox", "@abnormal/utils"],
+      "registryDependencies": ["@abnormal/checkbox", "@abnormal/icon-button", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/selection-bar.tsx",
@@ -991,7 +1004,7 @@
       "title": "Sheet",
       "description": "A drawer attached to the left or right edge, with a translatable close button.",
       "dependencies": ["lucide-react", "radix-ui"],
-      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "registryDependencies": ["@abnormal/icon-button", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/sheet.tsx",
@@ -1023,7 +1036,7 @@
       "title": "Side Pane",
       "description": "A pane beside a list that folds to a narrow rail and opens again: facets on one side, the current row's details on the other, remembered in a cookie.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/icon-button", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/side-pane.tsx",
@@ -1186,7 +1199,7 @@
       "title": "Table",
       "description": "Tables with plain and bordered variants, pinned columns and link-based sortable headers. table-row.ts holds the row action class and row click helper, usable from Server Components.",
       "dependencies": ["lucide-react", "radix-ui"],
-      "registryDependencies": ["@abnormal/scroll-area", "@abnormal/utils"],
+      "registryDependencies": ["@abnormal/scroll-area", "@abnormal/tooltip", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/table.tsx",
@@ -1276,7 +1289,13 @@
       "title": "Time Picker",
       "description": "A time of day: the browser's time input to type into, with a list of times in the theme's popover in place of the browser's picker, valued as \"09:30\" and following a form reset.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["@abnormal/form-reset", "@abnormal/input-group", "@abnormal/popover", "@abnormal/utils"],
+      "registryDependencies": [
+        "@abnormal/form-reset",
+        "@abnormal/input-group",
+        "@abnormal/popover",
+        "@abnormal/tooltip",
+        "@abnormal/utils"
+      ],
       "files": [
         {
           "path": "registry/ui/time-picker.tsx",
@@ -1359,7 +1378,7 @@
       "title": "Toolbar",
       "description": "A row of controls with one tab stop and arrow keys between them, in groups split by separators.",
       "dependencies": ["radix-ui"],
-      "registryDependencies": ["@abnormal/button", "@abnormal/utils"],
+      "registryDependencies": ["@abnormal/button", "@abnormal/tooltip", "@abnormal/utils"],
       "files": [
         {
           "path": "registry/ui/toolbar.tsx",
@@ -1385,7 +1404,7 @@
       "name": "tooltip",
       "type": "registry:ui",
       "title": "Tooltip",
-      "description": "A short hint shown on hover or focus. Works on its own; TooltipProvider shares the delay across an area.",
+      "description": "A short hint shown on hover or keyboard focus, in a portal that moves out of the way of the window edges. LabelTooltip wraps one element in one line; TooltipProvider shares the delay across an area.",
       "dependencies": ["radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [

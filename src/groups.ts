@@ -6,6 +6,7 @@ export const groups = [
     title: "Controls",
     items: [
       "button",
+      "icon-button",
       "input",
       "input-group",
       "search-input",

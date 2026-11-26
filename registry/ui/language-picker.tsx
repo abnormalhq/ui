@@ -12,7 +12,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { LabelTooltip } from "@/components/ui/tooltip";
 
 /** One language the page offers. */
 type LanguageOption = {
@@ -81,8 +81,9 @@ type Side = "top" | "right" | "bottom" | "left";
  * offers, with the current one checked. Like ThemePicker it keeps no state: the page passes the current choice and
  * writes the new one back (a cookie, a saved preference), or gives each option the `href` of its page.
  * `label` names the button, such as "Language: English"; `showValue` also writes the current language's name beside
- * the icon, for a page without a user menu where the button has room (sign-in, a status page). `side`, `align` and
- * `tooltip` place the menu and add a tooltip, as on ThemePicker.
+ * the icon, for a page without a user menu where the button has room (sign-in, a status page). `side` and `align`
+ * place the menu. Without `showValue` the button shows only the icon, so it shows `label` in the theme's tooltip, as
+ * ThemePicker does; `tooltip` gives other words, and false none.
  */
 function LanguagePicker({
   options,
@@ -106,13 +107,14 @@ function LanguagePicker({
   showValue?: boolean;
   side?: Side;
   align?: "start" | "center" | "end";
-  /** A tooltip for the button, such as "Language". */
+  /** The tooltip, when it is not `label` (which an icon-only button shows); false for none. */
   tooltip?: React.ReactNode;
   tooltipSide?: Side;
   /** The menu opening or closing, for a header that closes its other menus when this one opens. */
   onOpenChange?: (open: boolean) => void;
 } & Omit<React.ComponentProps<typeof Button>, "value" | "onChange" | "children" | "aria-label" | "asChild">) {
   const current = options.find((option) => option.value === value);
+  const hint = tooltip === undefined && !showValue ? label : tooltip;
   const trigger = (
     <DropdownMenuTrigger asChild>
       <Button
@@ -133,14 +135,10 @@ function LanguagePicker({
   );
   return (
     <DropdownMenu modal={false} onOpenChange={onOpenChange}>
-      {tooltip === undefined || tooltip === null || tooltip === false ? (
-        trigger
-      ) : (
-        <Tooltip>
-          <TooltipTrigger asChild>{trigger}</TooltipTrigger>
-          <TooltipContent side={tooltipSide}>{tooltip}</TooltipContent>
-        </Tooltip>
-      )}
+      {/* The name sits on the button inside the menu trigger, so the default hint, the name itself, is no description. */}
+      <LabelTooltip label={hint} side={tooltipSide} describe={hint !== label}>
+        {trigger}
+      </LabelTooltip>
       <DropdownMenuContent side={side} align={align} className="min-w-40">
         <LanguageOptions options={options} value={value} onValueChange={onValueChange} />
       </DropdownMenuContent>

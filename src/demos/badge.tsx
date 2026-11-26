@@ -1,6 +1,6 @@
 import { MenuIcon } from "lucide-react";
 import { Badge, BadgeCount, BadgeDot } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 
 export const defaultCopy = {
   default: "Default",
@@ -28,10 +28,10 @@ export default function BadgeDemo({ copy: overrides = {} }: { copy?: Partial<typ
         <BadgeCount count={3} aria-hidden="true" />
         <BadgeCount count={42} variant="destructive" aria-hidden="true" />
         <BadgeCount count={1204} max={99} variant="destructive" aria-hidden="true" />
-        <Button variant="ghost" size="icon-sm" aria-label={copy.unreadFolders} className="relative">
+        <IconButton variant="ghost" size="icon-sm" label={copy.unreadFolders} className="relative">
           <MenuIcon />
           <BadgeDot className="absolute top-1 right-1" />
-        </Button>
+        </IconButton>
       </div>
     </div>
   );

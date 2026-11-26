@@ -96,6 +96,12 @@
       "saving": "正在保存",
       "adding": "正在添加"
     },
+    "icon-button": {
+      "archive": "归档",
+      "delete": "删除",
+      "more": "更多操作",
+      "add": "添加邮箱"
+    },
     "dialog": {
       "trigger": "重命名邮箱",
       "close": "关闭",

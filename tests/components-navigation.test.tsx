@@ -520,6 +520,38 @@ test("a ThemePicker shows the painted theme's icon until the preference is known
   assert.ok(named("Theme").querySelector(".lucide-monitor"));
 });
 
+test("a ThemePicker's or LanguagePicker's default hint, its own name, is not read again as a description", async () => {
+  const hover = async (element: Element) => {
+    await act(async () => {
+      element.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, pointerType: "mouse" }));
+    });
+    await act(async () => new Promise((resolve) => setTimeout(resolve, 350)));
+  };
+  const labels = { system: "System", light: "Light", dark: "Dark" };
+  await mount(
+    <>
+      <ThemePicker value="system" onValueChange={() => {}} labels={labels} label="Theme" />
+      <ThemePicker value="system" onValueChange={() => {}} labels={labels} label="Colors" tooltip="Colors (T)" />
+      <LanguagePicker
+        value="en"
+        options={[
+          { value: "en", label: "English" },
+          { value: "zh", label: "中文" },
+        ]}
+        onValueChange={() => {}}
+        label="Language"
+      />
+    </>,
+  );
+  for (const name of ["Theme", "Language"]) {
+    await hover(named(name));
+    assert.equal(document.querySelector('[data-slot="tooltip-content"]')?.textContent?.includes(name), true);
+    assert.equal(named(name).hasAttribute("aria-describedby"), false);
+  }
+  await hover(named("Colors"));
+  assert.ok(named("Colors").getAttribute("aria-describedby"));
+});
+
 test("Tabs with the pill look keep the tab keyboard and mark the current tab", async () => {
   await mount(
     <Tabs defaultValue="profile">
@@ -802,7 +834,10 @@ test("the facet demo's Show more hands the focus to the first domain it reveals"
   const more = named("Show more");
   more.focus();
   await click(more);
-  assert.equal(document.querySelector('button[aria-pressed][title="brightside.example"]'), document.activeElement);
+  assert.equal(
+    document.querySelector('button[aria-pressed][data-domain="brightside.example"]'),
+    document.activeElement,
+  );
   assert.equal(
     [...document.querySelectorAll("button")].some((button) => button.textContent === "Show more"),
     false,
