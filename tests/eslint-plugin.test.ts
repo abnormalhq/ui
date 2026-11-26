@@ -191,6 +191,10 @@ test("icon buttons need IconButton or a tooltip around them", () => {
       'const t = <button type="button">{count > 0 && count}<BellIcon /></button>;',
       'const u = <button type="button">{name ?? <UserIcon />}</button>;',
       'const v = <button type="button">{showCount && <BadgeCount count={3} />}<BellIcon /></button>;',
+      'const w = <button type="button" aria-label="Done">{ready && <Check aria-hidden="true" />}</button>;',
+      'const x = <button type="button"><BadgeCount count={3} /><BellIcon /></button>;',
+      'const y = <button type="button" aria-label="Clear">{open && <Label className="sr-only" />}<XIcon /></button>;',
+      'const z = <button type="button" aria-label="Done"><Check aria-hidden /></button>;',
     ].join("\n"),
     {
       languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
@@ -200,7 +204,7 @@ test("icon buttons need IconButton or a tooltip around them", () => {
   );
   assert.deepEqual(
     messages.map(({ line }) => line),
-    [1, 3, 4, 13, 14, 15, 17, 18],
+    [1, 3, 4, 13, 14, 15, 17, 18, 23, 25, 26],
   );
   assert.match(messages[0]!.message, /IconButton/);
 });
