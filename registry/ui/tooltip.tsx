@@ -73,7 +73,8 @@ function TooltipTrigger({ onFocus, ...props }: React.ComponentProps<typeof Toolt
  * The content goes to a portal at the end of the page, so no scrolling box, sticky bar or sibling covers or clips it.
  * It opens on `side` (top by default) and moves out of the way by itself: to the opposite side when there is no room,
  * and along the edge so it stays `collisionPadding` (8px) inside the window. It hides while its trigger is scrolled
- * out of view inside a scrolling box.
+ * out of view inside a scrolling box. In full screen it goes into the full-screen element, the only part of the page on
+ * show, such as a video player's.
  */
 function TooltipContent({
   className,
@@ -83,7 +84,8 @@ function TooltipContent({
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Content>) {
   return (
-    <TooltipPrimitive.Portal>
+    // Read as it opens: in full screen only the full-screen element is on show, so the tooltip goes there.
+    <TooltipPrimitive.Portal container={typeof document === "undefined" ? undefined : document.fullscreenElement}>
       <TooltipPrimitive.Content
         data-slot="tooltip-content"
         sideOffset={sideOffset}
