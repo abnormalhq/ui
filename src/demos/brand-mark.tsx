@@ -8,9 +8,10 @@ export const defaultCopy = {
   status: "Status",
   doppel: "Doppel",
   takeone: "Take One",
+  nodus: "Nodus",
 };
 
-const PRODUCTS: Product[] = ["mail", "console", "developers", "status", "doppel", "takeone"];
+const PRODUCTS: Product[] = ["mail", "console", "developers", "status", "doppel", "takeone", "nodus"];
 
 export default function BrandMarkDemo({ copy: overrides = {} }: { copy?: Partial<typeof defaultCopy> } = {}) {
   const copy = { ...defaultCopy, ...overrides };
@@ -20,7 +21,7 @@ export default function BrandMarkDemo({ copy: overrides = {} }: { copy?: Partial
         <BrandMark className="size-10" />
         <BrandName className="text-3xl" />
       </div>
-      <ul className="grid grid-cols-3 gap-x-6 gap-y-4 sm:grid-cols-6">
+      <ul className="grid grid-cols-4 gap-x-6 gap-y-4 sm:grid-cols-7">
         {PRODUCTS.map((product) => (
           <li key={product} className="flex flex-col items-center gap-2 text-xs text-muted-foreground">
             <ProductMark product={product} className="size-10" />
