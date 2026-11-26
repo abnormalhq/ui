@@ -29,7 +29,7 @@ The theme is written on `<html data-theme="light|dark">`, and follows the system
 
 The ink shell: a product's navigation column, or the frame around its content, can be the brand ink in both themes, with the content a sheet of paper set into it. Put `ink` on that element and everything inside takes the dark values whatever the page's theme; `dark:` utilities still follow the page, not the shell. `bg-ink` is the color of the frame itself. Paper inside the shell is a sibling of the `ink` element, not a descendant of it.
 
-Fonts: projects on `next/font` set `--font-inter`, `--font-bricolage` and `--font-jetbrains-mono`, and the theme picks them up. Other projects install `@abnormal/fonts`, import `abnormal-fonts.css` after the theme, and copy the woff2 files from `https://ui.abnormalhq.com/fonts/` into `public/fonts/`: a registry item can only carry text.
+Fonts: projects on `next/font` set `--font-inter`, `--font-bricolage` and `--font-jetbrains-mono`, and the theme picks them up. Other projects install `@abnormal/fonts`, import `abnormal-fonts.css` after the theme, and copy the woff2 files from `https://ui.abnormalhq.com/fonts/` into `public/fonts/`: a registry item can only carry text. The editorial serif of the public pages (`font-serif`: Newsreader and Noto Serif SC) is not among them: the item installs `@fontsource-variable/newsreader` and `@fontsource-variable/noto-serif-sc` and `abnormal-fonts.css` imports them, so the Chinese half downloads only the unicode-range slices a page uses.
 
 Then install components, which bring their own dependencies:
 

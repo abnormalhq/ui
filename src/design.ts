@@ -6,7 +6,7 @@ export const principles = [
   },
   {
     title: "Few sizes, far apart",
-    text: "Text is 14px (13px compact) and meta text 12px; a lead or card title is 16px and titles are 20, 24 and 32px. Tell secondary text apart by color and place, not by a size one pixel smaller. Headings in a product are Inter; Bricolage Grotesque is for display lines on marketing pages; monospace is for code, identifiers and time codes only.",
+    text: "Text is 14px (13px compact) and meta text 12px; a lead or card title is 16px and titles are 20, 24 and 32px. Tell secondary text apart by color and place, not by a size one pixel smaller. Headings in a product are Inter; the titles of the public pages (website, developer site, status page) are the editorial serif, Newsreader with Noto Serif SC; Bricolage Grotesque is kept for the wordmark; monospace is for code, identifiers and time codes only.",
   },
   {
     title: "One surface per task",

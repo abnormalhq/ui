@@ -467,8 +467,8 @@
     "One thing the plan includes, led by a check. The check is decoration: the list already says these are included.": "套餐包含的一项功能，以装饰性勾号开头；列表语义已表达包含关系。"
   },
   "bento": {
-    "A wall of feature tiles on a landing page: one column on phones, two from `sm` and three from `lg`. Tiles are panels with a faint fill over the page, so the wall reads as one surface in either theme, with no shadows. Tiles read in source order; a `wide` tile takes two columns from `sm` up, so place it where the tiles after it can fill its row. Pass `asChild` with a `ul role=\"list\"` and give each tile `asChild` with an `li` when the tiles are a list: the wall takes the list markers away, and Safari then stops announcing a list unless the role says so.": "落地页的功能块墙：手机一列，sm 起两列，lg 起三列。每块是覆在页面上的淡填充面板，两种主题下都读作同一平面，不用阴影。按源码顺序阅读；wide 块从 sm 起横跨两列，安排位置时让后面的块能补满这一行。块是列表时，给 Bento 传 asChild 包一个 ul role=\"list\"，并给每块传 asChild 包一个 li：功能墙去掉了列表符号，Safari 在没有这个 role 时就不再把它读作列表。",
-    "One tile: a title, a sentence and a visual. The text leads and the visual sits at the foot, so the titles of a row start on one line whatever the height of the pictures under them.": "单个功能块：标题、一句说明和示意图。文字在上、示意图沉底，所以同一行的标题总在同一条线上，不受下方图片高度影响。",
+    "A wall of feature tiles on a landing page: one column on phones, two from `sm` and three from `lg`. Tiles are columns of a page, not boxes: each opens under a hairline rule, as in a magazine, so the drawing inside a tile is the one container on screen and the wall reads as one surface in either theme. Tiles read in source order; a `wide` tile takes two columns from `sm` up, so place it where the tiles after it can fill its row. Pass `asChild` with a `ul role=\"list\"` and give each tile `asChild` with an `li` when the tiles are a list: the wall takes the list markers away, and Safari then stops announcing a list unless the role says so.": "落地页的功能块墙：手机一列，sm 起两列，lg 起三列。每块是页面上的一栏而不是一个框：像杂志那样以一条细线开头，所以块里的示意图是屏幕上唯一的容器，两种主题下都读作同一平面。按源码顺序阅读；wide 块从 sm 起横跨两列，安排位置时让后面的块能补满这一行。块是列表时，给 Bento 传 asChild 包一个 ul role=\"list\"，并给每块传 asChild 包一个 li：功能墙去掉了列表符号，Safari 在没有这个 role 时就不再把它读作列表。",
+    "One tile: a title, a sentence and a visual. The text leads and the visual sits at the foot, so the titles of a row start on one line whatever the height of the pictures under them. The rule above it is the page's border color: a column break, not a frame.": "单个功能块：标题、一句说明和示意图。文字在上、示意图沉底，所以同一行的标题总在同一条线上，不受下方图片高度影响。上方的细线用页面的边框色：表示分栏，而不是框。",
     "The tile's title, an h3 unless `asChild` gives it the level the page needs.": "功能块标题，默认是 h3；页面需要其他层级时用 asChild 指定。",
     "The picture at the foot of a tile: a small piece of the product drawn in markup, a screenshot, a number. It is pushed to the bottom of the tile. When it only illustrates what the text already says, mark it `aria-hidden`.": "功能块底部的示意：用标记画出的一小段产品界面、截图或一个数字，会被推到块的底部。若它只是图解文字已说明的内容，请加 aria-hidden。"
   },
@@ -477,8 +477,8 @@
   },
   "section-heading": {
     "Section spacing that grows with the viewport.": "随视口增大的分区间距。",
-    "A small uppercase label, led by a signal-colored dot.": "以信号色圆点引导的小型大写标签。",
-    "The section title scale: 28px on phones, then the display scale: 34px on tablets, 40px on desktops.": "分区标题字号：手机 28px，平板 34px，桌面 40px。",
+    "A small uppercase label over a title, like the section line of a magazine page. It is set apart by its size and spacing alone: a dot in front of every label made dots decoration, and dots are kept for unread and for trouble.": "标题上方的小型大写标签，像杂志页的栏目名。只靠字号和间距区分：每个标签前都放圆点会让圆点沦为装饰，圆点只留给未读和出问题。",
+    "The section title scale: 28px on phones, then the display scale: 34px on tablets, 40px on desktops. Titles are the editorial serif at a medium weight: the size carries them, as in print, not a heavy stroke.": "分区标题字号：手机 28px，平板 34px，桌面 40px。标题用编辑排版的衬线字体、中等字重：像印刷品一样靠字号撑起标题，而不是靠粗笔画。",
     "The title at the top of an inner page (pricing, help, a document): its h1, a step above the section title, from 36px on phones to 56px on wide screens. A landing page's hero sets its own, larger headline.": "内页（定价、帮助、文档）顶部的标题，即页面的 h1，比分区标题大一级：手机 36px，宽屏 56px。落地页首屏的大标题自行设定，更大一些。",
     "The sentence or two under a page title that says what the page is for.": "页面标题下一两句说明页面用途的导语。",
     "The punctuation that ends a headline, in the signal color.": "标题末尾使用信号色的标点。"
