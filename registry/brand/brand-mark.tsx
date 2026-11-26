@@ -34,11 +34,11 @@ function BrandMark({ className, ...props }: React.ComponentProps<"svg">) {
  * Each product's glyph in a 20×20 box, drawn as the mark's arrow is: square caps, mitered corners, one stroke weight.
  * `lines` (strokes) and `fill` (shapes) are drawn in paper, `accent` (strokes) and `accentFill` (shapes) in the
  * highlighter, the product's one yellow: the envelope's flap, the lit cell of the console's grid, the slash between the
- * brackets, the status pulse, the front window of Doppel, the play button of Take One. The console's cells are solid,
- * because outlined cells run together at favicon size.
+ * brackets, the status pulse, the front window of Doppel, the play button of Take One, the route Nodus picks. The
+ * console's cells are solid, because outlined cells run together at favicon size.
  */
 const PRODUCT_GLYPHS: Record<
-  "mail" | "console" | "developers" | "status" | "doppel" | "takeone",
+  "mail" | "console" | "developers" | "status" | "doppel" | "takeone" | "nodus",
   { lines: readonly string[]; fill: readonly string[]; accent: readonly string[]; accentFill: readonly string[] }
 > = {
   mail: { lines: ["M1 4H19V17H1Z"], fill: [], accent: ["M2.2 5 10 11 17.8 5"], accentFill: [] },
@@ -62,6 +62,9 @@ const PRODUCT_GLYPHS: Record<
     accent: [],
     accentFill: ["M7.5 10.5 13.5 13.5 7.5 16.5Z"],
   },
+  // One line in that forks three ways, the way a selector chooses an outbound: the two it did not choose in paper, the
+  // one it did straight through in the highlighter. Each fork is a single path, so the joint is mitered, not capped.
+  nodus: { lines: ["M1 10H6L12 3H19", "M1 10H6L12 17H19"], fill: [], accent: ["M6 10H19"], accentFill: [] },
 };
 
 /**
