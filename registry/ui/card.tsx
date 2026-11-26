@@ -52,18 +52,29 @@ function CardTitle({ className, asChild = false, ...props }: React.ComponentProp
   );
 }
 
+/**
+ * Under a title with an action, on a phone the description takes the header's full width, under both (see CardAction).
+ */
 function CardDescription({ className, ...props }: React.ComponentProps<"p">) {
   return (
-    <p data-slot="card-description" className={cn("text-sm text-pretty text-muted-foreground", className)} {...props} />
+    <p
+      data-slot="card-description"
+      className={cn("text-sm text-pretty text-muted-foreground max-sm:col-span-full", className)}
+      {...props}
+    />
   );
 }
 
+/**
+ * The header's button, at the right of the title and the description. On a phone it sits level with the title only,
+ * and the description runs under both: beside a button, a paragraph on a 320px screen was a column a few words wide.
+ */
 function CardAction({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-action"
       className={cn(
-        "col-start-2 row-span-2 row-start-1 flex items-center gap-2 self-center justify-self-end",
+        "col-start-2 row-span-2 row-start-1 flex items-center gap-2 self-center justify-self-end max-sm:[grid-row:1]",
         className,
       )}
       {...props}
