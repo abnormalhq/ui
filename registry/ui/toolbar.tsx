@@ -65,18 +65,22 @@ function ToolbarSeparator({ className, ...props }: React.ComponentProps<typeof T
 /**
  * A Button in the toolbar's roving focus, ghost and icon-sized unless told otherwise. `pressed` makes it a toggle
  * (aria-pressed), shown with the control fill: bold, italic, a list. An icon-only button needs aria-label, which
- * an icon-sized one also shows in the theme's tooltip.
+ * an icon-sized one also shows in the theme's tooltip; `tooltip` shows more than the name instead, such as the
+ * shortcut, and on any size.
  */
 function ToolbarButton({
   pressed,
   disabled,
+  tooltip,
   variant = "ghost",
   size = "icon-sm",
   className,
   ...props
-}: Omit<React.ComponentProps<typeof Button>, "asChild" | "aria-pressed"> & {
+}: Omit<React.ComponentProps<typeof Button>, "asChild" | "aria-pressed" | "title"> & {
   /** The toggle's state; leave it out for a plain button. */
   pressed?: boolean;
+  /** The hint, when it says more than the name, such as "Bold (Ctrl+B)". */
+  tooltip?: string;
 }) {
   const name = props["aria-label"];
   const button = (
@@ -94,13 +98,12 @@ function ToolbarButton({
       />
     </ToolbarPrimitive.Button>
   );
-  // The name is on the button inside the primitive, so the hint says it once rather than describe the button with it.
-  return typeof size === "string" && size.startsWith("icon") && name ? (
-    <LabelTooltip label={name} describe={false}>
+  const iconName = typeof size === "string" && size.startsWith("icon") ? name : undefined;
+  // The name is on the button inside the primitive, so a hint that only repeats it does not describe the button too.
+  return (
+    <LabelTooltip label={tooltip ?? iconName} describe={tooltip !== undefined && tooltip !== name}>
       {button}
     </LabelTooltip>
-  ) : (
-    button
   );
 }
 

@@ -513,7 +513,8 @@ test("a ThemePicker shows the painted theme's icon until the preference is known
   // Both are drawn, and the stylesheet shows the one for the theme on screen.
   assert.ok(button.querySelector('[data-slot="theme-picker-light"].dark\\:hidden'));
   assert.ok(button.querySelector('[data-slot="theme-picker-dark"].dark\\:block'));
-  assert.equal(button.getAttribute("data-slot"), "tooltip-trigger");
+  // The menu trigger keeps its own data-slot; the tooltip around it does not replace it.
+  assert.equal(button.getAttribute("data-slot"), "dropdown-menu-trigger");
 
   await rerender(<ThemePicker value="system" onValueChange={() => {}} labels={labels} label="Theme" />);
   assert.equal(named("Theme").querySelectorAll("svg").length, 1);
