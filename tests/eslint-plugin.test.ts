@@ -190,6 +190,7 @@ test("icon buttons need IconButton or a tooltip around them", () => {
       'const s = <button type="button">{busy ? <Spinner /> : "Save"}</button>;',
       'const t = <button type="button">{count > 0 && count}<BellIcon /></button>;',
       'const u = <button type="button">{name ?? <UserIcon />}</button>;',
+      'const v = <button type="button">{showCount && <BadgeCount count={3} />}<BellIcon /></button>;',
     ].join("\n"),
     {
       languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },

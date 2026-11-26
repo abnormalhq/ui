@@ -671,3 +671,34 @@ test("a LabelTooltip reads a child that arrives as a lazy reference, as a server
   );
   assert.ok(container.querySelector('[data-slot="tooltip-disabled-trigger"] button[aria-label="Archive"]'));
 });
+
+test("a LabelTooltip reads through a lazy reference that resolves to another one", async () => {
+  const element = (
+    <button type="button" aria-label="Archive" disabled>
+      <svg aria-hidden="true" />
+    </button>
+  );
+  const lazyOf = (value: unknown) => ({
+    $$typeof: Symbol.for("react.lazy"),
+    _payload: Object.assign(Promise.resolve(value), { status: "fulfilled", value }),
+    _init: () => value,
+  });
+  const { container } = await mount(
+    <LabelTooltip label="Archive">{lazyOf(lazyOf(element)) as unknown as React.ReactElement}</LabelTooltip>,
+  );
+  assert.ok(container.querySelector('[data-slot="tooltip-disabled-trigger"] button[aria-label="Archive"]'));
+});
+
+test("a disabled child stays the same element as its tooltip opens", async () => {
+  const { container } = await mount(
+    <LabelTooltip label="Generate the shots first">
+      <button type="button" disabled>
+        Export
+      </button>
+    </LabelTooltip>,
+  );
+  const before = container.querySelector("button")!;
+  await hover(container.querySelector('[data-slot="tooltip-disabled-trigger"]')!);
+  assert.ok(before.getAttribute("aria-describedby"));
+  assert.equal(container.querySelector("button"), before);
+});
