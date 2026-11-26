@@ -177,6 +177,7 @@ test("icon buttons need IconButton or a tooltip around them", () => {
       'const h = <TooltipTrigger asChild><Button size="icon" aria-label="Help"><HelpIcon /></Button></TooltipTrigger>;',
       "const i = <button {...props} />;",
       'const j = <Button size="sm">Save</Button>;',
+      'const k = <button type="submit" className="hidden" aria-hidden="true" tabIndex={-1} />;',
     ].join("\n"),
     {
       languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
