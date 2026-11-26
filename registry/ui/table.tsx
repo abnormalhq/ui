@@ -174,7 +174,7 @@ function TableRow({ className, current = false, ...props }: React.ComponentProps
         variant === "plain"
           ? ""
           : // A checked row keeps its tint under the pointer and while its menu is open, as the current row does.
-            "border-b transition-colors duration-100 not-data-[state=selected]:hover:bg-accent not-data-[state=selected]:has-aria-expanded:bg-accent data-[state=selected]:bg-selected",
+            "border-b transition-colors duration-100 hover:bg-accent has-aria-expanded:bg-accent data-[state=selected]:bg-selected data-[state=selected]:hover:bg-selected data-[state=selected]:has-aria-expanded:bg-selected",
         current &&
           (variant === "plain"
             ? "[&>td]:bg-selected [&>td:first-child]:shadow-[inset_2px_0_0_var(--highlight)]"
