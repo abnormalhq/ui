@@ -398,3 +398,23 @@ test("a LabelTooltip with no label, or inside a TooltipTrigger, adds nothing", a
   // One trigger: the outer one's data-state, not a second tooltip of the IconButton's own.
   assert.equal(container.querySelectorAll("[data-state]").length, 1);
 });
+
+test("a LabelTooltip around a disabled button still opens, from a box around it", async () => {
+  const { container } = await mount(
+    <LabelTooltip label="Generate the shots first">
+      <button type="button" disabled>
+        Export
+      </button>
+    </LabelTooltip>,
+  );
+  const box = container.querySelector('[data-slot="tooltip-disabled-trigger"]')!;
+  assert.ok(box.contains(container.querySelector("button")));
+  await act(async () => {
+    box.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, pointerType: "mouse" }));
+  });
+  await act(async () => new Promise((resolve) => setTimeout(resolve, 350)));
+  assert.equal(
+    document.querySelector('[data-slot="tooltip-content"]')?.textContent?.includes("Generate the shots first"),
+    true,
+  );
+});
