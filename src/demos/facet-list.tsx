@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { SearchInput } from "@/components/ui/search-input";
 import {
   FacetCount,
@@ -13,6 +13,7 @@ import {
   FacetRow,
 } from "@/components/ui/facet-list";
 import { statusDotVariants } from "@/components/ui/status-label";
+import { LabelTooltip } from "@/components/ui/tooltip";
 
 export const defaultCopy = {
   views: "Views",
@@ -58,6 +59,14 @@ export default function FacetListDemo({ copy: overrides = {} }: { copy?: Partial
   const shown = matched.slice(0, limit);
   // The first domain "Show more" reveals takes the focus, since the button goes away once nothing is left to show.
   const reveal = useRef<string | null>(null);
+  // One ref for every row, so the tooltip around each row (whose trigger keeps the row in state) gets the same callback
+  // on every render; a new one each time would detach and attach the row, and render again, without end.
+  const revealed = useCallback((element: HTMLButtonElement | null) => {
+    if (element && reveal.current === element.dataset.domain) {
+      reveal.current = null;
+      element.focus();
+    }
+  }, []);
 
   return (
     <div className="grid w-full max-w-60 gap-5">
@@ -102,23 +111,20 @@ export default function FacetListDemo({ copy: overrides = {} }: { copy?: Partial
         <FacetList aria-labelledby="facet-demo-domains">
           {shown.map(({ name, count }) => (
             <FacetItem key={name}>
-              <FacetRow asChild selected={domain === name}>
-                <button
-                  type="button"
-                  aria-pressed={domain === name}
-                  title={name}
-                  ref={(element) => {
-                    if (element && reveal.current === name) {
-                      reveal.current = null;
-                      element.focus();
-                    }
-                  }}
-                  onClick={() => setDomain(domain === name ? null : name)}
-                >
-                  <FacetLabel>{name}</FacetLabel>
-                  <FacetCount>{count}</FacetCount>
-                </button>
-              </FacetRow>
+              <LabelTooltip label={name}>
+                <FacetRow asChild selected={domain === name}>
+                  <button
+                    type="button"
+                    aria-pressed={domain === name}
+                    data-domain={name}
+                    ref={revealed}
+                    onClick={() => setDomain(domain === name ? null : name)}
+                  >
+                    <FacetLabel>{name}</FacetLabel>
+                    <FacetCount>{count}</FacetCount>
+                  </button>
+                </FacetRow>
+              </LabelTooltip>
             </FacetItem>
           ))}
         </FacetList>

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { BrandMark, BrandName } from "@/components/ui/brand-mark";
-import { Button } from "@/components/ui/button";
 import { Sheet, SheetBody, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { TextLink } from "@/components/ui/text-link";
 import { ThemePicker, type ThemePreference } from "@/components/ui/theme-picker";
@@ -14,6 +13,7 @@ import { LanguageSwitch } from "@/site/components/language-switch";
 import type { Locale } from "@/site/i18n/locales";
 import { localeHref } from "@/site/i18n/locale-path";
 import { SiteNav, type NavGroup } from "@/site/components/site-nav";
+import { IconButton } from "@/components/ui/icon-button";
 
 /** The registry's ThemePicker over the preference the registry's ThemeScript keeps. */
 function SiteThemePicker() {
@@ -41,9 +41,9 @@ function MobileNav({ groups, locale }: { groups: NavGroup[]; locale: Locale }) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="lg:hidden" aria-label={t("openNavigation")}>
+        <IconButton variant="ghost" size="icon" className="lg:hidden" label={t("openNavigation")}>
           <MenuIcon />
-        </Button>
+        </IconButton>
       </SheetTrigger>
       <SheetContent side="left" closeLabel={t("closeNavigation")} aria-describedby={undefined}>
         <SheetHeader>

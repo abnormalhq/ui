@@ -3,7 +3,7 @@
 import * as React from "react";
 import { XIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { Checkbox } from "@/components/ui/checkbox";
 
 /**
@@ -114,18 +114,17 @@ function SelectionBar({
             {children}
           </fieldset>
           {onClear && clearLabel !== undefined && (
-            <Button
+            <IconButton
               type="button"
               variant="ghost"
               size="icon-sm"
-              aria-label={clearLabel}
-              title={clearLabel}
+              label={clearLabel}
               disabled={disabled}
               onClick={onClear}
               className="ml-auto"
             >
               <XIcon />
-            </Button>
+            </IconButton>
           )}
         </>
       )}

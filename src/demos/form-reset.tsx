@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useFormReset } from "@/components/ui/use-form-reset";
+import { IconButton } from "@/components/ui/icon-button";
 
 export const defaultCopy = {
   removeSeat: "Remove a seat",
@@ -25,20 +26,20 @@ function Seats({ name, defaultValue, copy }: { name: string; defaultValue: numbe
 
   return (
     <div className="flex items-center gap-2">
-      <Button
+      <IconButton
         type="button"
         variant="outline"
         size="icon"
-        aria-label={copy.removeSeat}
+        label={copy.removeSeat}
         disabled={seats <= 1}
         onClick={() => setSeats(seats - 1)}
       >
         <MinusIcon />
-      </Button>
+      </IconButton>
       <output className="w-8 text-center tabular-nums">{seats}</output>
-      <Button type="button" variant="outline" size="icon" aria-label={copy.addSeat} onClick={() => setSeats(seats + 1)}>
+      <IconButton type="button" variant="outline" size="icon" label={copy.addSeat} onClick={() => setSeats(seats + 1)}>
         <PlusIcon />
-      </Button>
+      </IconButton>
       <input ref={field} type="hidden" name={name} value={seats} />
     </div>
   );

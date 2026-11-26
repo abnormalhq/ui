@@ -136,3 +136,62 @@ test("the CSS rule reports literal colors, sizes, spacing, radii and layers, but
     ],
   );
 });
+
+test("native titles are reported on HTML elements and the components that pass them on, not where title names a frame", () => {
+  const linter = new Linter();
+  const messages = linter.verify(
+    [
+      'const a = <button title="Archive" aria-label="Archive" />;',
+      'const b = <span className="truncate" title={subject}>{subject}</span>;',
+      'const c = <Button title="Export">Export</Button>;',
+      'const d = <iframe title="Preview" src="/p" />;',
+      'const e = <PageHeader title="Mailboxes" />;',
+      "// abnormal-allow: a printed page has no pointer",
+      'const f = <span title="Printed" />;',
+      'const g = <abbr title="Domain-based Message Authentication">DMARC</abbr>;',
+    ].join("\n"),
+    {
+      languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
+      plugins: { abnormal },
+      rules: { "abnormal/no-native-title": "error" },
+    },
+  );
+  assert.deepEqual(
+    messages.map(({ line }) => line),
+    [1, 2, 3],
+  );
+  assert.match(messages[0]!.message, /LabelTooltip/);
+});
+
+test("icon buttons need IconButton or a tooltip around them", () => {
+  const linter = new Linter();
+  const messages = linter.verify(
+    [
+      'const a = <Button size="icon-sm" aria-label="Close"><XIcon /></Button>;',
+      'const b = <IconButton size="icon-sm" label="Close"><XIcon /></IconButton>;',
+      'const c = <button type="button" aria-label="Clear"><XIcon /></button>;',
+      'const d = <button type="button"><XIcon /><span className="sr-only">Clear</span></button>;',
+      'const e = <button type="button">Save</button>;',
+      'const f = <button type="button">{label}</button>;',
+      'const g = <LabelTooltip label="Clear"><button type="button" aria-label="Clear"><XIcon /></button></LabelTooltip>;',
+      'const h = <TooltipTrigger asChild><Button size="icon" aria-label="Help"><HelpIcon /></Button></TooltipTrigger>;',
+      "const i = <button {...props} />;",
+      'const j = <Button size="sm">Save</Button>;',
+      'const k = <button type="submit" className="hidden" aria-hidden="true" tabIndex={-1} />;',
+      'const l = <button type="submit" hidden />;',
+      'const m = <button type="button" hidden={false} aria-label="Clear"><XIcon /></button>;',
+      'const n = <button type="button" hidden={collapsed} aria-label="Clear"><XIcon /></button>;',
+      'const o = <button type="button" aria-hidden="true" aria-label="Clear"><XIcon /></button>;',
+    ].join("\n"),
+    {
+      languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
+      plugins: { abnormal },
+      rules: { "abnormal/icon-button-label": "error" },
+    },
+  );
+  assert.deepEqual(
+    messages.map(({ line }) => line),
+    [1, 3, 4, 13, 14, 15],
+  );
+  assert.match(messages[0]!.message, /IconButton/);
+});

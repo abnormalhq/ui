@@ -4,7 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Dialog as SheetPrimitive } from "radix-ui";
 import { XIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 
 /**
  * Right-hand drawer: click a row in a list to open its details (redeem code, log). It is essentially a Radix Dialog: focus is trapped inside, Esc closes it, and screen readers treat it as a dialog;
@@ -61,10 +61,9 @@ function SheetContent({
       >
         {children}
         <SheetPrimitive.Close asChild>
-          <Button variant="ghost" size="icon-sm" className="absolute top-3.5 right-3.5">
+          <IconButton variant="ghost" size="icon-sm" className="absolute top-3.5 right-3.5" label={closeLabel}>
             <XIcon />
-            <span className="sr-only">{closeLabel}</span>
-          </Button>
+          </IconButton>
         </SheetPrimitive.Close>
       </SheetPrimitive.Content>
     </SheetPrimitive.Portal>

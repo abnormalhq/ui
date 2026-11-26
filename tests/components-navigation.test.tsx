@@ -802,7 +802,10 @@ test("the facet demo's Show more hands the focus to the first domain it reveals"
   const more = named("Show more");
   more.focus();
   await click(more);
-  assert.equal(document.querySelector('button[aria-pressed][title="brightside.example"]'), document.activeElement);
+  assert.equal(
+    document.querySelector('button[aria-pressed][data-domain="brightside.example"]'),
+    document.activeElement,
+  );
   assert.equal(
     [...document.querySelectorAll("button")].some((button) => button.textContent === "Show more"),
     false,

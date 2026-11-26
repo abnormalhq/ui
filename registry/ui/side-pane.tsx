@@ -4,6 +4,7 @@ import * as React from "react";
 import { PanelLeftCloseIcon, PanelLeftOpenIcon, PanelRightCloseIcon, PanelRightOpenIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 
 /** A year, renewed by every change, so the choice outlives a session but not an abandoned browser. */
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
@@ -159,15 +160,14 @@ function SidePaneToggle({
         : PanelRightCloseIcon;
   const label = collapsed ? expandLabel : collapseLabel;
   return (
-    <Button
+    <IconButton
       type="button"
       variant="ghost"
       size="icon-sm"
       data-slot="side-pane-toggle"
       aria-expanded={!collapsed}
       aria-controls={contentId}
-      aria-label={label}
-      title={label}
+      label={label}
       className={cn("shrink-0 text-muted-foreground group-data-[state=collapsed]/side-pane:order-first", className)}
       onClick={(event) => {
         onClick?.(event);
@@ -176,7 +176,7 @@ function SidePaneToggle({
       {...props}
     >
       <Icon />
-    </Button>
+    </IconButton>
   );
 }
 

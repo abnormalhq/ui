@@ -3,7 +3,6 @@
 import * as React from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import {
   addDays,
   addMonths,
@@ -18,6 +17,7 @@ import {
   parseISODate,
 } from "@/components/ui/calendar-date";
 import { NativeSelect } from "@/components/ui/native-select";
+import { IconButton } from "@/components/ui/icon-button";
 
 /**
  * The names of the two lists that jump to a month and to a year, such as "Month" and "Year". Given both, the caption
@@ -253,17 +253,17 @@ function Calendar({
   return (
     <div data-slot="calendar" className={cn("inline-grid w-fit gap-2", className)} {...props}>
       <div className="flex items-center justify-between gap-1">
-        <Button
+        <IconButton
           variant="ghost"
           size="icon-sm"
           type="button"
           data-slot="calendar-previous"
-          aria-label={previousLabel}
+          label={previousLabel}
           disabled={atFirstMonth}
           onClick={() => showMonth(previousMonth)}
         >
           <ChevronLeftIcon className="rtl:rotate-180" />
-        </Button>
+        </IconButton>
         {/* With the lists on show the month's name is still here, for the grid's name and for the announcement. */}
         <div
           id={captionId}
@@ -314,17 +314,17 @@ function Calendar({
             </NativeSelect>
           </div>
         )}
-        <Button
+        <IconButton
           variant="ghost"
           size="icon-sm"
           type="button"
           data-slot="calendar-next"
-          aria-label={nextLabel}
+          label={nextLabel}
           disabled={atLastMonth}
           onClick={() => showMonth(nextMonth)}
         >
           <ChevronRightIcon className="rtl:rotate-180" />
-        </Button>
+        </IconButton>
       </div>
       <table
         ref={grid}

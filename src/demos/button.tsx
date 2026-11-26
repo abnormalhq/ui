@@ -1,5 +1,6 @@
 import { ArrowRightIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 
 export const defaultCopy = {
   save: "Save",
@@ -38,14 +39,14 @@ export default function ButtonDemo({ copy: overrides = {} }: { copy?: Partial<ty
           {copy.continue}
           <ArrowRightIcon />
         </Button>
-        <Button size="icon" variant="outline" aria-label={copy.add}>
+        <IconButton size="icon" variant="outline" label={copy.add}>
           <PlusIcon />
-        </Button>
+        </IconButton>
         <Button disabled>{copy.disabled}</Button>
         <Button loading>{copy.saving}</Button>
-        <Button size="icon" variant="outline" loading aria-label={copy.adding}>
+        <IconButton size="icon" variant="outline" loading label={copy.adding}>
           <PlusIcon />
-        </Button>
+        </IconButton>
       </div>
     </div>
   );

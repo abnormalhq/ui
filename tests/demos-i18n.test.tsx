@@ -329,7 +329,7 @@ test("translated demos show Chinese button, dialog, calendar, table, confirm and
     };
     await clickButton(view.container.querySelector('[data-demo="dialog"]')!, "重命名邮箱");
     assert.ok(document.body.textContent?.includes("向旧地址发送邮件的人会收到退信。"));
-    assert.equal(document.body.querySelector('[data-slot="dialog-close"]')?.textContent?.trim(), "关闭");
+    assert.equal(document.body.querySelector('[data-slot="dialog-close"]')?.getAttribute("aria-label"), "关闭");
 
     await clickButton(view.container.querySelector('[data-demo="confirm"]')!, "删除邮箱");
     assert.ok(document.body.textContent?.includes("确定要删除此邮箱吗？"));
