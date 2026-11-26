@@ -18,6 +18,7 @@ import {
   ClipTrackRuler,
   clipTrackMinWidth,
 } from "@/components/ui/clip-track";
+import { ProductMark, productFaviconSvg, type Product } from "@/components/ui/brand-mark";
 import { CodeBlock } from "@/components/ui/code-block";
 import { DescriptionDetails, DescriptionItem, DescriptionList } from "@/components/ui/description-list";
 import { EmptyState, EmptyStateTitle } from "@/components/ui/empty-state";
@@ -500,4 +501,33 @@ test("a NotFound is a main with the mark first, or the page's own element, and l
   assert.doesNotMatch(bare, /<svg/);
   assert.match(bare, /^<section data-slot="not-found"[^>]*><h1[^>]*>Gone<\/h1><\/section>$/);
   assert.doesNotMatch(renderToStaticMarkup(<NotFound mark={false} />), /<svg/);
+});
+
+test("a product's favicon is its ProductMark on a light tab strip and the glyph alone, nearly full size, on a dark one", () => {
+  const products: Product[] = ["mail", "console", "developers", "status", "doppel", "takeone", "nodus"];
+  for (const product of products) {
+    const svg = productFaviconSvg(product);
+    const [, light, dark] = /<g class="light">(.*)<\/g><g class="dark" (.*)<\/g><\/svg>$/.exec(svg) ?? [];
+    assert.ok(light && dark, product);
+    assert.match(svg, /@media \(prefers-color-scheme:dark\)\{\.light\{display:none\}\.dark\{display:inline\}\}/);
+    // The light drawing is the component's own, at its place and weight, cropped to a circle.
+    const paths = (markup: string) => [...markup.matchAll(/<path d="([^"]+)"/g)].map((match) => match[1]);
+    const group = (markup: string) =>
+      /<g transform="([^"]+)" fill="none" stroke-width="([^"]+)"/.exec(markup)?.slice(1);
+    const mark = renderToStaticMarkup(<ProductMark product={product} />);
+    assert.deepEqual(paths(light), paths(mark), product);
+    assert.deepEqual(group(light), group(mark), product);
+    assert.match(light, /^<circle cx="24" cy="24" r="24" fill="#141412"\/>/);
+    // The dark drawing has no tile, the same paths, and spans 44 of the 48px on its long side, stroke included.
+    assert.doesNotMatch(dark, /<circle|<rect/);
+    assert.deepEqual(paths(dark), paths(mark), product);
+    const placed =
+      /^transform="translate\(([-\d.]+) ([-\d.]+)\) scale\(([\d.]+)\)" fill="none" stroke-width="([\d.]+)"/.exec(dark);
+    assert.ok(placed, product);
+    const [x, y, scale, stroke] = placed.slice(1).map(Number) as [number, number, number, number];
+    assert.ok(Math.abs(stroke * scale - 4.4) < 0.01, product);
+    assert.ok(scale > 1.9, `${product} is drawn at ${scale}`);
+    // Centered: the offsets put the middle of the 20px grid's drawn box at the canvas's center, within rounding.
+    assert.ok(x > -1 && y > -1 && x < 6 && y < 6, product);
+  }
 });
