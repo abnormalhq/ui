@@ -39,37 +39,53 @@ function BrandMark({ className, ...props }: React.ComponentProps<"svg">) {
  */
 const PRODUCT_GLYPHS: Record<
   "mail" | "console" | "developers" | "status" | "doppel" | "takeone" | "nodus",
-  { lines: readonly string[]; fill: readonly string[]; accent: readonly string[]; accentFill: readonly string[] }
+  {
+    lines: readonly string[];
+    fill: readonly string[];
+    accent: readonly string[];
+    accentFill: readonly string[];
+    /** The glyph's drawn box in the 20×20 grid, as [left, top, right, bottom], before the stroke: the favicon centers and sizes the glyph by it. */
+    box: readonly [number, number, number, number];
+  }
 > = {
-  mail: { lines: ["M1 4H19V17H1Z"], fill: [], accent: ["M2.2 5 10 11 17.8 5"], accentFill: [] },
+  mail: { lines: ["M1 4H19V17H1Z"], fill: [], accent: ["M2.2 5 10 11 17.8 5"], accentFill: [], box: [1, 4, 19, 17] },
   console: {
     lines: [],
     fill: ["M1 1H9V9H1Z", "M1 11H9V19H1Z", "M11 11H19V19H11Z"],
     accent: [],
     accentFill: ["M11 1H19V9H11Z"],
+    box: [1, 1, 19, 19],
   },
   developers: {
     lines: ["M6.5 3.5 1 10 6.5 16.5", "M13.5 3.5 19 10 13.5 16.5"],
     fill: [],
     accent: ["M11.5 1.5 8.5 18.5"],
     accentFill: [],
+    box: [1, 1.5, 19, 18.5],
   },
-  status: { lines: [], fill: [], accent: ["M0 11H5L8 3L12 18L15 11H20"], accentFill: [] },
-  doppel: { lines: ["M6 6V1H19V14H14"], fill: [], accent: ["M1 6H14V19H1Z"], accentFill: [] },
+  status: { lines: [], fill: [], accent: ["M0 11H5L8 3L12 18L15 11H20"], accentFill: [], box: [0, 3, 20, 18] },
+  doppel: { lines: ["M6 6V1H19V14H14"], fill: [], accent: ["M1 6H14V19H1Z"], accentFill: [], box: [1, 1, 19, 19] },
   takeone: {
     lines: ["M1 8H19V19H1Z", "M1 5.5 18 1"],
     fill: [],
     accent: [],
     accentFill: ["M7.5 10.5 13.5 13.5 7.5 16.5Z"],
+    box: [1, 1, 19, 19],
   },
   // One line in that forks three ways, the way a selector chooses an outbound: the two it did not choose in paper, the
   // one it did straight through in the highlighter. Each fork is a single path, so the joint is mitered, not capped.
-  nodus: { lines: ["M1 10H6L12 3H19", "M1 10H6L12 17H19"], fill: [], accent: ["M6 10H19"], accentFill: [] },
+  nodus: {
+    lines: ["M1 10H6L12 3H19", "M1 10H6L12 17H19"],
+    fill: [],
+    accent: ["M6 10H19"],
+    accentFill: [],
+    box: [1, 3, 19, 17],
+  },
 };
 
 /**
  * Where the glyph sits in the 48×48 grid: scaled 1.6 times about the center, so it spans the middle 32px (two thirds of
- * the tile, as the glyphs of GitHub or ChatGPT fill theirs) and reads at 16px. Its corners stay inside a 23px radius,
+ * the tile) and reads at 16px. Its corners stay inside a 23px radius,
  * so a round crop keeps it whole. The stroke is 3.6px of the grid: about 1.2px at 16px.
  */
 const GLYPH_SCALE = 1.6;
@@ -120,6 +136,58 @@ function ProductMark({ product, className, ...props }: React.ComponentProps<"svg
   );
 }
 
+/**
+ * The glyph on a dark tab strip: no tile, the glyph alone, as large as GitHub's or ChatGPT's mark is in theirs. Its
+ * drawn box, stroke included, is 44px of the 48px canvas on its long side, and the stroke is 4.4px (about 1.5px at
+ * 16px), heavier than on the tile because nothing behind it sets it off.
+ */
+const FAVICON_GLYPH_SIZE = 44;
+const FAVICON_GLYPH_STROKE = 4.4;
+
+// Shortens a number for an SVG attribute: at most three decimals, without trailing zeros.
+function svgNumber(value: number): string {
+  return String(Math.round(value * 1000) / 1000);
+}
+
+// The glyph's paths as SVG markup, in the colors ProductMark draws them in.
+function glyphMarkup(glyph: (typeof PRODUCT_GLYPHS)[Product]): string {
+  return [
+    ...glyph.lines.map((d) => `<path d="${d}" stroke="#f7f7f4"/>`),
+    ...glyph.fill.map((d) => `<path d="${d}" fill="#f7f7f4"/>`),
+    ...glyph.accent.map((d) => `<path d="${d}" stroke="#ffe14d"/>`),
+    ...glyph.accentFill.map((d) => `<path d="${d}" fill="#ffe14d"/>`),
+  ].join("");
+}
+
+/**
+ * A product's favicon as a standalone SVG document, for an app's `icon.svg` or a route that serves one. On a light tab
+ * strip it is the ProductMark cropped to a circle, which reads as a full-size round mark there. On a dark one the ink
+ * disc all but disappears and only the glyph, two thirds of the canvas, is left, so that a mark looked small beside its
+ * neighbors; there the favicon drops the disc and draws the glyph alone, nearly as large as the canvas. Browsers that
+ * draw SVG favicons (Chromium, Firefox) pick the drawing by the color scheme; a PNG or ICO beside it stays the disc.
+ */
+function productFaviconSvg(product: Product): string {
+  const glyph = PRODUCT_GLYPHS[product];
+  const [left, top, right, bottom] = glyph.box;
+  const stroked = glyph.lines.length + glyph.accent.length > 0;
+  const outside = stroked ? FAVICON_GLYPH_STROKE : 0;
+  // Rounded before the offsets are worked out from it, so the glyph stays centered on the canvas as written out.
+  const scale = Number(svgNumber((FAVICON_GLYPH_SIZE - outside) / Math.max(right - left, bottom - top)));
+  const x = 24 - ((left + right) / 2) * scale;
+  const y = 24 - ((top + bottom) / 2) * scale;
+  const tile = 24 - 10 * GLYPH_SCALE;
+  const group = (transform: string, stroke: number) =>
+    `transform="${transform}" fill="none" stroke-width="${svgNumber(stroke)}" stroke-linecap="square" stroke-linejoin="miter"`;
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">` +
+    `<style>.dark{display:none}@media (prefers-color-scheme:dark){.light{display:none}.dark{display:inline}}</style>` +
+    `<g class="light"><circle cx="24" cy="24" r="24" fill="#141412"/>` +
+    `<g ${group(`translate(${svgNumber(tile)} ${svgNumber(tile)}) scale(${GLYPH_SCALE})`, GLYPH_STROKE / GLYPH_SCALE)}>${glyphMarkup(glyph)}</g></g>` +
+    `<g class="dark" ${group(`translate(${svgNumber(x)} ${svgNumber(y)}) scale(${svgNumber(scale)})`, FAVICON_GLYPH_STROKE / scale)}>${glyphMarkup(glyph)}</g>` +
+    `</svg>`
+  );
+}
+
 /** The wordmark: "abnormal" with a signal-colored period. */
 function BrandName({ className, ...props }: React.ComponentProps<"span">) {
   return (
@@ -157,5 +225,5 @@ function BrandArrow({ className, ...props }: React.ComponentProps<"svg">) {
   );
 }
 
-export { BrandArrow, BrandMark, BrandName, ProductMark };
+export { BrandArrow, BrandMark, BrandName, ProductMark, productFaviconSvg };
 export type { Product };
