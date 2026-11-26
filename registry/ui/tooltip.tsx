@@ -184,6 +184,16 @@ function DisabledTarget({
 }
 
 /**
+ * The element itself when it comes as a lazy reference, as a server component's child of a client component does:
+ * that reference has no props to read until it is unwrapped, the way Radix's Slot unwraps it.
+ */
+function useUnwrapped(child: React.ReactElement): React.ReactElement {
+  const lazy = child as unknown as { $$typeof?: symbol; _payload?: PromiseLike<React.ReactElement> };
+  if (lazy?.$$typeof !== Symbol.for("react.lazy") || typeof lazy._payload?.then !== "function") return child;
+  return React.use(lazy._payload as Promise<React.ReactElement>);
+}
+
+/**
  * A tooltip around one element, in one line: `<LabelTooltip label="Archive (E)"><button …/></LabelTooltip>`. It is
  * what IconButton uses for its label, and the way to give a hint to any other element that would have used
  * the browser's title. With no label, or inside a TooltipTrigger that already gives one, it renders the child alone.
@@ -213,9 +223,10 @@ function LabelTooltip({
   children: React.ReactElement;
 }) {
   const nested = React.useContext(TooltipTriggerContext);
+  children = useUnwrapped(children);
   if (nested || label === null || label === undefined || label === false || label === "")
     return <Slot.Root {...forwarded}>{children}</Slot.Root>;
-  const props = children.props as { "aria-label"?: unknown; disabled?: unknown };
+  const props = (children.props ?? {}) as { "aria-label"?: unknown; disabled?: unknown };
   const repeatsName = label === props["aria-label"];
   // Inside the slot that drops the tooltip's own description, so an aria-describedby passed in survives it.
   const own = <Slot.Root {...forwarded}>{children}</Slot.Root>;

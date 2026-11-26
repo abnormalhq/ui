@@ -656,3 +656,18 @@ test("a ToolbarButton's tooltip can say more than its name, such as the shortcut
   assert.equal(document.querySelector('[data-slot="tooltip-content"]')?.textContent?.includes("Bold (Ctrl+B)"), true);
   assert.ok(bold.getAttribute("aria-describedby"));
 });
+
+test("a LabelTooltip reads a child that arrives as a lazy reference, as a server component's child does", async () => {
+  const element = (
+    <button type="button" aria-label="Archive" disabled>
+      <svg aria-hidden="true" />
+    </button>
+  );
+  // What React's server components hand a client component: a lazy node whose payload has already resolved.
+  const payload = Object.assign(Promise.resolve(element), { status: "fulfilled", value: element });
+  const lazy = { $$typeof: Symbol.for("react.lazy"), _payload: payload, _init: () => element };
+  const { container } = await mount(
+    <LabelTooltip label="Archive">{lazy as unknown as React.ReactElement}</LabelTooltip>,
+  );
+  assert.ok(container.querySelector('[data-slot="tooltip-disabled-trigger"] button[aria-label="Archive"]'));
+});
