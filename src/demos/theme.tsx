@@ -99,7 +99,7 @@ export const defaultCopy = {
   dialogOverlay: "The dim behind a dialog or sheet.",
   primaryAction: "The primary action: ink in light, paper in dark.",
   chromaticBrand: "The loud brand color: the one new or actionable thing on a screen, and the mark on a selected row.",
-  selectedRows: "Selected rows, the current navigation item, a pressed toggle: an ink tint a step deeper than hover.",
+  selectedRows: "Selected rows, a pressed toggle, the current page of a pager: an ink tint a step deeper than hover.",
   turnedOn: "Something turned on or matched: an enabled mode, a search hit.",
   supporting: "Supporting colors",
   supportingDescription:

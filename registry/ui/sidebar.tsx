@@ -324,7 +324,7 @@ function SidebarFooter({ className, ...props }: React.ComponentProps<"div">) {
 
 /**
  * One row: an icon, a name, and at the end a count or a dot. `current` marks the page being shown
- * (aria-current="page") with the selected tint and the ink text. A button unless `asChild`, which puts the row's content in the child
+ * (aria-current="page") with the sidebar's accent (the paper, raised a little off the canvas) and the ink text. A button unless `asChild`, which puts the row's content in the child
  * given, such as the router's link: `<SidebarItem asChild icon={…} label="Inbox"><Link href="/inbox" /></SidebarItem>`.
  * `count` is a quiet number, or any short text such as "3/10"; with `attention` it is a pill in the highlight color,
  * for something waiting on the person (unread, pending). `countLabel` is how it is read ("12 unread"), in place of the
@@ -379,7 +379,7 @@ function SidebarItem({
           aria-current={current ? "page" : undefined}
           {...(asChild ? {} : { type: "button" as const })}
           className={cn(
-            "group/sidebar-item relative flex h-8 shrink-0 items-center gap-2 rounded-control text-left text-base text-muted-foreground hover:bg-control hover:text-foreground focus-visible:-outline-offset-2 disabled:pointer-events-none disabled:opacity-50 data-current:bg-selected data-current:font-medium data-current:text-foreground data-current:hover:bg-selected [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+            "group/sidebar-item relative flex h-8 shrink-0 items-center gap-2 rounded-control text-left text-base text-muted-foreground hover:bg-control hover:text-foreground focus-visible:-outline-offset-2 disabled:pointer-events-none disabled:opacity-50 data-current:bg-sidebar-accent data-current:font-medium data-current:text-foreground data-current:shadow-control data-current:hover:bg-sidebar-accent [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
             collapsed ? "size-9 justify-center px-0" : "w-full px-3",
             attention && "text-foreground",
             className,
@@ -417,7 +417,7 @@ function SidebarItem({
               className={cn(
                 "size-1.5 shrink-0 rounded-full bg-signal",
                 collapsed &&
-                  "absolute top-1.5 right-1.5 size-2 ring-2 ring-sidebar group-data-current/sidebar-item:ring-selected",
+                  "absolute top-1.5 right-1.5 size-2 ring-2 ring-sidebar group-data-current/sidebar-item:ring-sidebar-accent",
               )}
             />
           )}

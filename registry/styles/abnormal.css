@@ -9,8 +9,9 @@
  * - Highlighter yellow #ffe14d is the brand's one loud color. It marks the one thing on a screen that is new or that the
  *   person should act on (a count waiting for them, the 2px mark on the selected row, the lead action of a marketing
  *   page), always carries ink text (14.2:1), and is never text on a light background nor the background of long text.
- * - Selection is ink, not yellow: the current navigation item, a selected row, a pressed toggle and the current page of
- *   a pager all take `selected`, a quiet ink tint one step deeper than hover.
+ * - Selection is ink, not yellow: a selected row, a pressed toggle and the current page of a pager take `selected`, a
+ *   quiet ink tint one step deeper than hover. The current navigation item sits on the canvas, so it takes the paper
+ *   (`sidebar-accent`), as the open card in a list does.
  * - Three supporting colors sit beside the ink and the yellow, toned to the paper: indigo (information, links in
  *   reading text, keyboard focus), clay (an editorial accent for marketing pages and illustrations) and sage (a calm
  *   counterweight for illustrations and bands). Each has a -soft fill for a band or a callout and an -ink text color
@@ -117,6 +118,9 @@
   --canvas: #e8e8e1;
   --sidebar-foreground: var(--text);
   --sidebar-border: var(--border);
+  /* The current navigation item on the canvas: the paper itself, as the open card in a list is, so what is open reads as
+     the page it opens. An opaque tint here would sit one shade off the canvas and vanish. */
+  --sidebar-accent: var(--bg);
   /* The ink shell's own color (see .ink): the brand ink on a paper page, one step darker than the page in dark mode. */
   --ink: #141412;
   /* Focus outline: indigo, 7.2:1 against the paper and 6.3:1 against the canvas, and never mistaken for a border. */
@@ -201,6 +205,7 @@
   --overlay: rgb(0 0 0 / 0.7);
   --popover-bg: #1c1c19;
   --sidebar: #0f0f0d;
+  --sidebar-accent: #1c1c19;
   --canvas: #0b0b0a;
   --ink: #0f0f0d;
   /* 7.9:1 against #141412. */
@@ -272,6 +277,7 @@
     --overlay: rgb(0 0 0 / 0.7);
     --popover-bg: #1c1c19;
     --sidebar: #0f0f0d;
+    --sidebar-accent: #1c1c19;
     --canvas: #0b0b0a;
     --ink: #0f0f0d;
     --focus: #9aa7dc;
@@ -409,6 +415,7 @@
   --canvas: var(--sidebar);
   --sidebar-foreground: var(--text);
   --sidebar-border: var(--border);
+  --sidebar-accent: var(--selected);
   --background: var(--bg);
   --foreground: var(--text);
   --card-foreground: var(--text);
@@ -575,6 +582,7 @@
   --color-canvas: var(--canvas);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent: var(--sidebar-accent);
   --color-ink: var(--ink);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
