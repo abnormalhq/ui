@@ -2,7 +2,7 @@
 export const principles = [
   {
     title: "Paper, ink, one highlighter",
-    text: "Keep the warm paper and ink palette. Selection is ink: the current navigation item and a selected row take a quiet ink tint. Yellow appears about once a screen, for the one new or actionable thing and the 2px mark on the selected row. Indigo, clay and sage support it for meaning and storytelling. Primary actions remain ink on paper, or paper on ink.",
+    text: "Keep the warm paper and ink palette. Selection is ink: a selected row takes a quiet ink tint, and the current navigation item the paper on the canvas. Yellow appears about once a screen, for the one new or actionable thing and the 2px mark on the selected row. Indigo, clay and sage support it for meaning and storytelling. Primary actions remain ink on paper, or paper on ink.",
   },
   {
     title: "Few sizes, far apart",
@@ -45,13 +45,13 @@ export const palette = [
     token: "highlight",
     value: "#ffe14d",
     className: "bg-highlight",
-    role: "Current navigation or a new signal; always use highlight-foreground text.",
+    role: "The one new or actionable thing on a screen, and the 2px mark on a selected row; always use highlight-foreground text.",
   },
   {
     token: "selected",
     value: "#e8e8e3",
     className: "bg-selected",
-    role: "Selected rows, the current navigation item and pressed toggles; an ink tint a step deeper than hover.",
+    role: "Selected rows, pressed toggles and the current page of a pager; an ink tint a step deeper than hover. The current navigation item takes the paper (sidebar-accent).",
   },
   {
     token: "highlight-muted",
