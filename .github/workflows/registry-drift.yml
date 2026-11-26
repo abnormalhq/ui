@@ -37,6 +37,8 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
+      # Every project that calls this pins pnpm in its root package.json's packageManager, which this reads.
+      - uses: pnpm/action-setup@v6.1.1
       - uses: actions/setup-node@v7.1.0
         with:
           node-version: 26.13.1
@@ -46,8 +48,8 @@ jobs:
         run: |
           items=$(curl -fsSL "$REGISTRY" | node -e 'let s="";process.stdin.on("data",(d)=>(s+=d)).on("end",()=>console.log(JSON.parse(s).items.map(({name})=>`@abnormal/${name}`).join(" ")))')
           # A dry run writes nothing; it marks each file of the items as created, identical or to be overwritten.
-          npx --yes shadcn@4.23.0 add $items --dry-run | tee "$RUNNER_TEMP/dry-run.txt"
+          pnpm dlx shadcn@4.23.0 add $items --dry-run | tee "$RUNNER_TEMP/dry-run.txt"
           if grep -E '^│ ~ ' "$RUNNER_TEMP/dry-run.txt"; then
-            echo "::error::These copies differ from the registry. Reinstall their items with --overwrite and review the diff (README, \"Versions and updates\"); see each difference with: npx shadcn add @abnormal/<item> --dry-run --diff <path>"
+            echo "::error::These copies differ from the registry. Reinstall their items with --overwrite and review the diff (README, \"Versions and updates\"); see each difference with: pnpm dlx shadcn add @abnormal/<item> --dry-run --diff <path>"
             exit 1
           fi
