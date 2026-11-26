@@ -38,6 +38,7 @@ Each entry names the items it touches, because a project installs items one by o
 
 ### Changed
 
+- `description-list`: the names' column takes at most 40% of the list (`fit-content(40%)`), a longer name wrapping, and on a phone (below `sm`) the bare list and the `panel` put each value under its name, the panel with 12px padding. Beside an `auto` column, a value that wraps anywhere (an address, a key) shrank to a column one letter wide in a narrow list.
 - `card`: on a phone (below `sm`) a header's `CardAction` sits level with the `CardTitle` only, and the `CardDescription` runs under both at the header's full width, instead of the button taking the right of both rows and leaving the description a column a few words wide.
 - `prose`: second-level headings are set in `font-serif` at weight 500, like the section titles of the public pages; needs `theme` and `fonts` from the same release.
 - `theme`, `fonts`, `section-heading`, `bento`, `pricing-card`: the editorial direction for public pages. `theme` adds `font-serif` (Newsreader, then Noto Serif SC, then system serifs); `fonts` installs and imports the two `@fontsource-variable` packages. `SectionTitle`, `PageTitle` and the pricing figure are set in `font-serif` at weight 500, and the two titles keep normal letter spacing in Chinese; `Eyebrow` drops its leading dot; `BentoTile` is a column opened by a hairline instead of a filled panel. Reinstall `theme` and `fonts` together with the marketing items, or the titles fall back to a system serif.
