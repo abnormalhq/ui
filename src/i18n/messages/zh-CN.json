@@ -1212,7 +1212,7 @@
       },
       {
         "title": "营销展示",
-        "description": "用于网站的编辑式强调，不要让每个应用面板都使用超大标题。"
+        "description": "公共页面（网站、开发者站点、状态页）使用 Newsreader 与 Noto Serif SC，500 字重；应用面板不用。Bricolage 仍只用于字标。"
       },
       {
         "title": "数据",
