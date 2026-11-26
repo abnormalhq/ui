@@ -35,6 +35,7 @@ Each entry names the items it touches, because a project installs items one by o
 ### Changed
 
 - `dialog`, `sheet`, `side-pane`, `selection-bar`, `calendar`: their icon buttons are IconButtons, so the close, fold, clear and month buttons show their names as tooltips; `search-input`'s clear button, `password-input`'s eye, `time-picker`'s clock and `copy-button`'s icon-only button show theirs through LabelTooltip, and none sets `title` any more.
+- `theme-picker`, `language-picker`: an icon-only button now shows its `label` in the tooltip by default; `tooltip` gives other words and `false` none. `TooltipContent` portals into the full-screen element while one is open, so a full-screen video player's buttons still show theirs.
 - `uptime-bar`: a bar's `title` shows above it in the theme's tooltip, drawn with CSS so the strip still ships no script, leaning away from the strip's ends; `UptimeValue` takes `hint` for the same instead of `title`.
 - `banner`, `tag`: `BannerClose` and the tag's × drop their `title`; they are server items, so they keep only the aria-label.
 - `date-time-picker`: the time half is a `time-picker`, so its list of times opens in the theme's popover instead of the browser's picker. `timeListLabel` names that list and its button (`timeLabel` unless given), and `timeClassName` now goes to the time field's box.

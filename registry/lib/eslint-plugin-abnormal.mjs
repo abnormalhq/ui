@@ -55,7 +55,7 @@
  *     rules: { "abnormal/no-native-title": "error", "abnormal/icon-button-label": "error" } },
  *
  * no-native-title reports `title` on HTML elements and on the components that pass it to one (Button, IconButton, Link,
- * Toggle, ToggleGroupItem; the `components` option replaces the list). The browser's title ignores the theme, waits
+ * Toggle, ToggleGroupItem, ThemePicker, LanguagePicker; the `components` option replaces the list). The browser's title ignores the theme, waits
  * about a second, never opens for the keyboard and can sit over the thing it explains. Use IconButton's label for an
  * icon button, TruncatedText for cut text and LabelTooltip for anything else. An iframe's, frame's or object's title
  * (its accessible name), abbr's and a style sheet link's are left alone.
@@ -370,7 +370,15 @@ const noNativeTitle = {
     const allowed = allowedLines(context.sourceCode);
     // Components that pass title straight to the element they render, so it is the browser's title there too.
     const components = new Set(
-      context.options[0]?.components ?? ["Button", "IconButton", "Link", "Toggle", "ToggleGroupItem"],
+      context.options[0]?.components ?? [
+        "Button",
+        "IconButton",
+        "Link",
+        "Toggle",
+        "ToggleGroupItem",
+        "ThemePicker",
+        "LanguagePicker",
+      ],
     );
     return {
       JSXAttribute(node) {
