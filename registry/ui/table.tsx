@@ -159,7 +159,8 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
 
 /**
  * A row. `current` marks the row a list's details pane shows, the one J and K move: it takes the selected tint and a
- * highlighter mark at its start edge, and `aria-current`. It is not selection (`data-state="selected"`, the checked rows).
+ * mark in the signal color at its start edge (ink in light, yellow in dark and in the ink shell, so it shows on the
+ * tint), and `aria-current`. It is not selection (`data-state="selected"`, the checked rows).
  */
 function TableRow({ className, current = false, ...props }: React.ComponentProps<"tr"> & { current?: boolean }) {
   const variant = React.useContext(TableVariantContext);
@@ -177,9 +178,9 @@ function TableRow({ className, current = false, ...props }: React.ComponentProps
             "border-b transition-colors duration-100 hover:bg-accent has-aria-expanded:bg-accent data-[state=selected]:bg-selected data-[state=selected]:hover:bg-selected data-[state=selected]:has-aria-expanded:bg-selected",
         current &&
           (variant === "plain"
-            ? "[&>td]:bg-selected [&>td:first-child]:shadow-[inset_2px_0_0_var(--highlight)]"
+            ? "[&>td]:bg-selected [&>td:first-child]:shadow-[inset_2px_0_0_var(--signal)]"
             : // The current row keeps its tint under the pointer and while its menu is open.
-              "bg-selected shadow-[inset_2px_0_0_var(--highlight)] hover:bg-selected has-aria-expanded:bg-selected"),
+              "bg-selected shadow-[inset_2px_0_0_var(--signal)] hover:bg-selected has-aria-expanded:bg-selected"),
         props.onClick && "cursor-pointer",
         className,
       )}

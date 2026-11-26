@@ -21,7 +21,8 @@ const navTabVariants = cva(
       variant: {
         underline:
           "h-9 px-2.5 text-base font-medium after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-signal after:opacity-0 after:transition-opacity after:duration-100 aria-[current]:text-foreground aria-[current]:after:opacity-100",
-        pill: "h-8 rounded-control px-3 text-base font-semibold aria-[current]:bg-primary aria-[current]:text-primary-foreground aria-[current]:hover:text-primary-foreground",
+        // The keyboard outline sits inside the tab: on the current pill it takes the pill's text color (see TabsTrigger).
+        pill: "h-8 rounded-control px-3 text-base font-semibold aria-[current]:bg-primary aria-[current]:text-primary-foreground aria-[current]:hover:text-primary-foreground aria-[current]:focus-visible:outline-primary-foreground",
         segmented:
           "h-7 rounded-chip px-3 text-sm aria-[current]:bg-popover aria-[current]:font-medium aria-[current]:text-foreground aria-[current]:shadow-control",
       },
