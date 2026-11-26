@@ -37,6 +37,7 @@ Each entry names the items it touches, because a project installs items one by o
 
 ### Changed
 
+- `prose`: second-level headings are set in `font-serif` at weight 500, like the section titles of the public pages; needs `theme` and `fonts` from the same release.
 - `theme`, `fonts`, `section-heading`, `bento`, `pricing-card`: the editorial direction for public pages. `theme` adds `font-serif` (Newsreader, then Noto Serif SC, then system serifs); `fonts` installs and imports the two `@fontsource-variable` packages. `SectionTitle`, `PageTitle` and the pricing figure are set in `font-serif` at weight 500, with normal letter spacing in Chinese; `Eyebrow` drops its leading dot; `BentoTile` is a column opened by a hairline instead of a filled panel. Reinstall `theme` and `fonts` together with the marketing items, or the titles fall back to a system serif.
 - `brand-mark`: `ProductMark`'s glyph is scaled 1.6 times about the center (two thirds of the tile, 3.6px stroke), so it reads at 16px and on a dark tab strip where the ink tile disappears; the console's cells are solid, and glyphs take a `fill` list for paper shapes. Regenerate favicons drawn from it.
 - `dialog`, `sheet`, `side-pane`, `selection-bar`, `calendar`: their icon buttons are IconButtons, so the close, fold, clear and month buttons show their names as tooltips; `search-input`'s clear button, `password-input`'s eye, `time-picker`'s clock and `copy-button`'s icon-only button show theirs through LabelTooltip, and none sets `title` any more.
