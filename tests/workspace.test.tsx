@@ -114,7 +114,7 @@ test("a selected card is lifted with the bar and an unread one lights its dot, w
     html,
     /^<a href="#one" aria-current="true" data-slot="card-list-card" data-selected="true" data-unread="true"/,
   );
-  assert.match(html, /before:bg-highlight/);
+  assert.match(html, /before:bg-signal/);
   // The card names its group, or the dot and the bold title inside it would never see data-unread.
   assert.match(html, /class="group\/card /);
   assert.match(html, /group-data-unread\/card:inline-block/);

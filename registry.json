@@ -1129,7 +1129,7 @@
       "name": "card-list",
       "type": "registry:ui",
       "title": "Card List",
-      "description": "Small cards on the canvas, one per conversation or ticket: a first line with a time, a line or two under it, and a lifted selected card with a highlighter bar.",
+      "description": "Small cards on the canvas, one per conversation or ticket: a first line with a time, a line or two under it, and a selected card on the paper of the sheet with a mark in the signal color.",
       "dependencies": ["radix-ui"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [

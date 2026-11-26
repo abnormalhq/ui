@@ -45,7 +45,9 @@ const TABS_TRIGGER_VARIANTS = {
   // The bar is the trigger's own edge laid over the list's hairline, so nothing moves when the tab changes.
   underline:
     "h-9 px-2.5 font-medium after:absolute after:bg-signal after:opacity-0 after:transition-opacity after:duration-100 data-[orientation=horizontal]:after:inset-x-0 data-[orientation=horizontal]:after:bottom-0 data-[orientation=horizontal]:after:h-0.5 data-[orientation=vertical]:px-3.5 data-[orientation=vertical]:after:inset-y-0 data-[orientation=vertical]:after:left-0 data-[orientation=vertical]:after:w-0.5 data-[state=active]:after:opacity-100",
-  pill: "h-8 rounded-control px-3 font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:hover:text-primary-foreground",
+  // The keyboard outline sits inside the tab, so on the active pill it takes the pill's own text color: indigo on the
+  // dark theme's paper pill would be 2:1.
+  pill: "h-8 rounded-control px-3 font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:hover:text-primary-foreground data-[state=active]:focus-visible:outline-primary-foreground",
   chip: "h-6 min-h-[24px] rounded-chip border border-input px-2 text-xs font-medium data-[state=active]:border-transparent data-[state=active]:bg-secondary data-[state=active]:text-foreground",
 };
 

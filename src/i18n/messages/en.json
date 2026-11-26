@@ -116,7 +116,7 @@
     "patternsTitle": "Compose around the task",
     "patternsDescription": "These are executable component compositions, not replacement product screens. Use the theme switcher above to inspect both themes. No product routes or behavior are changed here.",
     "readingHeading": "01 / Reading workspace",
-    "readingDescription": "A compact list beside a comfortable reader. Select a message to change the reader; saturated yellow marks location, muted yellow marks content selection.",
+    "readingDescription": "A compact list beside a comfortable reader. Select a message to change the reader; the current folder and the selected message are marked by a quiet tint, not by yellow.",
     "listHeading": "02 / Operational list",
     "listDescription": "A continuous paper surface, aligned columns and explicit state. Use an inspector only when the workflow needs it, not to imitate Mail.",
     "statusHeading": "03 / Service health",
