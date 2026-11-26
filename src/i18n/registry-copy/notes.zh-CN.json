@@ -94,7 +94,9 @@
   },
   "card": {
     "A card has a thin border and no background fill; table content can extend to the panel edge via p-0. `interactive` deepens the border on hover, for cards that are links; `featured` keeps it deepened, for the one that leads.": "卡片使用细边框、不填充背景；可用 p-0 让表格延伸至面板边缘。`interactive` 在悬停时加深边框，适合链接卡片；`featured` 始终加深边框，用于重点项。",
-    "An h2 by default. The right level depends on where the card sits, so pass asChild with the element that fits the outline, such as `<CardTitle asChild><h3>…</h3></CardTitle>` under a section's h2, or a div for no heading at all.": "默认使用 h2。正确层级取决于所在位置，可用 asChild 提供符合页面结构的元素，例如分区 h2 下的 `<CardTitle asChild><h3>…</h3></CardTitle>`，无需标题时也可用 div。"
+    "An h2 by default. The right level depends on where the card sits, so pass asChild with the element that fits the outline, such as `<CardTitle asChild><h3>…</h3></CardTitle>` under a section's h2, or a div for no heading at all.": "默认使用 h2。正确层级取决于所在位置，可用 asChild 提供符合页面结构的元素，例如分区 h2 下的 `<CardTitle asChild><h3>…</h3></CardTitle>`，无需标题时也可用 div。",
+    "Under a title with an action, on a phone the description takes the header's full width, under both (see CardAction).": "标题旁有操作按钮时，在手机上说明文字占满整个标题区的宽度，排在标题和按钮下方（见 CardAction）。",
+    "The header's button, at the right of the title and the description. On a phone it sits level with the title only, and the description runs under both: beside a button, a paragraph on a 320px screen was a column a few words wide.": "标题区的按钮，位于标题和说明文字右侧。在手机上它只与标题同行，说明文字排在两者下方：在 320px 的屏幕上，按钮旁的一段文字会被挤成每行只有几个字的窄列。"
   },
   "checkbox": {
     "A 16px square with 4px radius; when checked it fills with text and a check in the bg color: quiet, no brand color.": "16px 方框、4px 圆角；选中时填充文字色，勾选符号使用背景色。保持克制，不使用品牌色。"
