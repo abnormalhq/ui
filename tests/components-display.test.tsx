@@ -2,6 +2,7 @@
 import { click, render } from "./support/render.tsx";
 import assert from "node:assert/strict";
 import { afterEach, mock, test } from "node:test";
+import * as React from "react";
 import { act, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { CodeBlock } from "@/components/ui/code-block";
@@ -17,6 +18,14 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/
 import { SortableHead } from "@/components/ui/table";
 import { Toolbar, ToolbarButton } from "@/components/ui/toolbar";
 import { LabelTooltip, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Toggle } from "@/components/ui/toggle";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const mounted: { unmount: () => Promise<void> }[] = [];
 const mount = async (ui: React.ReactNode) => {
@@ -549,4 +558,147 @@ test("an icon-sized ToolbarButton and a SortableHead show their words in the the
     ),
     true,
   );
+});
+
+test("a LabelTooltip leaves the child's own data-state and data-slot alone", async () => {
+  const { container } = await mount(
+    <>
+      <LabelTooltip label="Bold (Ctrl+B)">
+        <Toggle aria-label="Bold" defaultPressed data-testid="bold">
+          <svg aria-hidden="true" />
+        </Toggle>
+      </LabelTooltip>
+      <ToggleGroup type="single" defaultValue="all" aria-label="Scope">
+        <LabelTooltip label="Every folder">
+          <ToggleGroupItem value="all" data-testid="all">
+            All
+          </ToggleGroupItem>
+        </LabelTooltip>
+      </ToggleGroup>
+      <DropdownMenu>
+        <LabelTooltip label="More actions">
+          <DropdownMenuTrigger asChild>
+            <button type="button" aria-label="More" data-testid="more">
+              <svg aria-hidden="true" />
+            </button>
+          </DropdownMenuTrigger>
+        </LabelTooltip>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Rename</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>,
+  );
+  const bold = container.querySelector('[data-testid="bold"]')!;
+  assert.equal(bold.getAttribute("data-state"), "on");
+  assert.equal(bold.getAttribute("data-slot"), "toggle");
+  await hover(bold);
+  assert.equal(bold.getAttribute("data-state"), "on");
+  assert.ok(bold.getAttribute("aria-describedby"));
+  assert.equal(container.querySelector('[data-testid="all"]')!.getAttribute("data-state"), "on");
+  const more = container.querySelector('[data-testid="more"]')!;
+  await act(async () => {
+    more.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+  });
+  assert.equal(more.getAttribute("data-state"), "open");
+});
+
+test("a click on a tooltip does not reach what its trigger sits in", async () => {
+  const onRowClick = mock.fn();
+  const { container } = await mount(
+    <div role="presentation" onClick={onRowClick}>
+      <LabelTooltip label="3 messages">
+        <span data-testid="count">3</span>
+      </LabelTooltip>
+    </div>,
+  );
+  await hover(container.querySelector('[data-testid="count"]')!);
+  const content = document.querySelector<HTMLElement>('[data-slot="tooltip-content"]')!;
+  await act(async () => content.click());
+  assert.equal(onRowClick.mock.callCount(), 0);
+});
+
+test("a LabelTooltip whose label starts repeating the name keeps the same child element", async () => {
+  const mounts = mock.fn();
+  function Child(props: React.ComponentProps<"button">) {
+    // Counts how often React mounts the child, which a change in the tree around it would do again.
+    React.useEffect(() => mounts(), []);
+    return (
+      <button type="button" aria-label="Theme" {...props}>
+        <svg aria-hidden="true" />
+      </button>
+    );
+  }
+  const { rerender } = await mount(
+    <LabelTooltip label="Theme: dark">
+      <Child />
+    </LabelTooltip>,
+  );
+  await rerender(
+    <LabelTooltip label="Theme" describe={false}>
+      <Child />
+    </LabelTooltip>,
+  );
+  assert.equal(mounts.mock.callCount(), 1);
+});
+
+test("a ToolbarButton's tooltip can say more than its name, such as the shortcut", async () => {
+  const { container } = await mount(
+    <Toolbar label="Formatting">
+      <ToolbarButton aria-label="Bold" tooltip="Bold (Ctrl+B)">
+        <svg aria-hidden="true" />
+      </ToolbarButton>
+    </Toolbar>,
+  );
+  const bold = container.querySelector('[data-slot="toolbar-button"]')!;
+  assert.equal(bold.hasAttribute("title"), false);
+  await hover(bold);
+  assert.equal(document.querySelector('[data-slot="tooltip-content"]')?.textContent?.includes("Bold (Ctrl+B)"), true);
+  assert.ok(bold.getAttribute("aria-describedby"));
+});
+
+test("a LabelTooltip reads a child that arrives as a lazy reference, as a server component's child does", async () => {
+  const element = (
+    <button type="button" aria-label="Archive" disabled>
+      <svg aria-hidden="true" />
+    </button>
+  );
+  // What React's server components hand a client component: a lazy node whose payload has already resolved.
+  const payload = Object.assign(Promise.resolve(element), { status: "fulfilled", value: element });
+  const lazy = { $$typeof: Symbol.for("react.lazy"), _payload: payload, _init: () => element };
+  const { container } = await mount(
+    <LabelTooltip label="Archive">{lazy as unknown as React.ReactElement}</LabelTooltip>,
+  );
+  assert.ok(container.querySelector('[data-slot="tooltip-disabled-trigger"] button[aria-label="Archive"]'));
+});
+
+test("a LabelTooltip reads through a lazy reference that resolves to another one", async () => {
+  const element = (
+    <button type="button" aria-label="Archive" disabled>
+      <svg aria-hidden="true" />
+    </button>
+  );
+  const lazyOf = (value: unknown) => ({
+    $$typeof: Symbol.for("react.lazy"),
+    _payload: Object.assign(Promise.resolve(value), { status: "fulfilled", value }),
+    _init: () => value,
+  });
+  const { container } = await mount(
+    <LabelTooltip label="Archive">{lazyOf(lazyOf(element)) as unknown as React.ReactElement}</LabelTooltip>,
+  );
+  assert.ok(container.querySelector('[data-slot="tooltip-disabled-trigger"] button[aria-label="Archive"]'));
+});
+
+test("a disabled child stays the same element as its tooltip opens", async () => {
+  const { container } = await mount(
+    <LabelTooltip label="Generate the shots first">
+      <button type="button" disabled>
+        Export
+      </button>
+    </LabelTooltip>,
+  );
+  const before = container.querySelector("button")!;
+  await hover(container.querySelector('[data-slot="tooltip-disabled-trigger"]')!);
+  assert.ok(before.getAttribute("aria-describedby"));
+  assert.equal(container.querySelector("button"), before);
 });

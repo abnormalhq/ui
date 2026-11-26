@@ -149,6 +149,8 @@ test("native titles are reported on HTML elements and the components that pass t
       "// abnormal-allow: a printed page has no pointer",
       'const f = <span title="Printed" />;',
       'const g = <abbr title="Domain-based Message Authentication">DMARC</abbr>;',
+      'const h = <ToolbarButton aria-label="Bold" title="Bold (Ctrl+B)"><BoldIcon /></ToolbarButton>;',
+      "const i = <TableCell title={address}>{address}</TableCell>;",
     ].join("\n"),
     {
       languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
@@ -158,7 +160,7 @@ test("native titles are reported on HTML elements and the components that pass t
   );
   assert.deepEqual(
     messages.map(({ line }) => line),
-    [1, 2, 3],
+    [1, 2, 3, 9, 10],
   );
   assert.match(messages[0]!.message, /LabelTooltip/);
 });
@@ -182,6 +184,13 @@ test("icon buttons need IconButton or a tooltip around them", () => {
       'const m = <button type="button" hidden={false} aria-label="Clear"><XIcon /></button>;',
       'const n = <button type="button" hidden={collapsed} aria-label="Clear"><XIcon /></button>;',
       'const o = <button type="button" aria-hidden="true" aria-label="Clear"><XIcon /></button>;',
+      'const p = <button type="button" hidden="false" aria-label="Clear"><XIcon /></button>;',
+      'const q = <button type="button" aria-label="Play">{ended ? <RotateIcon /> : <PlayIcon />}</button>;',
+      'const r = <button type="button" aria-label="Menu">{open && <XIcon />}{" "}</button>;',
+      'const s = <button type="button">{busy ? <Spinner /> : "Save"}</button>;',
+      'const t = <button type="button">{count > 0 && count}<BellIcon /></button>;',
+      'const u = <button type="button">{name ?? <UserIcon />}</button>;',
+      'const v = <button type="button">{showCount && <BadgeCount count={3} />}<BellIcon /></button>;',
     ].join("\n"),
     {
       languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
@@ -191,7 +200,7 @@ test("icon buttons need IconButton or a tooltip around them", () => {
   );
   assert.deepEqual(
     messages.map(({ line }) => line),
-    [1, 3, 4, 13, 14, 15],
+    [1, 3, 4, 13, 14, 15, 17, 18],
   );
   assert.match(messages[0]!.message, /IconButton/);
 });
