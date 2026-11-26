@@ -13,6 +13,7 @@ import { SelectionBar } from "@/components/ui/selection-bar";
 import { Tag, TagList } from "@/components/ui/tag";
 import { TruncatedText } from "@/components/ui/truncated-text";
 import { IconButton } from "@/components/ui/icon-button";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { LabelTooltip, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const mounted: { unmount: () => Promise<void> }[] = [];
@@ -417,4 +418,23 @@ test("a LabelTooltip around a disabled button still opens, from a box around it"
     document.querySelector('[data-slot="tooltip-content"]')?.textContent?.includes("Generate the shots first"),
     true,
   );
+});
+
+test("a LabelTooltip inside a trigger's asChild passes the trigger's click and ref on to its child", async () => {
+  const { container } = await mount(
+    <Dialog>
+      <DialogTrigger asChild>
+        <LabelTooltip label="New mailbox">
+          <button type="button">New</button>
+        </LabelTooltip>
+      </DialogTrigger>
+      <DialogContent showCloseButton={false}>
+        <DialogTitle>New mailbox</DialogTitle>
+      </DialogContent>
+    </Dialog>,
+  );
+  const button = container.querySelector("button")!;
+  assert.equal(button.getAttribute("aria-haspopup"), "dialog");
+  await click(button);
+  assert.ok(document.querySelector('[data-slot="dialog-content"]'));
 });
