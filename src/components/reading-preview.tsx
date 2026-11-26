@@ -29,7 +29,9 @@ export function ReadingPreview() {
         <div className="flex items-center gap-2 font-semibold">
           <BrandMark className="size-6" /> {t("mail")}
         </div>
-        <p className="rounded-control bg-highlight px-2 py-1.5 font-medium text-highlight-foreground">{t("inbox")}</p>
+        <p className="rounded-control bg-sidebar-accent px-2 py-1.5 font-medium text-foreground shadow-control">
+          {t("inbox")}
+        </p>
         <p className="mt-auto text-xs text-muted-foreground">{t("sampleWorkspace")}</p>
       </WorkspaceNavigation>
       <WorkspacePane padding="none" className="md:w-52 md:flex-none">

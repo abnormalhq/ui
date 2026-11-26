@@ -225,6 +225,8 @@ test("NavTabs are a named landmark of links, the current one marked with aria-cu
   assert.equal(named("General").hasAttribute("aria-current"), false);
   assert.equal(named("Domains").getAttribute("aria-current"), "page");
   assert.equal(named("Audit").getAttribute("aria-current"), "location");
+  // The outline is drawn inside the tab: on the current pill it takes the pill's text color, not the indigo focus.
+  assert.match(named("Domains").className, /aria-\[current\]:focus-visible:outline-primary-foreground/);
 });
 
 test("NavTabs bring the current tab into view when it changes, and only when it is out of view", async () => {
@@ -533,6 +535,8 @@ test("Tabs with the pill look keep the tab keyboard and mark the current tab", a
   assert.doesNotMatch(list.className, /border-b/);
   const [profile, storage] = [...list.querySelectorAll<HTMLElement>('[role="tab"]')];
   assert.match(profile!.className, /data-\[state=active\]:bg-primary/);
+  // The outline is drawn inside the tab: on the active pill it takes the pill's text color, not the indigo focus.
+  assert.match(profile!.className, /data-\[state=active\]:focus-visible:outline-primary-foreground/);
   await act(async () => profile!.focus());
   await press(profile!, "ArrowRight");
   assert.equal(storage!.getAttribute("aria-selected"), "true");
