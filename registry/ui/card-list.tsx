@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
  * A list of small cards on the canvas, one per thing, with a little air between them instead of lines: conversations,
  * tickets, tasks. Each card has a first line (who or what, and a time at the end), and under it a line or two in the
  * page's words. The selected card takes the paper of the sheet beside it, with a highlighter mark at its start: no
- * border and no shadow, so the list stays one quiet column. For rows in a bordered box use ItemList; for columns that line up use Table.
+ * border and no shadow, so the list stays one quiet column. For rows in a bordered box use ItemList; for columns that
+ * line up use Table.
  */
 function CardList({ className, ...props }: React.ComponentProps<"ul">) {
   // The list has no markers, and Safari stops announcing such a list unless the role says so.
@@ -19,8 +20,8 @@ function CardListItem({ className, ...props }: React.ComponentProps<"li">) {
 
 /**
  * The card. As a link or a button (`asChild`) the whole card takes the pointer and the focus. `selected` lays it on
- * paper and draws the mark; it is visual only, so the page gives aria-current on a link or aria-pressed on a button. `unread`
- * sets the first line in bold and lights its dot (CardListDot), whose `label` says so to a screen reader.
+ * paper and draws the mark; it is visual only, so the page gives aria-current on a link or aria-pressed on a button.
+ * `unread` sets the first line in bold and lights its dot (CardListDot), whose `label` says so to a screen reader.
  */
 function CardListCard({
   className,
