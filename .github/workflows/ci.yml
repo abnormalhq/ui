@@ -17,7 +17,8 @@ concurrency:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    # Blacksmith, as on status, mail and doppel; setup-node's pnpm cache goes to Blacksmith's cache next to the runner.
+    runs-on: blacksmith-2vcpu-ubuntu-2404
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7.0.1
