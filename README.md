@@ -133,7 +133,7 @@ When editing the theme, keep two things in step, both also tested: the dark valu
 
 ## Develop
 
-Development pins Node.js 26.13.1 in `.node-version` and pnpm 12.21.0 in `packageManager`. `engines.node` remains the declared compatibility floor (`>=22.22.1`), not the development pin. `tests/toolchain.test.ts` validates dependency engine declarations; this rollout was exercised on Node 26.13.1.
+Development pins Node.js 26.13.1 in `.node-version` and pnpm 12.23.0 in `packageManager`. `engines.node` remains the declared compatibility floor (`>=22.22.1`), not the development pin. `tests/toolchain.test.ts` validates dependency engine declarations; this rollout was exercised on Node 26.13.1.
 
 Node 26 does not bundle Corepack. Install stable Corepack 0.36.0 into the selected Node installation, then use it to install the manager declared by `packageManager`.
 
@@ -143,7 +143,7 @@ nvm use 26.13.1
 npm install --global corepack@0.36.0
 corepack enable
 corepack install
-pnpm --version # 12.21.0
+pnpm --version # 12.23.0
 pnpm install --frozen-lockfile
 ```
 
