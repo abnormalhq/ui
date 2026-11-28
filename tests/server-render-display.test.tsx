@@ -33,6 +33,7 @@ import { Stat, StatDelta, StatGrid } from "@/components/ui/stat";
 import { SortableHead, Table, TableHeader, TableRow } from "@/components/ui/table";
 import { Timeline, TimelineItem, TimelineTime } from "@/components/ui/timeline";
 import { UptimeBar, UptimeValue, uptimeStatus } from "@/components/ui/uptime-bar";
+import { ModifierKeyProvider } from "@/components/ui/modifier-key-provider";
 import { useModifierKey } from "@/components/ui/use-modifier-key";
 
 test("a BadgeCount caps at the number it is given and renders nothing for zero", () => {
@@ -285,6 +286,34 @@ test("useModifierKey knows no platform on the server", () => {
   }
   renderToStaticMarkup(<Probe />);
   assert.equal(seen, null);
+});
+
+test("useModifierKey renders the request's platform on the server under ModifierKeyProvider", () => {
+  const seen: (string | null)[] = [];
+  function Probe() {
+    seen.push(useModifierKey());
+    return null;
+  }
+  const mac =
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36";
+  const windows =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36";
+  renderToStaticMarkup(
+    <ModifierKeyProvider userAgent={mac}>
+      <Probe />
+    </ModifierKeyProvider>,
+  );
+  renderToStaticMarkup(
+    <ModifierKeyProvider userAgent={windows}>
+      <Probe />
+    </ModifierKeyProvider>,
+  );
+  renderToStaticMarkup(
+    <ModifierKeyProvider userAgent={null}>
+      <Probe />
+    </ModifierKeyProvider>,
+  );
+  assert.deepEqual(seen, ["meta", "control", null]);
 });
 
 test("PageHeaderActions wrap by default, and keep one scrolling line with scroll, on any element given asChild", () => {
