@@ -525,6 +525,24 @@ test("a tooltip mounted before the page went full screen opens inside the full-s
   }
 });
 
+test("closed tooltips do not search the page for a modal dialog when the page renders", async () => {
+  const rows = (count: number) =>
+    Array.from({ length: count }, (_, index) => (
+      <LabelTooltip key={index} label={`Row ${index}`}>
+        <button type="button" aria-label={`Row ${index}`}>
+          <svg aria-hidden="true" />
+        </button>
+      </LabelTooltip>
+    ));
+  const { container, rerender } = await mount(<div>{rows(50)}</div>);
+  const searches = mock.method(document, "querySelectorAll");
+  await rerender(<div data-render="again">{rows(50)}</div>);
+  assert.equal(searches.mock.calls.filter((call) => call.arguments[0] === "dialog:modal").length, 0);
+  await hover(container.querySelector("button")!);
+  assert.equal(searches.mock.calls.filter((call) => call.arguments[0] === "dialog:modal").length, 1);
+  assert.ok(document.querySelector('[data-slot="tooltip-content"]'));
+});
+
 test("an icon-sized ToolbarButton and a SortableHead show their words in the theme's tooltip, not a native title", async () => {
   const { container } = await mount(
     <>
