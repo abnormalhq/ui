@@ -193,7 +193,7 @@
   },
   "kbd": {
     "title": "键盘按键",
-    "description": "展示单个按键或按键组合；useModifierKey 可识别当前平台使用的修饰键。"
+    "description": "展示单个按键或按键组合；useModifierKey 可识别当前平台使用的修饰键，ModifierKeyProvider 让服务器根据请求判断。"
   },
   "json-ld": {
     "title": "JSON-LD",

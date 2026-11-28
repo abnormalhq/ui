@@ -688,7 +688,7 @@
       "name": "kbd",
       "type": "registry:ui",
       "title": "Kbd",
-      "description": "A key cap and a combination of keys, with useModifierKey to tell the platform's modifier.",
+      "description": "A key cap and a combination of keys, with useModifierKey to tell the platform's modifier and ModifierKeyProvider to tell it on the server from the request.",
       "dependencies": ["class-variance-authority"],
       "registryDependencies": ["@abnormal/utils"],
       "files": [
@@ -698,6 +698,10 @@
         },
         {
           "path": "registry/ui/use-modifier-key.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/modifier-key-provider.tsx",
           "type": "registry:ui"
         }
       ]
