@@ -123,10 +123,15 @@ function TooltipContent({
   onClick,
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Content>) {
-  // Read on every render, and opening renders it again, so a page that went full screen after it mounted still counts.
-  React.useContext(TooltipOpenContext);
+  // The top layer is looked for as the tooltip opens, so a page that went full screen after it mounted still counts,
+  // and kept while it fades out. It is not looked for on any other render: a closed tooltip puts nothing in the portal,
+  // and a page of a few thousand rows, each with its tooltip, would otherwise search the whole document once per row
+  // every time the page renders.
+  const open = React.useContext(TooltipOpenContext);
+  const [layer, setLayer] = React.useState<{ open: boolean; element?: Element }>({ open: false });
+  if (layer.open !== open) setLayer({ open, element: open ? topLayer() : layer.element });
   return (
-    <TooltipPrimitive.Portal container={topLayer()}>
+    <TooltipPrimitive.Portal container={layer.element}>
       <TooltipPrimitive.Content
         data-slot="tooltip-content"
         sideOffset={sideOffset}
